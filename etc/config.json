@@ -1,0 +1,26 @@
+{
+	"applog_SessionHost": {
+		"level": 3, 
+		"exceptions":[
+			{ "eventId": 1106, "source": "MetaFrameEvents" },
+			{ "eventId": 1103, "source": "MetaFrameEvents" },
+			{ "eventId": 1114, "source": "MetaFrameEvents" },
+			{ "eventId": 1530, "source": "Microsoft-Windows-User Profiles Service" },
+			{ "eventId": 510, "source": "Microsoft-Windows-Folder Redirection" },
+			{ "eventId": 63, "source": "Microsoft-Windows-WMI" },
+			{ "eventId": 1000, "source": "VMware Tools" },
+			{ "eventId": 4440, "source": "Microsoft-Windows-Complus" },
+			{ "eventId": 4098, "source": "Group Policy Shortcuts" },
+			{ "eventId": 4098, "source": "Group Policy Files" }
+		],
+		"critical": [
+			{ "eventId": 502, "source": "Microsoft-Windows-Folder Redirection"}
+		]
+	},
+	"syslog_SessionHost": {
+		"level": 3,
+		"exceptions": [
+			{ "eventId": 36887, "source": "Schannel"}
+		]
+	}
+}
