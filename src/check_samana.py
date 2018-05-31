@@ -17,7 +17,7 @@ def help():
 
 def getConfig(name):
 	loglevel = 4
-	configfile = "/usr/local/nagios/etc/check_samana/config.json"
+	configfile = "%NAGIOSETC%/check_samana/config.json"
 	ex = []
 	crit = []
 
