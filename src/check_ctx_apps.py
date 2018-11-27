@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+from pymongo import MongoClient
 from winrm.protocol import Protocol
 from base64 import b64encode
 import json
@@ -34,26 +35,18 @@ class CitrixXD:
       self.username = auth['domain'] + '\\' + auth['username']
     self.password = auth['password']
     self.refresh_interval = refresh_interval
-    self.getCache()
+    self.citrix = MongoClient().citrix
+    timer = self.citrix[self.ddc].timers.find_one({"module": "apps"})
 
-    if 'time' in self.data:
-      last_update = self.data['time']
+    if timer is not None:
+        last_update = timer['last_update']
     else:
-      last_update = None
+        last_update = None;
 
     if last_update is not None:
         r = pow((time.time() - last_update)/float(refresh_interval), 5) * random.random()
     if load_from_server and (last_update is None or r > 0.5):
       self.updateCache()
-
-  def getCache(self):
-    try:
-      F = open('/tmp/' + self.ddc + '_apps_citrix.json', "r")
-      self.data = json.load(F)
-      F.close()
-      
-    except:
-      self.data = {}
 
   def getCitrix(self):
     script = """
@@ -89,22 +82,17 @@ $json
     if error: exit(3)
     return citrix
 
-  def saveCache(self):
+  def updateCache(self):
     try:
-      F = open('/tmp/' + self.ddc + '_apps_citrix.json', "w")
-      json.dump(self.data, F)
-      F.close()
+        self.citrix[self.ddc].timers.update({"module": "apps"}, \
+            {"$set": {"last_update": time.time() }}, \
+            upsert=True)
+        self.citrix[self.ddc].apps.drop()
+        for a in self.getCitrix():
+            self.citrix[self.ddc].apps.insert(a)
     except OSError as err:
       print("UNKNOWN - Unable to save cache {0}".format(err))
       exit(3)
-
-  def updateCache(self):
-    self.data['time'] = time.time()
-    self.data['apps'] = {}
-    for a in self.getCitrix():
-        name = a['ApplicationName']
-        self.data['apps'][name] = a
-    self.saveCache()
 
   def getRawData(self, hostname, domain):
     MachineName = self.getMachineName(hostname, domain)
@@ -176,13 +164,13 @@ Usage:
   <username> UPN of the user in the domain with privileges in the Citrix Farm to collect data
   <password> password of the user with privileges in the Citrix Farm
   <auth file> file name containing user's credentials
-  <refresh interval> Seconds to keep cache of the farm locally. default=600
+  <refresh interval> Seconds to keep cache of the farm locally. default=120
   -l loads data from server. By default data is fetched from cache
 """
   print(usage)
 
 def main():
-  refresh_interval = 600
+  refresh_interval = 120
   ddc = None
   u_domain = None
   hostname = None
@@ -223,8 +211,8 @@ def main():
 
     if load_from_server:
       print "OK - Data loaded"
-      for a in apps.data['apps']:
-         print "{0}={1}".format(apps.data['apps'][a]['ApplicationName'], apps.data['apps'][a]['Enabled'])
+      for a in apps.citrix[apps.ddc].apps.find():
+         print "{0}={1}".format(a['ApplicationName'], a['Enabled'])
       exit(0)
     else:
       raise Exception("Module not implemented")
