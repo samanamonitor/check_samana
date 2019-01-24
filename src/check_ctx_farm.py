@@ -29,7 +29,7 @@ class CitrixXD:
 
     self.data = {}
     self.ddc = ddc
-    if auth['upn']:
+    if 'upn' in auth:
       self.username = auth['username']
     else:
       self.username = auth['domain'] + '\\' + auth['username']
@@ -61,7 +61,7 @@ class CitrixXD:
 #Clear
 $file = "C:\inetpub\wwwroot\SamanaPerformance\out.json"
 Add-PSSnapin Citrix.*
-$m = Get-BrokerMachine
+$m = Get-BrokerMachine -MaxRecordCount 5000
 $json = ConvertTo-JSON -compress $m #| Out-File $file
 $l = (Get-Item $file).length
 $json
@@ -105,7 +105,10 @@ $json
     self.data['time'] = time.time()
     for m in self.getCitrix():
       mn = m['MachineName'].split('\\')
-      name = mn[0] + '__' + mn[1]
+      if len(mn) == 2:
+          name = mn[0] + '__' + mn[1]
+      else:
+          continue
       if self.data.get(name):
         if m['InMaintenanceMode'] != self.data[name]['data']['InMaintenanceMode']:
           self.data[name]['LastChangeInMaintenanceMode'] = self.data['time']
@@ -392,7 +395,7 @@ def auth_file(authfile):
     else:
       data['upn'] = False
   except Exception as e:
-    print "UNKNOWN - Error " + str(e)
+    print "UNKNOWN - auth_file Error " + str(e)
     exit(3)
 
   return data
@@ -463,7 +466,6 @@ def main():
   authfile = None
   load_from_server = False
   try:
-    
     opts, args = getopt.getopt(sys.argv[1:], "D:H:d:u:p:hm:w:c:g:a:S:r:l")
 
     for o, a in opts:
@@ -523,7 +525,7 @@ def main():
       raise Exception("Module not implemented")
 
   except Exception as err:
-    print "UNKNOWN - Error: " + str(err)
+    print "UNKNOWN - main Error: " + str(err)
     usage()
     exit(3)
 
