@@ -11,7 +11,7 @@ import unicodedata
 class CitrixXD:
   def __init__(self, ddc, auth, refresh_interval, load_from_server):
     try:
-      if ddc is None: 
+      if ddc is None:
         raise Exception("The DDC is a mandatory argument")
       if auth is None:
         raise Exception("Authentication data missing")
@@ -27,6 +27,7 @@ class CitrixXD:
       usage()
       exit(3)
 
+    self.data = {}
     self.ddc = ddc
     if auth['upn']:
       self.username = auth['username']
@@ -38,20 +39,22 @@ class CitrixXD:
 
     if 'time' in self.data:
       last_update = self.data['time']
+      r = pow((time.time() - last_update)/float(refresh_interval), 5) * random.random()
     else:
       last_update = 0
-    r = pow((time.time() - last_update)/float(refresh_interval), 5) * random.random()
+      r = 0
+
     if load_from_server and (last_update is None or r > 0.5):
       self.updateCache()
 
   def getCache(self):
     try:
       F = open('/tmp/' + self.ddc + '_citrix.json', "r")
-      data = F.read()
+      self.data = json.load(F)
       F.close()
-      self.data = json.loads(data)
-    except:
-      self.data = {}
+    except IOError:
+      print "UNKNOWN: There is no cache for server %s. Run the command with -l" % self.ddc
+      exit(3)
 
   def getCitrix(self):
     script = """
@@ -157,7 +160,7 @@ $json
         exit(1)
       else:
         print("OK - Server has been {0} minutes in maintenance mode ".format(timeInMaintenanceMode) + \
-		    "| maintenance={0};{1};{2};;".format(timeInMaintenanceMode, warn, crit))
+                    "| maintenance={0};{1};{2};;".format(timeInMaintenanceMode, warn, crit))
         exit(0)
     else:
         print("OK - Server is not in maintenance mode " + \
@@ -193,7 +196,7 @@ $json
   def getLoadIndex(self, hostname, domain, warn, crit):
     MachineName = self.getMachineName(hostname, domain)
     s = self.data.get(MachineName)
-    
+
     status = "UNKNOWN"
     code = 3
     if s is None:
@@ -242,7 +245,7 @@ $json
     if warn is None:
       warn = ''
 
-    if warn != '' and crit != '' and int(warn) > int(crit): 
+    if warn != '' and crit != '' and int(warn) > int(crit):
       print("UNKNOWN - Warning cannot be higher than Critical")
       exit(3)
 
@@ -266,7 +269,7 @@ $json
   def getCatalogName(self, hostname, domain):
     MachineName = self.getMachineName(hostname, domain)
     s = self.data.get(MachineName)
-	
+
     print("OK - {0}".format(s['data']['CatalogName']))
 
   def getDeliveryGroupLoadIndex(self, DesktopGroupName, warn, crit):
@@ -279,7 +282,7 @@ $json
     if warn is None:
       warn = ''
 
-    if warn != '' and crit != '' and int(warn) > int(crit): 
+    if warn != '' and crit != '' and int(warn) > int(crit):
       print("UNKNOWN - Warning cannot be higher than Critical")
       exit(3)
 
@@ -343,7 +346,7 @@ $json
     if warn is None:
       warn = ''
 
-    if warn != '' and crit != '' and int(warn) > int(crit): 
+    if warn != '' and crit != '' and int(warn) > int(crit):
       print("UNKNOWN - Warning cannot be higher than Critical")
       exit(3)
 
@@ -378,11 +381,11 @@ def auth_file(authfile):
         if len(d) != 2: raise Exception("Syntax error in authentication file at line %d" % linenum)
         data[d[0]] = d[1]
 
-    if 'username' not in data: 
+    if 'username' not in data:
       raise Exception("Username missing in authentication file")
-    if 'password' not in data: 
+    if 'password' not in data:
       raise Exception("Password missing in authentication file")
-    if 'domain' not in data and data['username'].find('@') == -1: 
+    if 'domain' not in data and data['username'].find('@') == -1:
       raise Exception("Domain missing in authentication file")
     if 'domain' not in data or data['username'].find('@') != -1:
       data['upn'] = True
@@ -402,7 +405,7 @@ def auth(username, domainname, password, authfile):
     print("Username, Domain name and Password are mandatory arguments")
     usage()
     exit(3)
-	
+
   return {
     'username': username,
     'domain': domainname,
@@ -435,12 +438,12 @@ Usage:
     RegistrationState: will return the time the server has been in a specific state
       <warn> <crit>: minutes that the hostname has been in this state and that will generate an alert
     LoadIndex: will return the load index and the time it has been in this state
-	LoadUser: will return the number of users connected
-	DeliveryGroupLoadIndex: will return the average load of a delivery group
-	  -g <delivery group name> 
-	DeliveryGroupLoadUser: will return the number of users connected to a delivery group
-	  -g <delivery group name> 
-	CatalogName: will return the catalog name a server is part of.
+    LoadUser: will return the number of users connected
+    DeliveryGroupLoadIndex: will return the average load of a delivery group
+      -g <delivery group name>
+    DeliveryGroupLoadUser: will return the number of users connected to a delivery group
+      -g <delivery group name>
+    CatalogName: will return the catalog name a server is part of.
   -l loads data from server. By default data is fetched from cache
 """
   print(usage)
