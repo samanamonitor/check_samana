@@ -35,13 +35,13 @@ class CitrixXD:
       self.username = auth['domain'] + '\\' + auth['username']
     self.password = auth['password']
     self.refresh_interval = refresh_interval
-    self.getCache()
 
+    self.getCache()
     if 'time' in self.data:
       last_update = self.data['time']
       r = pow((time.time() - last_update)/float(refresh_interval), 5) * random.random()
     else:
-      last_update = 0
+      last_update = None
       r = 0
 
     if load_from_server and (last_update is None or r > 0.5):
@@ -53,17 +53,13 @@ class CitrixXD:
       self.data = json.load(F)
       F.close()
     except IOError:
-      print "UNKNOWN: There is no cache for server %s. Run the command with -l" % self.ddc
-      exit(3)
+      self.updateCache()
 
   def getCitrix(self):
     script = """
-#Clear
-$file = "C:\inetpub\wwwroot\SamanaPerformance\out.json"
 Add-PSSnapin Citrix.*
 $m = Get-BrokerMachine -MaxRecordCount 5000
-$json = ConvertTo-JSON -compress $m #| Out-File $file
-$l = (Get-Item $file).length
+$json = ConvertTo-JSON -compress $m
 $json
 """
 
@@ -83,6 +79,8 @@ $json
       command_id = p.run_command(shell_id, 'powershell', ['-encodedcommand {0}'.format(encoded_ps), ])
       std_out, std_err, status_code = p.get_command_output(shell_id, command_id)
       citrix = json.loads(std_out, 'latin-1')
+      if not isinstance(citrix, list):
+        citrix = [citrix]
     except Exception as e:
       print("UNKNOWN - Unable to get data from Citrix DDC (%s) %s." % (str(e), type(e).__name__))
       error = True
