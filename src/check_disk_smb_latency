@@ -1,0 +1,266 @@
+#! /bin/perl -w
+#
+#
+# check_disk.pl <host> <share> <user> <pass> [warn] [critical] [port]
+#
+# Nagios host script to get the disk usage from a SMB share
+#
+# Changes and Modifications
+# =========================
+# 7-Aug-1999 - Michael Anthon
+#  Created from check_disk.pl script provided with netsaint_statd (basically
+#  cause I was too lazy (or is that smart?) to write it from scratch)
+# 8-Aug-1999 - Michael Anthon
+#  Modified [warn] and [critical] parameters to accept format of nnn[M|G] to
+#  allow setting of limits in MBytes or GBytes.  Percentage settings for large
+#  drives is a pain in the butt
+# 2-May-2002 - SGhosh fix for embedded perl
+#
+#
+
+require 5.004;
+use POSIX;
+use strict;
+use Getopt::Long;
+use vars qw($opt_P $opt_V $opt_h $opt_H $opt_s $opt_W $opt_u $opt_p $opt_w $opt_c $opt_a $verbose);
+use vars qw($PROGNAME);
+use lib "/usr/local/nagios/libexec"  ;
+use utils qw($TIMEOUT %ERRORS &print_revision &support &usage);
+use Time::HiRes qw(gettimeofday);
+
+sub print_help ();
+sub print_usage ();
+
+$PROGNAME = "check_disk_smb";
+
+$ENV{'PATH'}='';
+$ENV{'BASH_ENV'}=''; 
+$ENV{'ENV'}='';
+
+Getopt::Long::Configure('bundling');
+GetOptions
+	("v"   => \$verbose, "verbose"    => \$verbose,
+	 "P=s" => \$opt_P, "port=s"     => \$opt_P,
+	 "V"   => \$opt_V, "version"    => \$opt_V,
+	 "h"   => \$opt_h, "help"       => \$opt_h,
+	 "w=s" => \$opt_w, "warning=s"  => \$opt_w,
+	 "c=s" => \$opt_c, "critical=s" => \$opt_c,
+	 "p=s" => \$opt_p, "password=s" => \$opt_p,
+	 "u=s" => \$opt_u, "username=s" => \$opt_u,
+	 "s=s" => \$opt_s, "share=s"    => \$opt_s,
+	 "W=s" => \$opt_W, "workgroup=s" => \$opt_W,
+	 "H=s" => \$opt_H, "hostname=s" => \$opt_H,
+	 "a=s" => \$opt_a, "address=s" => \$opt_a);
+
+if ($opt_V) {
+	print_revision($PROGNAME,'2.0.3'); #'
+	exit $ERRORS{'OK'};
+}
+
+if ($opt_h) {print_help(); exit $ERRORS{'OK'};}
+
+my $smbclient = $utils::PATH_TO_SMBCLIENT;
+$smbclient    || usage("check requires smbclient, smbclient not set\n");
+-x $smbclient || usage("check requires smbclient, $smbclient: $!\n");
+
+# Options checking
+
+($opt_H) || ($opt_H = shift @ARGV) || usage("Host name not specified\n");
+my $host = $1 if ($opt_H =~ /^([-_.A-Za-z0-9 ]+\$?)$/);
+($host) || usage("Invalid host: $opt_H\n");
+
+($opt_s) || ($opt_s = shift @ARGV) || usage("Share volume not specified\n");
+my $share = $1 if ($opt_s =~ /^([-_.A-Za-z0-9 ]+\$?)$/);
+($share) || usage("Invalid share: $opt_s\n");
+
+defined($opt_u) || ($opt_u = shift @ARGV) || ($opt_u = "guest");
+my $user = $1 if ($opt_u =~ /^([-_.A-Za-z0-9\\]*)$/);
+defined($user) || usage("Invalid user: $opt_u\n");
+
+defined($opt_p) || ($opt_p = shift @ARGV) || ($opt_p = "");
+my $pass = $1 if ($opt_p =~ /(.*)/);
+
+($opt_w) || ($opt_w = shift @ARGV) || ($opt_w = 100000);
+my $warn_dur = $1 if ($opt_w =~ /^([0-9]+)$/);
+($warn_dur) || usage("Invalid warning threshold: $opt_w\n");
+
+($opt_c) || ($opt_c = shift @ARGV) || ($opt_c = 500000);
+my $crit_dur = $1 if ($opt_c =~ /^([0-9]+)$/);
+($crit_dur) || usage("Invalid critical threshold: $opt_c\n");
+
+# Execute the given command line and return anything it writes to STDOUT and/or
+# STDERR.  (This might be useful for other plugins, too, so it should possibly
+# be moved to utils.pm.)
+sub output_and_error_of {
+	local *CMD;
+	local $/ = undef;
+	my $pid = open CMD, "-|";
+	if (defined($pid)) {
+		if ($pid) {
+			return <CMD>;
+		} else {
+			open STDERR, ">&STDOUT" and exec @_;
+			exit(1);
+		}
+	}
+	return undef;
+}
+
+if ($opt_w =~ /^([0-9]+)$/) {
+	$warn_dur = "$1";
+}
+if ($opt_c =~ /^([0-9]+)$/) {
+	$crit_dur = "$1";
+}
+
+# verify warning is less than critical
+unless ( $warn_dur < $crit_dur) {
+	usage("Percentage: warning ($opt_w) should be less than critical ($opt_c) \n");
+}
+
+my $workgroup = $1 if (defined($opt_W) && $opt_W =~ /(.*)/);
+
+my $address = $1 if (defined($opt_a) && $opt_a =~ /(.*)/);
+
+# end of options checking
+
+
+my $state = "OK";
+my $answer = undef;
+my $res = undef;
+my $perfdata = "";
+my @lines = undef;
+
+# Just in case of problems, let's not hang Nagios
+$SIG{'ALRM'} = sub { 
+	print "No Answer from Client\n";
+	exit $ERRORS{"UNKNOWN"};
+};
+alarm($TIMEOUT);
+
+# Execute a "du" on the share using smbclient program
+# get the results into $res
+my @cmd = (
+	$smbclient,
+	"//$host/$share",
+	"-U", "$user%$pass",
+	defined($workgroup) ? ("-W", $workgroup) : (),
+	defined($address) ? ("-I", $address) : (),
+	defined($opt_P) ? ("-p", $opt_P) : (),
+	"-c", "du"
+);
+
+print join(" ", @cmd) . "\n" if ($verbose);
+my $start_s;
+my $start_us;
+my $end_s; 
+my $end_us;
+($start_s, $start_us) = gettimeofday;
+$res = output_and_error_of(@cmd) or exit $ERRORS{"UNKNOWN"};
+($end_s, $end_us) = gettimeofday;
+
+my $start = $start_s * 1000000 + $start_us;
+my $end = $end_s * 1000000 + $end_us;
+my $duration = $end - $start;
+
+#Turn off alarm
+alarm(0);
+
+#Split $res into an array of lines
+@lines = split /\n/, $res;
+
+#Get the last line into $_
+$_ = $lines[$#lines-1];
+#print "$_\n";
+
+#Process the last line to get free space.  
+#If line does not match required regexp, return an UNKNOWN error
+if (/\s*(\d*) blocks of size (\d*)\. (\d*) blocks available/) {
+
+	$perfdata = "'". $share . "'=". $duration . ';'
+		. $warn_dur . ';'
+		. $crit_dur . ';'
+		. '0;'
+		. '0';
+
+	if ($duration > $crit_dur) {
+		$state = "CRITICAL";
+		$answer = "CRITICAL: Server took $duration us to respond";
+	} elsif ( $duration > $warn_dur ) {
+		$state = "WARNING";
+		$answer = "WARNING: Server took $duration us to respond";
+	} else {
+		$answer = "Latency ok - Server took $duration us to respond";
+	}
+} else {
+	$answer = "Result from smbclient not suitable";
+	$state = "UNKNOWN";
+	foreach (@lines) {
+		if (/(Access denied|NT_STATUS_LOGON_FAILURE|NT_STATUS_ACCESS_DENIED)/) {
+			$answer = "Access Denied";
+			$state = "CRITICAL";
+			last;
+		}
+		if (/(Unknown host \w*|Connection.*failed)/) {
+			$answer = "$1";
+			$state = "CRITICAL";
+			last;
+		}
+		if (/(You specified an invalid share name|NT_STATUS_BAD_NETWORK_NAME)/) {
+			$answer = "Invalid share name \\\\$host\\$share";
+			$state = "CRITICAL";
+			last;
+		}
+	}
+}
+
+
+print $answer;
+print " | " . $perfdata if ($perfdata);
+print "\n";
+print "$state\n" if ($verbose);
+exit $ERRORS{$state};
+
+sub print_usage () {
+	print "Usage: $PROGNAME -H <host> -s <share> -u <user> -p <password> 
+      -w <warn> -c <crit> [-W <workgroup>] [-P <port>] [-a <IP>]\n";
+}
+
+sub print_help () {
+	print_revision($PROGNAME,'2.0.3');
+	print "Copyright (c) 2000 Michael Anthon/Karl DeBisschop
+
+Perl Check SMB Disk plugin for Nagios
+
+";
+	print_usage();
+	print "
+-H, --hostname=HOST
+   NetBIOS name of the server
+-s, --share=STRING
+   Share name to be tested
+-W, --workgroup=STRING
+   Workgroup or Domain used (Defaults to \"WORKGROUP\")
+-a, --address=IP
+   IP-address of HOST (only necessary if HOST is in another network)
+-u, --user=STRING
+   Username to log in to server. (Defaults to \"guest\")
+-p, --password=STRING
+   Password to log in to server. (Defaults to an empty password)
+-w, --warning=INTEGER or INTEGER[kMG]
+   Percent of used space at which a warning will be generated (Default: 85%)
+      
+-c, --critical=INTEGER or INTEGER[kMG]
+   Percent of used space at which a critical will be generated (Defaults: 95%)
+-P, --port=INTEGER
+   Port to be used to connect to. Some Windows boxes use 139, others 445 (Defaults to smbclient default)
+   
+   If thresholds are followed by either a k, M, or G then check to see if that
+   much disk space is available (kilobytes, Megabytes, Gigabytes)
+
+   Warning percentage should be less than critical
+   Warning (remaining) disk space should be greater than critical.
+
+";
+	support();
+}
