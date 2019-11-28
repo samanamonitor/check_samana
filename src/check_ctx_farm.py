@@ -102,10 +102,12 @@ $json
   def updateCache(self):
     self.data['time'] = time.time()
     for m in self.getCitrix():
+      if 'MachineName' not in m: continue
       mn = m['MachineName'].split('\\')
       if len(mn) == 2:
           name = mn[0] + '__' + mn[1]
       else:
+          print "Invalid Machine name %s" % m['MachineName']
           continue
       if self.data.get(name):
         if m['InMaintenanceMode'] != self.data[name]['data']['InMaintenanceMode']:
@@ -379,7 +381,7 @@ def auth_file(authfile):
         line = l.split("#")[0]
         line = line.strip()
         d = line.split('=')
-        if len(d) != 2: raise Exception("Syntax error in authentication file at line %d" % linenum)
+        if len(d) != 2: continue
         data[d[0]] = d[1]
 
     if 'username' not in data:
