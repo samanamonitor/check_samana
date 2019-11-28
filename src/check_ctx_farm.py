@@ -311,6 +311,9 @@ $json
           for tag in s['data']['Tags']:
             if tag == 'RebootReady':
               WaitingForReboot += 1
+    if TotalServers == 0:
+      print 'UNKNOWN - Servers in Delivery Group is 0. Maybe Delivery Group %s doesn\'t exist' % DesktopGroupName
+      exit(3)
 
     AverageLoad = int(LoadIndex / TotalServers)
     AvailLoadIndex = int(AvailLoadIndex / TotalServers)
