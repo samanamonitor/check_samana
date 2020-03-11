@@ -118,16 +118,16 @@ def main():
         'warn': False
       }
     if osd['up'] == 1:
-      hosts[host]['up'].append(o)
+      hosts[host]['up'].append(osd)
       osd_up += 1
     else:
-      hosts[host]['down'].append(o)
+      hosts[host]['down'].append(osd)
       osd_down += 1
     if osd['in'] == 1:
-      hosts[host]['in'].append(o)
+      hosts[host]['in'].append(osd)
       osd_in += 1
     else:
-      hosts[host]['out'].append(o)
+      hosts[host]['out'].append(osd)
       osd_out += 1
     if osd['in'] == 1 and osd['up'] == 0:
       hosts[host]['warn'] = True
