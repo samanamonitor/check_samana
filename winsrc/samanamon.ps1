@@ -25,6 +25,7 @@ Function get-config {
 
 $data = @{}
 
+$data['epoch'] =[Math]::Floor([decimal](Get-Date(Get-Date).ToUniversalTime()-uformat "%s"))
 $query = "select DNSHostName, Domain from win32_computersystem"
 $computer = Get-WmiObject -Query $query
 $data['DNSHostName'] = $computer.DNSHostName
