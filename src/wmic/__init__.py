@@ -131,12 +131,13 @@ class Client:
             self.no_pass = False
             self._command.append('--password=%s' % self.password)
 
-        if self.no_pass is True:
-            self._command.append('--no-pass')
-
         if self.authentication_file is not None:
+            self.no_pass = False
             self._command.append('--authentication-file')
             self._command.append(self.authentication_file)
+
+        if self.no_pass is True:
+            self._command.append('--no-pass')
 
         if self.signing == "on" or self.signing == "required":
             self._command.append('--signing')
