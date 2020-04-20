@@ -27,6 +27,7 @@ class WMIC_InvalidHost(Exception):
     pass
 
 class WMIC_InvalidSigning(Exception):
+    pass
 
 class Client:
     def __init__(self, host, wmi_class=None, query=None, timeout=60, configfile=None,
