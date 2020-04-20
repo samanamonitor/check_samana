@@ -19,7 +19,7 @@ def raise_timeout(signum, frame):
     raise TimeoutError
 
 class WMIC_InvalidQuery(Exception):
-    class
+    pass
 
 class WMIC:
     self._configfile = None
