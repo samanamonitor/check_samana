@@ -33,7 +33,7 @@ class Client:
     def __init__(self, host, wmi_class=None, query=None, timeout=60, configfile=None,
             option=[], log_basename=None, leak_report=None, leak_report_full=None, 
             name_resolve = None, socket_options = None, netbiosname = None, workgroup = None, 
-            realm = None, scope = None, maxprotocol = None, user = None, no_pass = False, 
+            realm = None, scope = None, maxprotocol = None, user = None, no_pass = True, 
             password = None, authentication_file = None, signing = "off", machine_pass = False, 
             simple_bind_dn = None, kerberos = None, use_security_mechanisms = None, 
             namespace = None, timeout_sec = None):
@@ -98,11 +98,12 @@ class Client:
             self._command.append('--user')
             self._command.append(user)
 
+        if password is not None:
+            no_pass = False
+            self._command.append('--password=%s' % password)
+
         if no_pass is True:
             self._command.append('--no-pass')
-
-        if password is not None:
-            self._command.append('--password=%s' % password)
 
         if authentication_file is not None:
             self._command.append('--authentication-file')
@@ -138,7 +139,6 @@ class Client:
             query = "select * from %s" % wmi_class
 
         self._command.append(query)
-        self._command
 
     def get(self):
         p = subprocess.Popen(self._command,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
