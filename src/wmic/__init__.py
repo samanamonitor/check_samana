@@ -175,7 +175,19 @@ class Client:
         p = subprocess.Popen(self._command,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         with timeout(self._timeout_sec):
             self.output, self.err = p.communicate()
-        return self.output
+        return self.process_output()
 
     def process_output(self):
-        pass
+        output_arr = self.output.split('\n')
+        output_class = output_arr[0]
+        headers = output_arr[1].split('|')
+        data = []
+        for line in output_arr[2:]:
+            line_data = line.split('|')
+            if len(line_data) < len(headers):
+                continue
+            data_item = {}
+            for j in range(len(headers)):
+                data_item[headers[j]] = line_data[j]
+            data += [ data_item ]
+        return data
