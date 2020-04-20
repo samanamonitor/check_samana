@@ -139,7 +139,7 @@ class Client:
 
         self._command.append(query)
 
-    def get():
+    def get(self):
         p = subprocess.Popen(self._command,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         with timeout(self.timeout_sec):
             output, err = p.communicate()
