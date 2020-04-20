@@ -132,7 +132,7 @@ class Client:
         if namespace is not None:
             self._command.append('--namespace=%s' % namespace)
 
-        self._command.append(host)
+        self._command.append("//%s" % host)
 
         if wmi_class is not None:
             query = "select * from %s" % wmi_class
