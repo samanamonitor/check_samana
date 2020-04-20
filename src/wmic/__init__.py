@@ -141,7 +141,7 @@ class Client:
 
     def get(self):
         p = subprocess.Popen(self._command,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-        with timeout(self.timeout_sec):
+        with timeout(self._timeout_sec):
             output, err = p.communicate()
         print output
 
