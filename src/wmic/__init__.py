@@ -67,7 +67,7 @@ class Client:
 
 
 
-    def _prepare_command(self)
+    def _prepare_command(self):
         if self.wmi_class is None and self.query is None:
             raise WMIC_InvalidQuery
         if self.wmi_class is not None and self.query is not None:
