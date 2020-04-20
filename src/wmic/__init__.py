@@ -174,6 +174,8 @@ class Client:
         self._prepare_command()
         p = subprocess.Popen(self._command,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         with timeout(self._timeout_sec):
-            output, err = p.communicate()
-        print output
+            self.output, self.err = p.communicate()
+        return self.output
 
+    def process_output(self):
+        pass
