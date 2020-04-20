@@ -36,8 +36,7 @@ class Client:
             realm = None, scope = None, maxprotocol = None, user = None, no_pass = False, 
             password = None, authentication_file = None, signing = "off", machine_pass = False, 
             simple_bind_dn = None, kerberos = None, use_security_mechanisms = None, 
-            namespace = None, host = None, query = None, wmi_class = None, parameters = None, 
-            timeout_sec = None):
+            namespace = None, timeout_sec = None):
         if wmi_class is None and query is None:
             raise WMIC_InvalidQuery
         if wmi_class is not None and query is not None:
