@@ -5,7 +5,7 @@ class TimeoutError(Exception):
 
 @contextmanager
 def timeout(time):
-`    signal.signal(signal.SIGALRM, raise_timeout)
+    signal.signal(signal.SIGALRM, raise_timeout)
     signal.alarm(time)
 
     try:
