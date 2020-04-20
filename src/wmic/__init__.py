@@ -138,6 +138,7 @@ class Client:
             query = "select * from %s" % wmi_class
 
         self._command.append(query)
+        self._command
 
     def get(self):
         p = subprocess.Popen(self._command,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
