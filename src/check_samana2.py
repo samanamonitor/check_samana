@@ -190,6 +190,7 @@ def hddrives(data, crit, warn, srch):
         usedg = totalg - freeg
         percused =  usedg / totalg
         message = "Disk %s Total: %.2fG - Used: %.2fG (%.1f%%)" % (
+            disk['Name'],
             totalg,
             usedg,
             percused)
