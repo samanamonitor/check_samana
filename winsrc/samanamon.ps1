@@ -99,3 +99,5 @@ $value = $data | ConvertTo-JSON -Compress
 $res = Invoke-WebRequest -UseBasicParsing -Method "PUT" -Body @{value=$value} `
     -uri "$($SamanaMonitorServer)/v2/keys/samanamonitor/data/$($ComputerID)" `
     -ContentType "application/x-www-form-urlencoded"
+
+$ComputerID | Out-Host
