@@ -49,8 +49,8 @@ def cpu(s, data, crit, warn):
     state = "UNKNOWN"
     graphmax = 100
 
-    critval = None
-    warnval = None
+    critval = 101
+    warnval = 101
     if debug:
         print data
     
