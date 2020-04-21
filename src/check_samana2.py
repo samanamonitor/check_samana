@@ -134,8 +134,9 @@ def services(data, crit, warn, incl, excl):
     for service in data['Services']:
         displayname = service['DisplayName'].lower()
         name = service['name'].lower()
-        if excl is not None and excl != '' and 
-                (re.search(excl, displayname) is not None or re.search(excl, name) is not None):
+        if excl is not None and excl != '' and \
+                (re.search(excl, displayname) is not None or \
+                    re.search(excl, name) is not None):
             continue
         if re.search(incl, displayname) is not None or re.search(incl, name) is not None:
             details += x['displayname'] + "(" + x['status'] + ")\n"
@@ -166,8 +167,8 @@ def services(data, crit, warn, incl, excl):
         state = "OK"
         outval = 0
 
-    outmsg = "%s - %d Services Running - %d Services Stopped %s" % \
-        (state, r, s, stopped_services)
+    outmsg = "%s - %d Services Running - %d Services Stopped %s" % (
+        state, r, s, stopped_services)
     return (outval, outmsg)
 
 def hddrives(s, d, crit, warn, srch):
