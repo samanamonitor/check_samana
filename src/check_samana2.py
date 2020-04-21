@@ -169,52 +169,59 @@ def services(data, crit, warn, incl, excl):
         state, r, s, stopped_services if outval > 0 else '')
     return (outval, outmsg)
 
-def hddrives(s, d, crit, warn, srch):
+def hddrives(data, crit, warn, srch):
     state = 'UNKNOWN'
-    if srch == '':
-        return (3, "UNKNOWN - Could not find a drive matching '' or the WMI data returned is invalid. Available Drives are C:, D:")
 
-    data = json.loads(d)['data']
-    search = srch.upper()
-    total = 0
-    used = 0
-    free = 0
-    percused = 0
-    percfree = 0
-    usedbytes = 0
-    critval = ''
-    warnval = ''
-    if crit != -1:
-        critval = crit
-    if warn != -1:
-        warnval = warn
+    critval = 101
+    warnval = 101
+    if crit is not None:
+        critval = float(crit)
+    if warn is not None:
+        warnval = float(warn)
 
-#  C: Total=59.995GB, Used=32.598GB (54.3%), Free=27.397GB (45.7%)     |'C: Space'=35002163200B; 'C: Utilisation'=54.3%;95;98;
-    for x in data:
-        if x['name'].upper().find(search) != -1:
-            total = float(x['totalsize']) / 1024
-            used = float(x['used']) / 1024
-            free = float(x['free']) / 1024
-            percused = float(x['used']) * 100 / float(x['totalsize'])
-            percfree = float(x['free']) * 100 / float(x['totalsize'])
-            usedbytes = int(x['used']) * 1024 * 1024
-            break
+    disk_messages = []
+    disk_perfs = []
+    status_crit = 0
+    status_warn = 0
 
-    if usedbytes == 0:
-        return (3, "UNKNOWN - no data found for the drive {0}".format(srch))
+    def check_disk(disk):
+        totalg = disk['Size'] / 1024 / 1024 / 1024
+        freeg = disk['FreeSpace'] / 1024 / 1024 / 1024
+        usedg = totalg - freeg
+        percused =  usedg / totalg
+        message = "Disk %s Total: %.2fG - Used: %.2fG (%.1f%%)" % (
+            totalg,
+            usedg,
+            percused)
+        disk_messages.append(message)
+        perf = "%s=%.1f;%s;%s;0;100 " % (
+            disk['Name'],
+            percused,
+            warn if warn is not None else '',
+            crit if crit is not None else '')
+        disk_perfs.append(perf)
+        if perfused >= critval:
+            status_crit += 1
+        elif perfused >= warnval:
+            status_warn += 1
 
-    if crit != -1 and percused >= float(crit):
+    if isinstance(data['Disks'], list):
+        for disk in data['Disks']:
+            check_disk(disk)
+    else
+        check_disk(data['Disks'])
+
+    if status_crit > 0:
         state = "CRITICAL"
         outval = 2
-    elif warn != -1 and percused >= float(warn):
+    elif status_warn > 0:
         state = "WARNING"
         outval = 1
     else:
         state = "OK"
         outval = 0
 
-    outmsg = "%s - %s Total=%.2fGB, Used=%.2fGB (%.1f%%), Free=%.2fGB (%.1f%%) | '%s Space'=%dB '%s Utilization'=%.1f%%;%s;%s;0;100" % (
-        state, search, total, used, percused, free, percfree, search, usedbytes, search, percused, warnval, critval) 
+    outmsg = "%s | %s" % (state, " ".join(disk_messages), " ".join(disk_perfs))
     return (outval, outmsg)
 
 def uptime(d, crit, warn):
