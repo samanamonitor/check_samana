@@ -44,7 +44,7 @@ def getData(name):
         print ex
     return (loglevel, ex, crit)
 
-def cpu(s, data, crit, warn):
+def cpu(data, crit, warn):
     global debug
     state = "UNKNOWN"
     graphmax = 100
@@ -82,38 +82,39 @@ def cpu(s, data, crit, warn):
         state, val, perfusage, perfpriv, perfuser, perfirq)
     return (outval, outmsg)
 
-def ram(d, crit, warn):
+def ram(data, crit, warn):
 # Physical Memory: Total: 16GB - Used: 7.399GB (46%) - Free: 8.601GB (54%)|'Physical Memory Used'=7944216576Bytes; 'Physical Memory Utilisation'=46%;95;98;
     state = "UNKNOWN"
-    data = json.loads(d)
     
-    total = float(data['ramTotal']) / 1024
-    used = float(data['ramLoad']) / 1024
-    free = float(data['ramFree']) / 1024
-    percused = used * 100 / total
-    percfree = free * 100 / total
-    usedbytes = int(data['ramLoad']) * 1024 * 1024
-    totalbytes = float(data['ramTotal']) * 1024 * 1024
+    total = float(data['TotalVisibleMemorySize']) / 1024.0
+    free = float(data['FreePhysicalMemory']) / 1024.0
+    used = total - free
+    percused = used * 100.0 / total
+    percfree = free * 100.0 / total
 
-    warnval = ''
-    critval = ''
-    if crit != -1:
-        critval = crit
-    if warn != -1:
-        warnval = warn
+    critval = 101
+    warnval = 101
+    if crit is not None:
+        critval = float(crit)
+    if warn is not None:
+        warnval = float(warn)
 
-    if crit != -1 and int(percused) > int(crit):
+    if percused > critval:
         state = "CRITICAL"
         outval = 2
-    elif warn != -1 and int(percused) > int(warn):
+    elif percused > warnval:
         state = "WARNING"
         outval = 1
     else:
         state = "OK"
         outval = 0
 
-    outmsg = "%s - Physical Memory: Total: %.2fGB - Used: %.2fGB (%.1f%%) - Free %.2fGB (%1f%%) | 'Physical Memory Used'=%dB;;0;%d 'Physical Memory Utilization'=%d%%;%s;%s;0;100" % (
-        state, total, used, percused, free, percfree, usedbytes, totalbytes, percused, warnval, critval)
+    perfused = "Physical Memory Used'=%dG%s;%s;0;100" % (
+        percused,
+        warn if warn is not None else '',
+        crit if crit is not None else '')
+    outmsg = "%s - Physical Memory: Total: %.2fGB - Used: %.2fGB (%.1f%%) - Free %.2fGB (%1f%%) | %s" % (
+        state, total, used, percused, free, percfree, perfused)
 
     return (outval, outmsg)
 
@@ -438,7 +439,7 @@ def main(argv):
     outval = 3 
     
     if module == 'cpu':
-        (outval, outmsg) = cpu(submod, data, crit, warn)
+        (outval, outmsg) = cpu(data, crit, warn)
     elif module == 'ram':
         (outval, outmsg) = ram(data, crit, warn)
     elif module == 'syslog':
