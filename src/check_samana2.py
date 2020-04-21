@@ -116,7 +116,7 @@ def log(data, logname, crit, warn):
     if outval > 0:
         messages = "\n"
         for i in data['Events'][logname]:
-            messages += i['Message']
+            messages += i['Message'] + "\n"
 
     outmsg = "%s - Error or Warning Events=%d %s" %  \
         (state, val, messages)
