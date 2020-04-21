@@ -428,6 +428,9 @@ def main(argv):
     except etcd.EtcdKeyNotFound:
         print "UNKNOWN - ServerID %s not found in the database" % hostid
         exit(3)
+    except ValueError:
+        print "UNKNOWN - Data for ServerID %s is corrupt" % hostid
+        exit(3)
     except Exception as e:
         print "UNKNOWN - Server not responding. Maybe agent not installed? %s" % str(e)
         exit(3)
