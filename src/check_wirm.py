@@ -32,7 +32,6 @@ class WinRMScript:
     else:
       self.username = auth['domain'] + '\\' + auth['username']
     self.password = auth['password']
-    self.refresh_interval = refresh_interval
 
     self.get()
 
@@ -147,7 +146,6 @@ Usage:
   print(usage)
 
 def main():
-  refresh_interval = 600
   u_domain = None
   hostname = None
   h_domain = None
