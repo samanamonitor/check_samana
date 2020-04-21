@@ -34,8 +34,7 @@ class WinRMScript:
       self.username = auth['domain'] + '\\' + auth['username']
     self.password = auth['password']
 
-  def get(self, scriptname):
-    server='https://%s:5986/wsman' % self.hostaddress
+  def get(self, scriptname):    server='https://%s:5986/wsman' % self.hostaddress
     scriptpath = "c:\\samanamon"
     scripturl="http://%s/%s" % (self.nagiosaddress, scriptname)
     samanamon = '''
@@ -51,7 +50,7 @@ rmdir %(scriptpath)s
 ''' % { 'scripturl': scripturl, 
       'scriptpath': scriptpath, 
       'scriptname': scriptname,
-      'hostaddress': hostaddress,
+      'hostaddress': self.hostaddress,
       'nagiosaddress': self.nagiosaddress
       }
 
@@ -62,7 +61,7 @@ rmdir %(scriptpath)s
     stdout = ''
     try:
       p = Protocol(
-        endpoint='https://%s:5986/wsman' % hostaddress,
+        endpoint='https://%s:5986/wsman' % self.hostaddress,
         transport='ntlm',
         username=self.username,
         password=self.password,
