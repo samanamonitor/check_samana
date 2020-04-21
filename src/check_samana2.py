@@ -12,7 +12,7 @@ from os import environ
 debug = 0
 
 def help():
-    print "check_samana2.py -H <hostID> -m <module> [-s <submodule>] [-c <critical>] [-w <warning>]"
+    print "check_samana2.py -H <hostid> -m <module> [-s <submodule>] [-c <critical>] [-w <warning>]"
     sys.exit(3)
 
 def getData(name):
@@ -418,7 +418,7 @@ def main(argv):
         elif opt == "-d":
             debug = 1
 
-    if host == "" or module == "":
+    if hostid == "" or module == "":
         help()
 
     c = etcd.Client(port=2379)
