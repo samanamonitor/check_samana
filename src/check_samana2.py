@@ -114,6 +114,7 @@ def log(data, logname, crit, warn):
         outval = 0
 
     if outval > 0:
+        messages = "\n"
         for i in data['Events'][logname]:
             messages += i['Message']
 
@@ -121,7 +122,7 @@ def log(data, logname, crit, warn):
         (state, val, messages)
     return (outval, outmsg)
 
-def services(d, crit, warn, incl, excl):
+def services(data, crit, warn, incl, excl):
     state = 'UNKNOWN'
     if incl == '':
         return (3, 'UNKNOWN - No services defined to be monitored')
