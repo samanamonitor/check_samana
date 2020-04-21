@@ -201,9 +201,9 @@ def hddrives(data, crit, warn, srch):
             warn if warn is not None else '',
             crit if crit is not None else '')
         disk_perfs.append(perf)
-        if perfused >= critval:
+        if percused >= critval:
             status_crit += 1
-        elif perfused >= warnval:
+        elif percused >= warnval:
             status_warn += 1
 
     if isinstance(data['Disks'], list):
