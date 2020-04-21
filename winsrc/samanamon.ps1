@@ -1,6 +1,6 @@
+#$SamanaMonitorServer = Get-Content "$($PSScriptRoot)\samanamon.txt"
 $SamanaMonitorServer = "http://192.168.0.101:2379"
 
-# Default parameters
 $config = @{
 EventMinutes = 10
 EventMax = 10
@@ -13,7 +13,7 @@ Function get-config {
     param( $ServerUri, $Location, $Config )
     $uri = "$($ServerUri)/v2/keys/$($Location)"
     try {
-        $temp_config = ((Invoke-WebRequest -Uri $uri).Content `
+        $temp_config = ((Invoke-WebRequest -UseBasicParsing -Uri $uri).Content `
             | ConvertFrom-Json).node.value | ConvertFrom-Json
         $temp_config.PSObject.Properties | ForEach-Object {
             $Config[$_.Name] = $_.Value
@@ -96,6 +96,6 @@ foreach($e in $config['EventList']) {
 }
 
 $value = $data | ConvertTo-JSON -Compress
-$res = Invoke-WebRequest -Method "PUT" -Body @{value=$value} `
+$res = Invoke-WebRequest -UseBasicParsing -Method "PUT" -Body @{value=$value} `
     -uri "$($SamanaMonitorServer)/v2/keys/samanamonitor/data/$($ComputerID)" `
     -ContentType "application/x-www-form-urlencoded"
