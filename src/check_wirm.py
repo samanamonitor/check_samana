@@ -33,8 +33,6 @@ class WinRMScript:
       self.username = auth['domain'] + '\\' + auth['username']
     self.password = auth['password']
 
-    self.get()
-
   def get(self, scriptname):
     server='https://%(hostaddress)s:5986/wsman'
     scriptpath = "c:\\samanamon"
