@@ -9,7 +9,7 @@ import random
 import unicodedata
 
 class WinRMScript:
-  def __init__(self, auth, nagiosaddress):
+  def __init__(self, hostaddress, auth, nagiosaddress):
     try:
       if auth is None:
         raise Exception("Authentication data missing")
@@ -26,6 +26,7 @@ class WinRMScript:
       exit(3)
 
     self.data = {}
+    self.hostaddress = hostaddress
     self.nagiosaddress = nagiosaddress
     if 'upn' in auth:
       self.username = auth['username']
@@ -146,7 +147,7 @@ Usage:
 
 def main():
   u_domain = None
-  hostname = None
+  hostaddress = None
   h_domain = None
   username = None
   password = None
@@ -161,7 +162,7 @@ def main():
 
     for o, a in opts:
       if o == '-H':
-        hostname = a
+        hostaddress = a
       elif o == '-d':
         u_domain = a
       elif o == '-u':
@@ -175,7 +176,7 @@ def main():
       elif o == '-h':
         raise Exception("Unknown argument")
 
-    client = WinRMScript(auth(username, u_domain, password, authfile), nagiosaddress)
+    client = WinRMScript(hostaddress, auth(username, u_domain, password, authfile), nagiosaddress)
     print "OK - " % client.get('samanamon.ps1')
     return 0
 
