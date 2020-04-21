@@ -70,7 +70,7 @@ def cpu(s, data, crit, warn):
         state = "OK"
         outval = 0
     
-    outmsg = "%s - CPU Usage %0.f | cpu=%.0f;%.0f;%.0f;0;%d" % (state, val, val, warn, crit, graphmax)
+    outmsg = "%s - CPU Usage %0.f | cpu=%.0f;%s;%s;0;%d" % (state, val, val, warn, crit, graphmax)
     return (outval, outmsg)
 
 def ram(d, crit, warn):
