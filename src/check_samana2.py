@@ -208,7 +208,7 @@ def hddrives(data, crit, warn, srch):
     if isinstance(data['Disks'], list):
         for disk in data['Disks']:
             check_disk(disk)
-    else
+    else:
         check_disk(data['Disks'])
 
     if status_crit > 0:
@@ -321,7 +321,7 @@ def main(argv):
     elif module == 'services':
         (outval, outmsg) = services(data, crit, warn, incl, excl)
     elif module == 'hddrives':
-        (outval, outmsg) = hddrives(submod, data, crit, warn, search)
+        (outval, outmsg) = hddrives(data, crit, warn, search)
     elif module == 'uptime':
         (outval, outmsg) = uptime(data, crit, warn)
         
