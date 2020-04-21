@@ -175,7 +175,8 @@ def main():
         raise Exception("Unknown argument")
 
     client = WinRMScript(auth(username, u_domain, password, authfile), nagiosaddress)
-    print "OK - %s" % client.get('samanamon.ps1')
+    output = client.get('samanamon.ps1')
+    print "OK - %s" % output
     return 0
 
   except Exception as err:
