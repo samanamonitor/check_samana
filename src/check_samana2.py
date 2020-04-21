@@ -58,7 +58,7 @@ def cpu(s, data, crit, warn):
         critval = float(crit)
     if warn is not None:
         warnval = float(warn)
-    val = 100 - float(data['PercentIdleTime'])
+    val = 100.0 - float(data['PercentIdleTime'])
 
     if val > critval:
         state = "CRITICAL"
