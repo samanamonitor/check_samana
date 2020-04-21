@@ -202,15 +202,24 @@ def hddrives(data, crit, warn, srch):
             crit if crit is not None else '')
         disk_perfs.append(perf)
         if percused >= critval:
-            status_crit += 1
+            return 2
         elif percused >= warnval:
-            status_warn += 1
+            return 1
+        return 0
 
     if isinstance(data['Disks'], list):
         for disk in data['Disks']:
-            check_disk(disk)
+            s = check_disk(disk)
+            if s == 2: 
+                status_crit += 1
+            elif s == 1: 
+                status_warn += 1
     else:
-        check_disk(data['Disks'])
+        s = check_disk(data['Disks'])
+        if s == 2: 
+            status_crit += 1
+        elif s == 1: 
+            status_warn += 1
 
     if status_crit > 0:
         state = "CRITICAL"
