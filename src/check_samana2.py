@@ -113,7 +113,7 @@ def ram(data, crit, warn):
         percused,
         warn if warn is not None else '',
         crit if crit is not None else '')
-    outmsg = "%s - Physical Memory: Total: %.2fGB - Used: %.2fGB (%.1f%%) - Free %.2fGB (%1f%%) | %s" % (
+    outmsg = "%s - Physical Memory: Total: %.2fGB - Used: %.2fGB (%.1f%%) - Free %.2fGB (%.2f%%) | %s" % (
         state, total, used, percused, free, percfree, perfused)
 
     return (outval, outmsg)
