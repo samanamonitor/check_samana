@@ -58,7 +58,8 @@ rmdir %(scriptpath)s
     command_id = None
     p = None
     error = False
-    stdout = ''
+    std_out = ''
+    std_err = ''
     try:
       p = Protocol(
         endpoint='https://%s:5986/wsman' % self.hostaddress,
@@ -73,11 +74,12 @@ rmdir %(scriptpath)s
     except Exception as e:
       print("UNKNOWN - Unable to get data from Server (%s) %s." % (str(e), type(e).__name__))
       error = True
+      return std_err
     finally:
       p.cleanup_command(shell_id, command_id)
       p.close_shell(shell_id)
     if error: exit(3)
-    return stdout
+    return std_out
 
 def auth_file(authfile):
   data = {}
