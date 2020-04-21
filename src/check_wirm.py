@@ -58,6 +58,7 @@ rmdir %(scriptpath)s
     command_id = None
     p = None
     error = False
+    stdout = ''
     try:
       p = Protocol(
         endpoint='https://%s:5986/wsman' % hostaddress,
