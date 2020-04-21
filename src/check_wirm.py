@@ -11,8 +11,6 @@ import unicodedata
 class WinRMScript:
   def __init__(self, auth, nagiosaddress):
     try:
-      if ddc is None:
-        raise Exception("The DDC is a mandatory argument")
       if auth is None:
         raise Exception("Authentication data missing")
       if 'domain' not in auth or auth['domain'] is None:
@@ -65,7 +63,7 @@ rmdir %(scriptpath)s
     error = False
     try:
       p = Protocol(
-        endpoint='https://' + self.ddc + ':5986/wsman',
+        endpoint='https://%s:5986/wsman' % hostaddress,
         transport='ntlm',
         username=self.username,
         password=self.password,
@@ -135,21 +133,21 @@ to get a license.
 Copyright (c) 2019 Samana Group LLC
 
 Usage:
-  check_winrm.py -H <host name> < -d <user domain name> -u <username> -p <password> | -a <auth file> >
-  check_citrixddc -h
+  check_winrm.py -H <host name> < -d <user domain name> -u <username> -p <password> | -a <auth file> > -n <nagios>
+  check_winrm -h
 
   <host domain name> Session Host server domain name
-  <host name> Session Host server to be queried
-  <domain name> domain name the Session Host is a member of
-  <username> UPN of the user in the domain with privileges in the Citrix Farm to collect data
-  <password> password of the user with privileges in the Citrix Farm
-  <auth file> file name containing user's credentials
+  <host name>        Session Host server to be queried
+  <domain name>      domain name the Session Host is a member of
+  <username>         UPN of the user in the domain with privileges in the Citrix Farm to collect data
+  <password>         password of the user with privileges in the Citrix Farm
+  <auth file>        file name containing user's credentials
+  <nagios>           Nagios server IP
 """
   print(usage)
 
 def main():
   refresh_interval = 600
-  ddc = None
   u_domain = None
   hostname = None
   h_domain = None
