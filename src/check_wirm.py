@@ -177,7 +177,7 @@ def main():
 
     client = WinRMScript(auth(username, u_domain, password, authfile), nagiosaddress)
     output = client.get('samanamon.ps1')
-    print "OK - %s" % output
+    print "OK - "
     return 0
 
   except Exception as err:
