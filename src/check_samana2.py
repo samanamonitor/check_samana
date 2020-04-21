@@ -133,7 +133,7 @@ def services(data, crit, warn, incl, excl):
     details = ""
     for service in data['Services']:
         displayname = service['DisplayName'].lower()
-        name = service['name'].lower()
+        name = service['ServiceName'].lower()
         if excl is not None and excl != '' and \
                 (re.search(excl, displayname) is not None or \
                     re.search(excl, name) is not None):
