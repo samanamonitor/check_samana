@@ -37,7 +37,7 @@ class WinRMScript:
   def get(self, scriptname):
     scriptpath = "c:\\samanamon"
     scripturl="http://%s/%s" % (self.nagiosaddress, scriptname)
-    samanamon = '''
+    script = '''
 if (-Not (Test-Path %(scriptpath)s)) { mkdir %(scriptpath)s | Out-Null}
 "Environment prepared." | Out-Host
 Invoke-WebRequest -Uri %(scripturl)s -OutFile "%(scriptpath)s\\%(scriptname)s"
