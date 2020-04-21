@@ -234,31 +234,32 @@ def hddrives(data, crit, warn, srch):
     outmsg = "%s - %s | %s" % (state, " ".join(disk_messages), " ".join(disk_perfs))
     return (outval, outmsg)
 
-def uptime(d, crit, warn):
+def uptime(data, crit, warn):
     state = "UNKNOWN"
 
-    data = json.loads(d)
-    if crit != -1 and int(data) > int(crit):
+    critval = 101
+    warnval = 101
+    if debug:
+        print data
+    
+    if crit is not None:
+        critval = float(crit)
+    if warn is not None:
+        warnval = float(warn)
+    val = data['UpTime']
+
+    if val > critval:
         state = "CRITICAL"
         outval = 2
-    elif warn != -1 and int(data) > int(warn):
+    elif val > warnval:
         state = "WARNING"
         outval = 1
     else:
         state = "OK"
         outval = 0
-    
-    temp = int(data / 1000)
-    seconds = temp % 60
-    temp = (temp - seconds) / 60
-    minutes = temp % 60
-    temp = (temp - minutes) / 60
-    hours = temp % 24
-    temp = (temp - hours) / 24
-    days = temp
-    
-    outmsg = "%s - Uptime of server is %dms - %d Days, %d Hours, %d Minutes, %d Seconds | uptime=%d;%d;%d;;" % \
-        (state, data, days, hours, minutes, seconds, data, int(warn), int(crit))
+        
+    outmsg = "%s - Uptime of server is %.0f Hours" % \
+        (state, val)
     return (outval, outmsg)
 
 def main(argv):
