@@ -188,7 +188,7 @@ def hddrives(data, crit, warn, srch):
         totalg = float(disk['Size']) / 1024.0 / 1024.0 / 1024.0
         freeg = floag(disk['FreeSpace']) / 1024.0 / 1024.0 / 1024.0
         usedg = totalg - freeg
-        percused =  usedg / totalg
+        percused =  usedg / totalg * 100.0
         message = "Disk %s Total: %.2fG - Used: %.2fG (%.1f%%)" % (
             disk['Name'],
             totalg,
