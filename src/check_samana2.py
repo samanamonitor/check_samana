@@ -47,8 +47,6 @@ def getData(name):
 def cpu(s, d, crit, warn):
     global debug
     state = "UNKNOWN"
-    if s != 'cpuLoad' and s != 'cpuqLoad':
-        return (3, "UNKNOWN - Unknown submodule")
 
     s = 'PercentIdleTime'
     critval = ''
