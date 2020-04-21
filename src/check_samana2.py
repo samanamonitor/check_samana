@@ -166,7 +166,7 @@ def services(data, crit, warn, incl, excl):
         outval = 0
 
     outmsg = "%s - %d Services Running - %d Services Stopped %s" % (
-        state, r, s, stopped_services)
+        state, r, s, stopped_services if outval > 0 else '')
     return (outval, outmsg)
 
 def hddrives(s, d, crit, warn, srch):
