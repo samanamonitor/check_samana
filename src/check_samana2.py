@@ -221,7 +221,7 @@ def hddrives(data, crit, warn, srch):
         state = "OK"
         outval = 0
 
-    outmsg = "%s | %s" % (state, " ".join(disk_messages), " ".join(disk_perfs))
+    outmsg = "%s - %s | %s" % (state, " ".join(disk_messages), " ".join(disk_perfs))
     return (outval, outmsg)
 
 def uptime(d, crit, warn):
