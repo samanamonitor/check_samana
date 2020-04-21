@@ -90,6 +90,7 @@ def ram(data, crit, warn):
 
 def log(data, logname, crit, warn):
     state = "UNKNOWN"
+    messages = ""
 
     if logname not in data['Events']:
         return (3, "UNKNOWN - Invalid event log.")
@@ -112,82 +113,12 @@ def log(data, logname, crit, warn):
         state = "OK"
         outval = 0
 
-    outmsg = "%s - Error or Warning Events=%d" %  \
-        (state, val)
-    return (outval, outmsg)
+    if outval > 0:
+        for i in data['Events'][logname]:
+            messages += i['Message']
 
-def applog(d, crit, warn, excl_data):
-    state = "UNKNOWN"
-
-    data = json.loads(d)['data']
-    details = ''
-    errors = 0
-    warnings = 0
-    loglevel = 4
-    criticalEvent = False
-
-    (loglevel, ex, ce) = getConfig("applog_" + excl_data)
-
-    for x in data:
-        level = int(x['level'])
-        exclude_event = False
-
-        for t in ce:
-            c = 0
-            filtercount = 0
-            if 'eventId' in t:
-                filtercount += 1
-                if t['eventId'] == x['eventId']:
-                    c += 1
-            if 'source' in t:
-                filtercount += 1
-                if re.search(t['source'], x['source']) is not None:
-                    c += 1
-            if c == filtercount:
-                criticalEvent = True
-        if debug:
-            print ex
-        for t in ex:
-            exclude = 0
-            filtercount = 0
-            if 'eventId' in t:
-                filtercount += 1
-                if t['eventId'] == x['eventId']:
-                    exclude += 1
-            if 'source' in t:
-                filtercount += 1
-                if re.search(t['source'], x['source']) is not None:
-                    exclude += 1
-
-            if exclude == filtercount:
-                exclude_event = True
-                break
-        
-        if exclude_event:
-            continue
-
-        if level <= loglevel:
-            details += str(x['eventId']) + "," + x['source'] + "," + x['message'][:100].rstrip() + "\n"
-        if level <= 2:
-            errors += 1
-        elif level == 3:
-            warnings += 1
-
-    totallogs = errors + warnings
-    if crit != -1 and totallogs > int(crit):
-        state = "CRITICAL"
-        outval = 2
-    elif warn != -1 and totallogs > int(warn):
-        state = "WARNING"
-        outval = 1
-    else:
-        state = "OK"
-        outval = 0
-
-    warn_text = ("" if warn == -1 else str(warn))
-    crit_text = ("" if crit == -1 else str(crit))
-    outmsg = "%s - Application errors=%d warnings=%d | logs=%d;%s;%s;;\n%s" % \
-        (state, errors, warnings, totallogs, warn_text, crit_text, details)
+    outmsg = "%s - Error or Warning Events=%d %s" %  \
+        (state, val, messages)
     return (outval, outmsg)
 
 def services(d, crit, warn, incl, excl):
