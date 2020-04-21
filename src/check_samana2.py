@@ -49,37 +49,28 @@ def cpu(s, data, crit, warn):
     state = "UNKNOWN"
     graphmax = 100
 
-    s = 'PercentIdleTime'
-    critval = ''
-    warnval = ''
+    critval = None
+    warnval = None
     if debug:
         print data
     
-    if crit != -1:
-        critval = crit
-    if warn != -1:
-        warnval = warn
+    if crit is not None:
+        critval = float(crit)
+    if warn is not None:
+        warnval = float(warn)
+    val = 100 - float(data['PercentIdleTime'])
 
-    if crit != -1 and data[s] > float(crit):
+    if val > critval:
         state = "CRITICAL"
         outval = 2
-    elif warn != -1 and data[s] > float(warn):
+    elif val > warnval:
         state = "WARNING"
         outval = 1
     else:
         state = "OK"
         outval = 0
     
-    if s == "cpuLoad":
-        txt = "CPU usage"
-        graphmax = 100
-    elif s == "cpuqLoad":
-        txt = "CPU Queue"
-        graphmax = 10
-    else:
-        txt = "UNKNOWN"
-
-    outmsg = "%s - %f %s | %s=%.0f;%s;%s;0;%d" % (state, data[s], txt, s, data[s], warnval, critval, graphmax)
+    outmsg = "%s - CPU Usage %0.f | cpu=%.0f;%.0f;%.0f;0;%d" % (state, val, val, warnval, critval, graphmax)
     return (outval, outmsg)
 
 def ram(d, crit, warn):
@@ -381,8 +372,8 @@ def main(argv):
     port = 11000
     module = ''
     submod = ''
-    warn = -1
-    crit = -1
+    warn = None
+    crit = None
     search = ""
     incl = ''
     excl = ''
