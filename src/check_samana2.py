@@ -6,6 +6,7 @@ import json
 import socket
 import re
 import etcd
+import time
 
 from os import environ
 
@@ -304,6 +305,9 @@ def main(argv):
 
     try:
         data =json.loads(c.get("/samanamonitor/data/%s" % hostid).value)
+        age_secs = time.time() - data['epoch']
+        if age_secs > 600:
+            print "UNKNOWN - Data is too old %d seconds" % age_secs
     except etcd.EtcdKeyNotFound:
         print "UNKNOWN - ServerID \"%s\" not found in the database" % hostid
         exit(3)
