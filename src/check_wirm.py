@@ -41,6 +41,7 @@ class WinRMScript:
 if (-Not (Test-Path %(scriptpath)s)) { mkdir %(scriptpath)s | Out-Null}
 "Environment prepared." | Out-Host
 Invoke-WebRequest -Uri %(scripturl)s -OutFile "%(scriptpath)s\\%(scriptname)s"
+if (-Not (Test-Path %(scriptpath)s\\%(scriptname)s)) { "File not downloaded" | Out-Host; exit 1 }
 "Downloaded Script." | Out-Host
 %(scriptpath)s\\%(scriptname)s | Out-Host
 "Done executing script" | Out-Host
