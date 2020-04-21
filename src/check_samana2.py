@@ -70,10 +70,16 @@ def cpu(s, data, crit, warn):
         state = "OK"
         outval = 0
     
-    outmsg = "%s - CPU Usage %0.f %%| cpu=%.0f;%s;%s;0;%d" % \
-        (state, val, val, 
-            warn if warn is not None else '', 
-            crit if crit is not None else '', graphmax)
+    perfusage = "cpu=%.0f;%s;%s;0;%d" % (
+        val, 
+        warn if warn is not None else '', 
+        crit if crit is not None else '', 
+        graphmax)
+    perfpriv = "priv=%.0f;;;" % data['PercentPrivilegedTime']
+    perfuser = "user=%.0f;;;" % data['PercentUserTime']
+    perfirq  = "interrupt=%.0f;;;" % data['PercentInterruptTime']
+    outmsg = "%s - CPU Usage %0.f %%| %s %s %s %s" % (
+        state, val, perfusage, perfpriv, perfuser, perfirq)
     return (outval, outmsg)
 
 def ram(d, crit, warn):
