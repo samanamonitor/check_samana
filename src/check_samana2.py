@@ -47,6 +47,7 @@ def getData(name):
 def cpu(s, data, crit, warn):
     global debug
     state = "UNKNOWN"
+    graphmax = 100
 
     s = 'PercentIdleTime'
     critval = ''
