@@ -78,16 +78,14 @@ rmdir %(scriptpath)s
       std_out, std_err, status_code = p.get_command_output(shell_id, command_id)
       if status_code != 0:
         print("ERROR - %s" % std_err)
-        exit(1)
-      print status_code
+        error = 1
     except Exception as e:
       print("UNKNOWN - Unable to get data from Server (%s) %s." % (str(e), type(e).__name__))
-      error = True
-      return std_err
+      error = 3
     finally:
       p.cleanup_command(shell_id, command_id)
       p.close_shell(shell_id)
-    if error: exit(3)
+    if error: exit(error)
     return std_out
 
 def auth_file(authfile):
