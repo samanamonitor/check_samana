@@ -126,37 +126,48 @@ def services(data, crit, warn, incl, excl):
     state = 'UNKNOWN'
     if incl == '':
         return (3, 'UNKNOWN - No services defined to be monitored')
-        
-    data = json.loads(d)['data']
+
     r = 0
     s = 0
+    stopped_services = 'Stopped Services:\n'
     details = ""
-    for x in data:
-        displayname = x['displayname'].lower()
-        name = x['name'].lower()
-        if excl != '' and (re.search(excl, displayname) is not None or re.search(excl, name) is not None):
+    for service in data['Services']:
+        displayname = service['DisplayName'].lower()
+        name = service['name'].lower()
+        if excl is not None and excl != '' and 
+                (re.search(excl, displayname) is not None or re.search(excl, name) is not None):
             continue
         if re.search(incl, displayname) is not None or re.search(incl, name) is not None:
             details += x['displayname'] + "(" + x['status'] + ")\n"
-            if x['status'].lower() == 'running':
+            if int(x['Status']) == 4:
                 r += 1
             else:
                 s += 1
+                stopped_services += displayname
 
-    if crit != -1 and  s > int(crit):
+    critval = 101
+    warnval = 101
+    if debug:
+        print data
+    
+    if crit is not None:
+        critval = int(crit)
+    if warn is not None:
+        warnval = int(warn)
+
+
+    if s > critval:
         state = "CRITICAL"
         outval = 2
-    elif warn != -1 and s > int(warn):
+    elif s > warnval:
         state = "WARNING"
         outval = 1
     else:
         state = "OK"
         outval = 0
 
-    warn_text = ("" if warn == -1 else str(warn))
-    crit_text = ("" if crit == -1 else str(crit))
-    outmsg = "%s - %d Services Running - %d Services Stopped | running=%d stopped=%d;%s;%s;;\n%s" % \
-        (state, r, s, r, s, warn_text, crit_text, details)
+    outmsg = "%s - %d Services Running - %d Services Stopped %s" % \
+        (state, r, s, stopped_services)
     return (outval, outmsg)
 
 def hddrives(s, d, crit, warn, srch):
@@ -301,8 +312,6 @@ def main(argv):
         (outval, outmsg) = ram(data, crit, warn)
     elif module == 'log':
         (outval, outmsg) = log(data, submod, crit, warn)
-    elif module == 'applog':
-        (outval, outmsg) = applog(data, crit, warn, excl)
     elif module == 'services':
         (outval, outmsg) = services(data, crit, warn, incl, excl)
     elif module == 'hddrives':
