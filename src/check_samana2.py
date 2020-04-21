@@ -129,7 +129,7 @@ def services(data, crit, warn, incl, excl):
 
     r = 0
     s = 0
-    stopped_services = 'Stopped Services:\n'
+    stopped_services = '\nStopped Services:\n'
     for service in data['Services']:
         displayname = service['DisplayName'].lower()
         name = service['ServiceName'].lower()
