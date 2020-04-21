@@ -237,21 +237,15 @@ def hddrives(data, crit, warn, srch):
 def uptime(data, crit, warn):
     state = "UNKNOWN"
 
-    critval = 101
-    warnval = 101
     if debug:
         print data
     
-    if crit is not None:
-        critval = float(crit)
-    if warn is not None:
-        warnval = float(warn)
     val = data['UpTime']
 
-    if val > critval:
+    if crit is not None and val > float(crit):
         state = "CRITICAL"
         outval = 2
-    elif val > warnval:
+    elif warn is not None and val > float(warn):
         state = "WARNING"
         outval = 1
     else:
