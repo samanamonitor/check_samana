@@ -368,8 +368,8 @@ def main(argv):
         (outval, outmsg) = cpu(data, crit, warn)
     elif module == 'ram':
         (outval, outmsg) = ram(data, crit, warn)
-    elif module == 'syslog':
-        (outval, outmsg) = syslog(data, crit, warn, excl)
+    elif module == 'log':
+        (outval, outmsg) = log(data, submod, crit, warn)
     elif module == 'applog':
         (outval, outmsg) = applog(data, crit, warn, excl)
     elif module == 'services':
