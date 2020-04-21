@@ -79,7 +79,7 @@ def cpu(s, data, crit, warn):
     else:
         txt = "UNKNOWN"
 
-    outmsg = "%s - %f %s | %s=%f;%s;%s;0;%d" % (state, data[s], txt, s, data[s], warnval, critval, graphmax)
+    outmsg = "%s - %f %s | %s=%.0f;%s;%s;0;%d" % (state, data[s], txt, s, data[s], warnval, critval, graphmax)
     return (outval, outmsg)
 
 def ram(d, crit, warn):
