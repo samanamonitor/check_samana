@@ -54,7 +54,6 @@ def cpu(data, crit, warn):
     return (outval, outmsg)
 
 def ram(data, crit, warn):
-# Physical Memory: Total: 16GB - Used: 7.399GB (46%) - Free: 8.601GB (54%)|'Physical Memory Used'=7944216576Bytes; 'Physical Memory Utilisation'=46%;95;98;
     state = "UNKNOWN"
     
     total = float(data['TotalVisibleMemorySize']) / 1024.0
@@ -89,7 +88,7 @@ def ram(data, crit, warn):
 
     return (outval, outmsg)
 
-def log(data, logname, crit, warn, excl_data):
+def log(data, logname, crit, warn):
     state = "UNKNOWN"
 
     if logname not in data['Events']:
