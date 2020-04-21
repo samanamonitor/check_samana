@@ -15,35 +15,6 @@ def help():
     print "check_samana2.py -H <hostid> -m <module> [-s <submodule>] [-c <critical>] [-w <warning>]"
     sys.exit(3)
 
-def getData(name):
-    loglevel = 4
-    configfile = "%NAGIOSETC%/check_samana/config.json"
-    ex = []
-    crit = []
-
-    try:
-        file = open(configfile, "r")
-        temp = json.load(file)
-        file.close()
-    except:
-        print "UNKNOWN - Cannot read configuration file " + configfile
-        print environ
-        exit(3)
-
-    if debug:
-        print name
-    if name in temp:
-        if 'exceptions' in temp[name]:
-            ex = temp[name]['exceptions']
-        if 'level' in temp[name]:
-            loglevel = temp[name]['level']
-        if 'critical' in temp[name]:
-            crit = temp[name]['critical']
-
-    if debug:
-        print ex
-    return (loglevel, ex, crit)
-
 def cpu(data, crit, warn):
     global debug
     state = "UNKNOWN"
@@ -118,77 +89,32 @@ def ram(data, crit, warn):
 
     return (outval, outmsg)
 
-def syslog(d, crit, warn, excl_data):
+def log(data, logname, crit, warn, excl_data):
     state = "UNKNOWN"
 
-    data = json.loads(d)['data']
-    details = ''
-    errors = 0
-    warnings = 0
-    loglevel = 4
-    criticalEvent = False
+    if logname not in data['Events']:
+        return (3, "UNKNOWN - Invalid event log.")
 
-    (loglevel, ex, ce) = getConfig("syslog_" + excl_data)
+    critval = 101
+    warnval = 101
+    if crit is not None:
+        critval = int(crit)
+    if warn is not None:
+        warnval = int(warn)
 
-    for x in data:
-        level = int(x['level'])
-        exclude_event = False
-        
-        for t in ce:
-            c = 0
-            filtercount = 0
-            if 'eventId' in t:
-                filtercount += 1
-                if t['eventId'] == x['eventId']:
-                    c += 1
-            if 'source' in t:
-                filtercount += 1
-                if re.search(t['source'], x['source']) is not None:
-                    c += 1
-            if c == filtercount:
-                criticalEvent = True
-
-        for t in ex:
-            exclude = 0
-            filtercount = 0
-            if 'eventId' in t:
-                filtercount += 1
-                if t['eventId'] == x['eventId']:
-                    exclude += 1
-            if 'source' in t:
-                filtercount += 1
-                if re.search(t['source'], x['source']) is not None:
-                    exclude += 1
-
-            if exclude == filtercount:
-                exclude_event = True
-                continue
-        
-        if exclude_event:
-            continue
-
-        if level <= loglevel:
-            details += str(x['eventId']) + "," + x['source'] + "," + x['message'][:100].rstrip() + "\n"
-        if level <= 2:
-            errors += 1
-        elif level == 3:
-            warnings += 1
-
-    totallogs = errors + warnings
-    if (crit != -1 and totallogs > int(crit)) or criticalEvent:
+    val = len(data['Events'][logname])
+    if 'Truncated' in data['Events'] and logname in data['Events']['Truncated'] or val > critval:
         state = "CRITICAL"
         outval = 2
-    elif warn != -1 and totallogs > int(warn):
+    elif val > warnval:
         state = "WARNING"
         outval = 1
     else:
         state = "OK"
         outval = 0
 
-    warn_text = ("" if warn == -1 else str(warn))
-    crit_text = ("" if crit == -1 else str(crit))
-    outmsg = "%s - System errors=%d warnings=%d | logs=%d;%s;%s;;\n%s" %  \
-        (state, errors, warnings, totallogs, warn_text, crit_text, details)
+    outmsg = "%s - Error or Warning Events=%d" %  \
+        (state, val)
     return (outval, outmsg)
 
 def applog(d, crit, warn, excl_data):
