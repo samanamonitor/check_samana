@@ -155,10 +155,10 @@ def services(data, crit, warn, incl, excl):
         warnval = int(warn)
 
 
-    if s > critval:
+    if s >= critval:
         state = "CRITICAL"
         outval = 2
-    elif s > warnval:
+    elif s >= warnval:
         state = "WARNING"
         outval = 1
     else:
