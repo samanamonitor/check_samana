@@ -44,14 +44,13 @@ def getData(name):
         print ex
     return (loglevel, ex, crit)
 
-def cpu(s, d, crit, warn):
+def cpu(s, data, crit, warn):
     global debug
     state = "UNKNOWN"
 
     s = 'PercentIdleTime'
     critval = ''
     warnval = ''
-    data = json.loads(d)
     if debug:
         print data
     
