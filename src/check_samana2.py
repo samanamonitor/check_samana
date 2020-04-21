@@ -50,6 +50,7 @@ def cpu(s, d, crit, warn):
     if s != 'cpuLoad' and s != 'cpuqLoad':
         return (3, "UNKNOWN - Unknown submodule")
 
+    s = 'PercentIdleTime'
     critval = ''
     warnval = ''
     data = json.loads(d)
@@ -426,13 +427,13 @@ def main(argv):
     try:
         data =json.loads(c.get("/samanamonitor/data/%s" % hostid).value)
     except etcd.EtcdKeyNotFound:
-        print "UNKNOWN - ServerID %s not found in the database" % hostid
+        print "UNKNOWN - ServerID \"%s\" not found in the database" % hostid
         exit(3)
     except ValueError:
-        print "UNKNOWN - Data for ServerID %s is corrupt" % hostid
+        print "UNKNOWN - Data for ServerID \"%s\" is corrupt" % hostid
         exit(3)
-    except Exception as e:
-        print "UNKNOWN - Server not responding. Maybe agent not installed? %s" % str(e)
+    except etcd.EtcdException as e:
+        print "UNKNOWN - Server not responding. %s" % str(e)
         exit(3)
 
     outmsg = "UNKNOWN - Data is unavailable"
