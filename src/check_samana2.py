@@ -308,6 +308,7 @@ def main(argv):
         age_secs = time.time() - data['epoch']
         if age_secs > 600:
             print "UNKNOWN - Data is too old %d seconds" % age_secs
+            exit(3)
     except etcd.EtcdKeyNotFound:
         print "UNKNOWN - ServerID \"%s\" not found in the database" % hostid
         exit(3)
