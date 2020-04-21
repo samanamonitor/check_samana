@@ -41,7 +41,11 @@ class WinRMScript:
 if (-Not (Test-Path %(scriptpath)s)) { mkdir %(scriptpath)s | Out-Null}
 "Environment prepared." | Out-Host
 Invoke-WebRequest -Uri %(scripturl)s -OutFile "%(scriptpath)s\\%(scriptname)s"
-if (-Not (Test-Path %(scriptpath)s\\%(scriptname)s)) { "File not downloaded" | Out-Host; exit 1 }
+if (-Not (Test-Path %(scriptpath)s\\%(scriptname)s)) { 
+  "File not downloaded" | Out-Host; 
+  rmdir %(scriptpath)s
+  exit 1 
+}
 "Downloaded Script." | Out-Host
 %(scriptpath)s\\%(scriptname)s | Out-Host
 "Done executing script" | Out-Host
@@ -72,6 +76,9 @@ rmdir %(scriptpath)s
       encoded_ps = b64encode(script.encode('utf_16_le')).decode('ascii')
       command_id = p.run_command(shell_id, 'powershell', ['-encodedcommand {0}'.format(encoded_ps), ])
       std_out, std_err, status_code = p.get_command_output(shell_id, command_id)
+      if status_code != 0:
+        print("ERROR - %s" % std_err)
+        exit(1)
       print status_code
     except Exception as e:
       print("UNKNOWN - Unable to get data from Server (%s) %s." % (str(e), type(e).__name__))
