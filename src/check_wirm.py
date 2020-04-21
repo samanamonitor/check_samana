@@ -34,9 +34,9 @@ class WinRMScript:
     self.password = auth['password']
 
   def get(self, scriptname):
-    server='https://%(hostaddress)s:5986/wsman'
+    server='https://%s:5986/wsman' % self.hostaddress
     scriptpath = "c:\\samanamon"
-    scripturl="http://%(nagiosaddress)s/%s" % scriptname
+    scripturl="http://%s/%s" % (self.nagiosaddress, scriptname)
     samanamon = '''
 if (-Not (Test-Path %(scriptpath)s)) { mkdir %(scriptpath)s | Out-Null}
 "Environment prepared." | Out-Host
@@ -176,8 +176,7 @@ def main():
         raise Exception("Unknown argument")
 
     client = WinRMScript(auth(username, u_domain, password, authfile), nagiosaddress)
-    output = client.get('samanamon.ps1')
-    print "OK - "
+    print "OK - " % client.get('samanamon.ps1')
     return 0
 
   except Exception as err:
