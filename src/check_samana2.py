@@ -130,7 +130,6 @@ def services(data, crit, warn, incl, excl):
     r = 0
     s = 0
     stopped_services = 'Stopped Services:\n'
-    details = ""
     for service in data['Services']:
         displayname = service['DisplayName'].lower()
         name = service['ServiceName'].lower()
@@ -139,8 +138,7 @@ def services(data, crit, warn, incl, excl):
                     re.search(excl, name) is not None):
             continue
         if re.search(incl, displayname) is not None or re.search(incl, name) is not None:
-            details += x['displayname'] + "(" + x['status'] + ")\n"
-            if int(x['Status']) == 4:
+            if int(service['Status']) == 4:
                 r += 1
             else:
                 s += 1
