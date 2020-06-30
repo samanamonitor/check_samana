@@ -67,7 +67,7 @@ rmdir %(scriptpath)s
     std_err = ''
     try:
       p = Protocol(
-        endpoint='https://%s:5986/wsman' % self.hostaddress,
+        endpoint='http://%s:5985/wsman' % self.hostaddress,
         transport='ntlm',
         username=self.username,
         password=self.password,
