@@ -210,6 +210,8 @@ def hddrives(data, crit, warn, srch):
 
     if isinstance(data['Disks'], list):
         for disk in data['Disks']:
+            if disk['DriveType'] != 3:
+                continue
             s = check_disk(disk)
             if s == 2: 
                 status_crit += 1
