@@ -6,4 +6,4 @@ SRC_SAMANA2=check_samana2.py \
 	check_winrm.py
 
 install: $(SRC_SAMANA2)
-	install $^
+	install $^ /usr/local/nagios/libexec
