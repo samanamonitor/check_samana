@@ -69,7 +69,7 @@ $json
     error = False
     try:
       p = Protocol(
-        endpoint='https://' + self.ddc + ':5986/wsman',
+        endpoint='http://' + self.ddc + ':5985/wsman',
         transport='ntlm',
         username=self.username,
         password=self.password,
