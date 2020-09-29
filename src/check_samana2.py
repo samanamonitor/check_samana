@@ -248,19 +248,21 @@ def uptime(data, crit, warn):
     
     val = data['UpTime']
 
-    if crit is not None and crit != '' and val > float(crit):
-        state = "CRITICAL"
-        outval = 2
-    elif warn is not None and warn != '' and val > float(warn):
-        state = "WARNING"
-        outval = 1
-    else:
-        state = "OK"
-        outval = 0
-        
-    outmsg = "%s - Uptime of server is %.0f Hours" % \
-        (state, val)
-    return (outval, outmsg)
+    try:
+        crit = float(crit)
+        if val > crit:
+            return (2, "CRITICAL - of server is %.0f Hours" % val)
+    finally:
+        pass
+
+    try:
+        warn = float(warn)
+        if val > warn:
+            return (1, "WARNING - of server is %.0f Hours" % val)
+    finally:
+        pass
+
+    return (0, "OK - of server is %.0f Hours" % val)
 
 def main(argv):
     hostid = ''
