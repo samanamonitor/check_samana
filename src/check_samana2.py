@@ -248,10 +248,10 @@ def uptime(data, crit, warn):
     
     val = data['UpTime']
 
-    if crit is not None and val > float(crit):
+    if crit is not None and crit != '' and val > float(crit):
         state = "CRITICAL"
         outval = 2
-    elif warn is not None and val > float(warn):
+    elif warn is not None and warn != '' and val > float(warn):
         state = "WARNING"
         outval = 1
     else:
