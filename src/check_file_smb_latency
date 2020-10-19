@@ -90,7 +90,7 @@ my $warn_dur = $1 if ($opt_w =~ /^([0-9]+)$/);
 my $crit_dur = $1 if ($opt_c =~ /^([0-9]+)$/);
 ($crit_dur) || usage("Invalid critical threshold: $opt_c\n");
 
-$command = defined($opt_f) ? "get $opt_f $temp_file" : "du"
+my $command = defined($opt_f) ? "get $opt_f $temp_file" : "du"
 
 # Execute the given command line and return anything it writes to STDOUT and/or
 # STDERR.  (This might be useful for other plugins, too, so it should possibly
