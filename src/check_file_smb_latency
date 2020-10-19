@@ -183,43 +183,20 @@ $_ = $lines[$#lines-1];
 
 #Process the last line to get free space.  
 #If line does not match required regexp, return an UNKNOWN error
-if (/\s*(\d*) blocks of size (\d*)\. (\d*) blocks available/) {
+$perfdata = "'". $share . "'=". $duration . ';'
+    . $warn_dur . ';'
+    . $crit_dur . ';'
+    . '0;'
+    . '0';
 
-    $perfdata = "'". $share . "'=". $duration . ';'
-        . $warn_dur . ';'
-        . $crit_dur . ';'
-        . '0;'
-        . '0';
-
-    if ($duration > $crit_dur) {
-        $state = "CRITICAL";
-        $answer = "CRITICAL: Server took $duration us to respond";
-    } elsif ( $duration > $warn_dur ) {
-        $state = "WARNING";
-        $answer = "WARNING: Server took $duration us to respond";
-    } else {
-        $answer = "Latency ok - Server took $duration us to respond";
-    }
+if ($duration > $crit_dur) {
+    $state = "CRITICAL";
+    $answer = "CRITICAL: Server took $duration us to respond";
+} elsif ( $duration > $warn_dur ) {
+    $state = "WARNING";
+    $answer = "WARNING: Server took $duration us to respond";
 } else {
-    $answer = "Result from smbclient not suitable";
-    $state = "UNKNOWN";
-    foreach (@lines) {
-        if (/(Access denied|NT_STATUS_LOGON_FAILURE|NT_STATUS_ACCESS_DENIED)/) {
-            $answer = "Access Denied";
-            $state = "CRITICAL";
-            last;
-        }
-        if (/(Unknown host \w*|Connection.*failed)/) {
-            $answer = "$1";
-            $state = "CRITICAL";
-            last;
-        }
-        if (/(You specified an invalid share name|NT_STATUS_BAD_NETWORK_NAME)/) {
-            $answer = "Invalid share name \\\\$host\\$share";
-            $state = "CRITICAL";
-            last;
-        }
-    }
+    $answer = "Latency ok - Server took $duration us to respond";
 }
 
 
