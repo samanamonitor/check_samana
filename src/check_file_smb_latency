@@ -82,11 +82,11 @@ defined($user) || usage("Invalid user: $opt_u\n");
 defined($opt_p) || ($opt_p = shift @ARGV) || ($opt_p = "");
 my $pass = $1 if ($opt_p =~ /(.*)/);
 
-($opt_w) || ($opt_w = shift @ARGV) || ($opt_w = 100000);
+($opt_w) || ($opt_w = shift @ARGV) || ($opt_w = 2000000);
 my $warn_dur = $1 if ($opt_w =~ /^([0-9]+)$/);
 ($warn_dur) || usage("Invalid warning threshold: $opt_w\n");
 
-($opt_c) || ($opt_c = shift @ARGV) || ($opt_c = 500000);
+($opt_c) || ($opt_c = shift @ARGV) || ($opt_c = 5000000);
 my $crit_dur = $1 if ($opt_c =~ /^([0-9]+)$/);
 ($crit_dur) || usage("Invalid critical threshold: $opt_c\n");
 
