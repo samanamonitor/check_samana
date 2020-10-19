@@ -32,7 +32,7 @@ sub print_help ();
 sub print_usage ();
 
 $PROGNAME = "check_file_smb_latency";
-$temp_file = '/tmp/montest';
+my $temp_file = '/tmp/montest';
 
 $ENV{'PATH'}='';
 $ENV{'BASH_ENV'}=''; 
