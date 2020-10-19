@@ -331,7 +331,7 @@ $json
       exit_code = 0
 
     print("{0} - Average DeliveryGroup load is {1}. | load={1};{2};{3};0;10000"
-      .format(status, AverageLoad, warn, crit))
+      .format(status, AvailLoadIndex, warn, crit))
     if exit_code != 0:
       print(alert_message)
       print('Check servers in Maintenance or Unregistered')
