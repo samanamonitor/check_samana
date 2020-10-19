@@ -1,6 +1,5 @@
 #!/usr/bin/python
 
-from winrm.protocol import Protocol
 from base64 import b64encode
 import json
 import sys, getopt
@@ -68,6 +67,7 @@ $json
     p = None
     error = False
     try:
+      from winrm.protocol import Protocol
       p = Protocol(
         endpoint='http://' + self.ddc + ':5985/wsman',
         transport='ntlm',
