@@ -22,7 +22,7 @@ require 5.004;
 use POSIX;
 use strict;
 use Getopt::Long;
-use vars qw($opt_P $opt_V $opt_h $opt_H $opt_s $opt_W $opt_u $opt_p $opt_w $opt_c $opt_a $verbose);
+use vars qw($opt_P $opt_V $opt_h $opt_H $opt_s $opt_W $opt_u $opt_p $opt_w $opt_c $opt_a $opt_f $verbose);
 use vars qw($PROGNAME);
 use lib "/usr/local/nagios/libexec"  ;
 use utils qw($TIMEOUT %ERRORS &print_revision &support &usage);
