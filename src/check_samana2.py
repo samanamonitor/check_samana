@@ -103,6 +103,9 @@ def log(data, logname, crit, warn):
     if warn is not None:
         warnval = int(warn)
 
+    if logname not in data['Events'] or data['Events'][logname] is None:
+        return (3, 'UNKNOWN - Event log %s not configured.' % logname)
+
     val = len(data['Events'][logname])
     if 'Truncated' in data['Events'] and logname in data['Events']['Truncated'] or val > critval:
         state = "CRITICAL"
@@ -116,11 +119,14 @@ def log(data, logname, crit, warn):
 
     if outval > 0:
         messages = "\n"
-        for i in data['Events'][logname]:
-            if 'Message' in i:
-                messages += i['Message'] + "\n"
-            else:
-                messages += "<UNKNOWN>\n"
+        if logname in data['Events']:
+            for i in data['Events'][logname]:
+                if 'Message' in i:
+                    messages += i['Message'] + "\n"
+                else:
+                    messages += "<UNKNOWN>\n"
+        else:
+            messages = "Not configured to pull Log"
 
     outmsg = "%s - Error or Warning Events=%d %s" %  \
         (state, val, messages)

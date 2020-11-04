@@ -426,8 +426,8 @@ to get a license.
 Copyright (c) 2017 Samana Group LLC
 
 Usage:
-  check_citrixddc -D <ddc> -S <host domain name> -H <host name> < -d <user domain name> -u <username> -p <password> | -a <auth file> > [-r <refresh interval>] -m <module> -w <warning> -c <critical> -l
-  check_citrixddc -h
+  check_ctx_farm.py -D <ddc> -S <host domain name> -H <host name> < -d <user domain name> -u <username> -p <password> | -a <auth file> > [-r <refresh interval>] -m <module> -w <warning> -c <critical> -l
+  check_ctx_farm.py -h
 
   <ddc> Citrix Desktop Deliver Controller hostname or IP address
   <host domain name> Session Host server domain name
@@ -450,7 +450,7 @@ Usage:
     DeliveryGroupLoadUser: will return the number of users connected to a delivery group
       -g <delivery group name>
     CatalogName: will return the catalog name a server is part of.
-  -l loads data from server. By default data is fetched from cache
+      -l loads data from server. By default data is fetched from cache
 """
   print(usage)
 

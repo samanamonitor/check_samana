@@ -88,7 +88,11 @@ foreach($e in $config['EventList']) {
             $data['Events']['Truncated'] += @($e)
             $data['Events'][$e] = $evts[0..($config['EventMax']-1)]
         } else {
-            $data['Events'][$e] = $evts
+            if ($evts -is [array]) {
+                $data['Events'][$e] = $evts
+            } else {
+                $data['Events'][$e] = [$evts]
+            }
         }
     } catch {
         $data['Events'][$e] = "Invalid Event Log"
