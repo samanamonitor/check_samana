@@ -84,15 +84,12 @@ foreach($e in $config['EventList']) {
 "@
     try {
         $evts = Get-WinEvent -FilterXML $query -EA silentlycontinue
+        $data['Events'][$e] = @()
         if ($evts.Count -gt $config['EventMax']) {
             $data['Events']['Truncated'] += @($e)
             $data['Events'][$e] = $evts[0..($config['EventMax']-1)]
         } else {
-            if ($evts -is [array]) {
-                $data['Events'][$e] = $evts
-            } else {
-                $data['Events'][$e] = [$evts]
-            }
+            $data['Events'][$e] += @($evts)
         }
     } catch {
         $data['Events'][$e] = "Invalid Event Log"
