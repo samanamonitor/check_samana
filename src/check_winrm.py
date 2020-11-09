@@ -255,14 +255,14 @@ def main():
     hostip = get_dns_ip(hostaddress)
     dns_end = time()
     ping_data = ping_host(hostip)
-    print ping_data
 
     client = WinRMScript(hostaddress, user_auth, nagiosaddress)
     winrm_start = time()
-    host_id = client.get(script)
+    out = client.get(script)
     winrm_end = time()
 
-    print "OK - Data Collected\n%s" % host_id
+    perc_packet_loss = int(100.0 * float(ping_data['packets_received']) / float(ping_data['packets_sent']))
+    print "OK - Data Collected | perc_packet_loss=%d;;;;\n%s" % (perc_packet_loss, out)
     return 0
 
   except Exception as err:
