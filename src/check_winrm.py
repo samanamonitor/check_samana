@@ -51,8 +51,8 @@ if (-Not (Test-Path %(scriptpath)s\\%(scriptname)s)) {
 "Downloaded Script." | Out-Host
 %(scriptpath)s\\%(scriptname)s | Out-Host
 "Done executing script" | Out-Host
-del %(scriptpath)s\\%(scriptname)s
-rmdir %(scriptpath)s
+#del %(scriptpath)s\\%(scriptname)s
+#rmdir %(scriptpath)s
 "Done cleanup" | Out-Host
 ''' % { 'scripturl': scripturl, 
       'scriptpath': scriptpath, 
