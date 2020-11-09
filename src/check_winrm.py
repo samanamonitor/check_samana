@@ -51,8 +51,8 @@ if (-Not (Test-Path %(scriptpath)s\\%(scriptname)s)) {
 "Downloaded Script." | Out-Host
 %(scriptpath)s\\%(scriptname)s | Out-Host
 "Done executing script" | Out-Host
-#del %(scriptpath)s\\%(scriptname)s
-#rmdir %(scriptpath)s
+del %(scriptpath)s\\%(scriptname)s
+rmdir %(scriptpath)s
 "Done cleanup" | Out-Host
 ''' % { 'scripturl': scripturl, 
       'scriptpath': scriptpath, 
@@ -74,12 +74,10 @@ if (-Not (Test-Path %(scriptpath)s\\%(scriptname)s)) {
         username=self.username,
         password=self.password,
         server_cert_validation='ignore')
-      print self.password
       shell_id = p.open_shell()
       encoded_ps = b64encode(script.encode('utf_16_le')).decode('ascii')
       command_id = p.run_command(shell_id, 'powershell', ['-encodedcommand {0}'.format(encoded_ps), ])
       std_out, std_err, status_code = p.get_command_output(shell_id, command_id)
-      print std_out
       if status_code != 0:
         print("ERROR - %s" % std_err)
         error = 1
