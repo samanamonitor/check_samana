@@ -215,9 +215,10 @@ def main():
   authfile = None
   load_from_server = False
   nagiosaddress = None
+  script = 'samanamon.ps1'
 
   try:
-    opts, args = getopt.getopt(sys.argv[1:], "H:d:u:p:ha:n:")
+    opts, args = getopt.getopt(sys.argv[1:], "H:d:u:p:ha:n:s:")
 
     for o, a in opts:
       if o == '-H':
@@ -232,6 +233,8 @@ def main():
         authfile = a
       elif o == '-n':
         nagiosaddress = a
+      elif o == '-s':
+        script = a
       elif o == '-h':
         raise Exception("Unknown argument")
 
@@ -253,11 +256,12 @@ def main():
     dns_end = time()
     ping_data = ping_host(hostip)
 
-    winrm_start = time()
     client = WinRMScript(hostaddress, user_auth, nagiosaddress)
+    winrm_start = time()
+    host_id = client.get(script)
     winrm_end = time()
 
-    print "OK - Data Collected\nHost ID: %s" % client.get('samanamon.ps1')
+    print "OK - Data Collected\nHost ID: %s" % host_id
     return 0
 
   except Exception as err:
