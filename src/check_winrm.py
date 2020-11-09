@@ -163,6 +163,8 @@ def main():
   DeliveryGroup = None
   authfile = None
   load_from_server = False
+  nagiosaddress = None
+  
   try:
     opts, args = getopt.getopt(sys.argv[1:], "H:d:u:p:ha:n:")
 
