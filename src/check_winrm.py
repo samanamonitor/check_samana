@@ -60,7 +60,7 @@ if (-Not (Test-Path %(scriptpath)s\\%(scriptname)s)) {
       'hostaddress': self.hostaddress,
       'nagiosaddress': self.nagiosaddress
       }
-
+    print script
     shell_id = None
     command_id = None
     p = None
