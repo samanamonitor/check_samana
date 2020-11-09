@@ -262,7 +262,7 @@ def main():
     host_id = client.get(script)
     winrm_end = time()
 
-    print "OK - Data Collected\nHost ID: %s" % host_id
+    print "OK - Data Collected\n%s" % host_id
     return 0
 
   except Exception as err:
