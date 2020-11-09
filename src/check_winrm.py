@@ -64,7 +64,7 @@ rmdir %(scriptpath)s
     shell_id = None
     command_id = None
     p = None
-    error = False
+    error = 0
     std_out = ''
     std_err = ''
     try:
@@ -87,7 +87,7 @@ rmdir %(scriptpath)s
     finally:
       p.cleanup_command(shell_id, command_id)
       p.close_shell(shell_id)
-    if error: exit(error)
+    if error > 0: exit(error)
     return std_out
 
 def auth_file(authfile):
