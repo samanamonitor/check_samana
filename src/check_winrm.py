@@ -7,6 +7,8 @@ import sys, getopt
 import time
 import random
 import unicodedata
+import re
+from time import time
 
 class WinRMScript:
   def __init__(self, hostaddress, auth, nagiosaddress):
@@ -151,6 +153,55 @@ Usage:
 """
   print(usage)
 
+def get_dns_ip(hn):
+  import socket
+
+  pat = re.compile("^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$")
+  if pat.match(hn):
+    return hn
+
+  try:
+    server_data = socket.gethostbyname_ex(hn)
+  except Exception as err:
+    print "CRITICAL - Unable to resove hostname to IP address"
+    exit(2)
+  if len(server_data) != 3:
+    print "CRITICAL - invalid data received from gethostbyname_ex %s" % server_data
+    exit(2)
+  ips = server_data[2]
+  if !isinstance(ips, list) && len(ips) != 1:
+    print "CRITICAL - hostname is linked to more than 1 IP or 0 IPs"
+    exit(2)
+  return ips[0]
+
+def ping_host(ip):
+  import subprocess
+  data={
+    'packets_sent': 0,
+    'packets_received': 0,
+    'min': 0,
+    'avg': 0,
+    'max': 0,
+    'mdev': 0
+  }
+  p = subprocess.Popen(["ping", "-c", "3", ip], stdout = subprocess.PIPE)
+  out = p.communicate()
+  pat = re.search("^(\d+) packets transmitted, (\d+) received", out[0], flags=re.M)
+  if pat is None:
+    print "UNKOWN - ping output invalid %s" % out[0]
+    exit(3)
+  packets = pat.groups()
+  data['packets_sent'] = packets[0]
+  data['packets_received'] = packets[1]
+
+  pat = re.search("^rtt min/avg/max/mdev = ([\d.]+)/([\d.]+)/([\d.]+)/([\d.]+)")
+  rtt = pat.groups()
+  data['min'] = rtt[0]
+  data['avg'] = rtt[1]
+  data['max'] = rtt[2]
+  data['mdev'] = rtt[3]
+  return data
+
 def main():
   u_domain = None
   hostaddress = None
@@ -164,7 +215,7 @@ def main():
   authfile = None
   load_from_server = False
   nagiosaddress = None
-  
+
   try:
     opts, args = getopt.getopt(sys.argv[1:], "H:d:u:p:ha:n:")
 
@@ -197,7 +248,15 @@ def main():
       print "UNKNOWN - Invalid authentication information"
       exit(3)
 
+    dns_start = time()
+    hostip = get_dns_ip(hostaddress)
+    dns_end = time()
+    ping_data = ping_host(hostip)
+
+    winrm_start = time()
     client = WinRMScript(hostaddress, user_auth, nagiosaddress)
+    winrm_end = time()
+
     print "OK - Data Collected\n%s" % client.get('samanamon.ps1')
     return 0
 
