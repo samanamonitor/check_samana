@@ -122,9 +122,7 @@ def auth(username, domainname, password, authfile):
     return auth_file(authfile)
 
   if username is None or domainname is None or password is None:
-    print("Username, Domain name and Password are mandatory arguments")
-    usage()
-    exit(3)
+    return None
 
   return {
     'username': username,
@@ -184,7 +182,20 @@ def main():
       elif o == '-h':
         raise Exception("Unknown argument")
 
-    client = WinRMScript(hostaddress, auth(username, u_domain, password, authfile), nagiosaddress)
+    if hostaddress is None:
+      print "UNKNOWN - Hostaddress not defined."
+      exit(3)
+
+    if nagiosaddress is None:
+      print "UNKNOWN - Nagios address not defined."
+      exit(3)
+
+    user_auth = auth(username, u_domain, password, authfile)
+    if user_auth is None:
+      print "UNKNOWN - Invalid authentication information"
+      exit(3)
+
+    client = WinRMScript(hostaddress, user_auth, nagiosaddress)
     print "OK - Data Collected\n%s" % client.get('samanamon.ps1')
     return 0
 
