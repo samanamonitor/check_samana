@@ -194,7 +194,7 @@ def ping_host(ip):
   data['packets_sent'] = packets[0]
   data['packets_received'] = packets[1]
 
-  pat = re.search("^rtt min/avg/max/mdev = ([\d.]+)/([\d.]+)/([\d.]+)/([\d.]+)")
+  pat = re.search("^rtt min/avg/max/mdev = ([\d.]+)/([\d.]+)/([\d.]+)/([\d.]+)", out[0], flags=re.M)
   rtt = pat.groups()
   data['min'] = rtt[0]
   data['avg'] = rtt[1]
