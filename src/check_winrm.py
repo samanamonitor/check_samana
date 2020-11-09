@@ -255,6 +255,7 @@ def main():
     hostip = get_dns_ip(hostaddress)
     dns_end = time()
     ping_data = ping_host(hostip)
+    print ping_data
 
     client = WinRMScript(hostaddress, user_auth, nagiosaddress)
     winrm_start = time()
