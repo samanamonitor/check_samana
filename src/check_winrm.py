@@ -169,7 +169,7 @@ def get_dns_ip(hn):
     print "CRITICAL - invalid data received from gethostbyname_ex %s" % server_data
     exit(2)
   ips = server_data[2]
-  if !isinstance(ips, list) && len(ips) != 1:
+  if not isinstance(ips, list) and len(ips) != 1:
     print "CRITICAL - hostname is linked to more than 1 IP or 0 IPs"
     exit(2)
   return ips[0]
