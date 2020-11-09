@@ -257,7 +257,7 @@ def main():
     client = WinRMScript(hostaddress, user_auth, nagiosaddress)
     winrm_end = time()
 
-    print "OK - Data Collected\n%s" % client.get('samanamon.ps1')
+    print "OK - Data Collected\nHost ID: %s" % client.get('samanamon.ps1')
     return 0
 
   except Exception as err:
