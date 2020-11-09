@@ -75,7 +75,7 @@ if (-Not (Test-Path %(scriptpath)s\\%(scriptname)s)) {
         password=self.password,
         server_cert_validation='ignore')
       shell_id = p.open_shell()
-      print "test"
+      print self.hostaddress
       encoded_ps = b64encode(script.encode('utf_16_le')).decode('ascii')
       command_id = p.run_command(shell_id, 'powershell', ['-encodedcommand {0}'.format(encoded_ps), ])
       std_out, std_err, status_code = p.get_command_output(shell_id, command_id)
