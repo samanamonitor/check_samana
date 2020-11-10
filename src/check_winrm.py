@@ -11,7 +11,7 @@ import re
 from time import time
 
 class WinRMScript:
-  def __init__(self, hostaddress, auth, nagiosaddress):
+  def __init__(self, hostaddress, auth):
     try:
       if auth is None:
         raise Exception("Authentication data missing")
@@ -29,7 +29,6 @@ class WinRMScript:
 
     self.data = {}
     self.hostaddress = hostaddress
-    self.nagiosaddress = nagiosaddress
     if 'upn' in auth:
       self.username = auth['username']
     else:
@@ -57,8 +56,7 @@ rmdir %(scriptpath)s
 ''' % { 'scripturl': scripturl, 
       'scriptpath': scriptpath, 
       'scriptname': scriptname,
-      'hostaddress': self.hostaddress,
-      'nagiosaddress': self.nagiosaddress
+      'hostaddress': self.hostaddress
       }
 
     shell_id = None
