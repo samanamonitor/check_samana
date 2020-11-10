@@ -262,7 +262,7 @@ def main():
     winrm_end = time()
 
     perc_packet_loss = int(100.0 * float(ping_data['packets_received']) / float(ping_data['packets_sent']))
-    print "OK - Data Collected | ping_perc_packet_loss=%d;;;; ping_rtt=%d;;;;\n%s" % (perc_packet_loss, ping_data['avg'], out)
+    print "OK - Data Collected | ping_perc_packet_loss=%d;;;; ping_rtt=%f;;;;\n%s" % (perc_packet_loss, ping_data['avg'], out)
     return 0
 
   except Exception as err:
