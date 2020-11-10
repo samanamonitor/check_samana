@@ -311,7 +311,7 @@ def main():
     client = WinRMScript(hostaddress, user_auth, nagiosaddress)
     out = client.get(script)
     winrm_time = time() - winrm_start
-
+    print ping_data
     perc_packet_loss = 100-int(100.0 * ping_data['packets_received'] / ping_data['packets_sent'])
 
     perf_data = "dns_resolution=%d;;;; ping_perc_packet_loss=%d;;;; ping_rtt=%d;;;; winrm_time=%d;;;;" % \
