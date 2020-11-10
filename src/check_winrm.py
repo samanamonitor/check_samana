@@ -196,10 +196,10 @@ def ping_host(ip):
 
   pat = re.search("^rtt min/avg/max/mdev = ([\d.]+)/([\d.]+)/([\d.]+)/([\d.]+)", out[0], flags=re.M)
   rtt = pat.groups()
-  data['min'] = rtt[0]
-  data['avg'] = rtt[1]
-  data['max'] = rtt[2]
-  data['mdev'] = rtt[3]
+  data['min'] = float(rtt[0])
+  data['avg'] = float(rtt[1])
+  data['max'] = float(rtt[2])
+  data['mdev'] = float(rtt[3])
   return data
 
 def main():
