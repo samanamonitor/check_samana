@@ -354,7 +354,7 @@ def main():
       exit(1)
 
     print "OK - Data Collected | %s\n%s" % \
-        (winrm_time, perf_data, out)
+        (perf_data, out)
     exit(0)
 
   except Exception as err:
