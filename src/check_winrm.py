@@ -242,6 +242,8 @@ def main():
   winrm_crit = None
   dns_warn = None
   dns_crit = None
+  packet_loss_warn = None
+  packet_loss_crit = None
   script = 'samanamon.ps1'
 
   try:
