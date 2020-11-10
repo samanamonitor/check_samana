@@ -170,8 +170,8 @@ def get_dns_ip(hn):
     ips = server_data[2]
     if not isinstance(ips, list) and len(ips) != 1:
       raise ValueError("hostname is linked to more than 1 IP or 0 IPs")
-    dns_end = time()
-    return (ips[0], dns_end-dns_start)
+    dns_time = (time() - dns_start) * 1000
+    return (ips[0], dns_time)
 
   except ValueError as err:
     print "CRITICAL - %s" % str(err)
