@@ -217,7 +217,7 @@ def ping_host(ip):
     print "UNKNOWN - ping output invalid %s\n%s" % (str(e), out[0])
     exit(3)
   except Exception as e:
-    print "UNKNOWN - unexpected error %s\n%s" % (str(e), out[0])
+    print "UNKNOWN - unexpected error %s\n%s\n%s\n%s" % (str(e), out[0], packets, rtt)
     exit(3)
   return data
 
