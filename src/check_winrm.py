@@ -356,7 +356,8 @@ def main():
     exit(0)
 
   except Exception as err:
-    print "UNKNOWN - main Error: " + str(err)
+    print "UNKNOWN - main Error: %s at line %d" % \
+      (str(err), sys.exc_info().tb_lineno)
     usage()
     exit(3)
 
