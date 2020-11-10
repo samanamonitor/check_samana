@@ -36,9 +36,9 @@ class WinRMScript:
       self.username = auth['domain'] + '\\' + auth['username']
     self.password = auth['password']
 
-  def get(self, scriptname):
+  def run(self, scripturl):
     scriptpath = "c:\\samanamon"
-    scripturl="http://%s/%s" % (self.nagiosaddress, scriptname)
+    #scripturl="http://%s/%s" % (self.nagiosaddress, scriptname)
     script = '''
 if (-Not (Test-Path %(scriptpath)s)) { mkdir %(scriptpath)s | Out-Null}
 "Environment prepared." | Out-Host
@@ -140,7 +140,7 @@ to get a license.
 Copyright (c) 2019 Samana Group LLC
 
 Usage:
-  check_winrm.py -H <host name> < -d <user domain name> -u <username> -p <password> | -a <auth file> > -n <nagios> [-w <name resolution time warn (ms)>,<ping rtt warn (ms)>,<ping packet loss %>,<winrm time warn (ms)>] [-c <name resolution crit (ms)><ping rtt crit (ms)>,<ping packet loss %>,<warn time crit (ms)>]
+  check_winrm.py -H <host name> < -d <user domain name> -u <username> -p <password> | -a <auth file> > (-n <nagios> -s <script name> | -U <script URL>) [-w <name resolution time warn (ms)>,<ping rtt warn (ms)>,<ping packet loss %>,<winrm time warn (ms)>] [-c <name resolution crit (ms)><ping rtt crit (ms)>,<ping packet loss %>,<warn time crit (ms)>]
   check_winrm -h
 
   <host domain name> Session Host server domain name
@@ -150,6 +150,8 @@ Usage:
   <password>         password of the user with privileges in the Citrix Farm
   <auth file>        file name containing user's credentials
   <nagios>           Nagios server IP
+  <script>           Powershell script to run on server
+  <script URL>       URL where Powershell script is located
   <name resolution>  Time to resolve the host name in miliseconds. Only integer values accepted.
   <ping rtt>         Ping round trip time in miliseconds. Only integer values accepted.
   <ping packet loss> \% of packets that can be lost. Don't use \% sign in value
@@ -245,9 +247,10 @@ def main():
   packet_loss_warn = None
   packet_loss_crit = None
   script = 'samanamon.ps1'
+  url = None
 
   try:
-    opts, args = getopt.getopt(sys.argv[1:], "H:d:u:p:ha:n:s:w:c:")
+    opts, args = getopt.getopt(sys.argv[1:], "H:d:u:p:ha:n:s:w:c:U:")
 
     for o, a in opts:
       if o == '-H':
@@ -268,6 +271,8 @@ def main():
         warning = a
       elif o == '-c':
         critical = a
+      elif o == '-U':
+        url = a
       elif o == '-h':
         raise Exception("Unknown argument")
 
@@ -275,9 +280,12 @@ def main():
       print "UNKNOWN - Hostaddress not defined."
       exit(3)
 
-    if nagiosaddress is None:
-      print "UNKNOWN - Nagios address not defined."
+    if nagiosaddress is None and url is None:
+      print "UNKNOWN - Powershell script location not defined."
       exit(3)
+    if url is None:
+      url = "http://%s/%s" % (nagiosaddress, script)
+    #TODO check URL syntax for the case when we receive URL from user
 
     user_auth = auth(username, u_domain, password, authfile)
     if user_auth is None:
@@ -311,8 +319,8 @@ def main():
     ping_data = ping_host(hostip)
 
     winrm_start = time()
-    client = WinRMScript(hostaddress, user_auth, nagiosaddress)
-    out = client.get(script)
+    client = WinRMScript(hostaddress, user_auth)
+    out = client.run(url)
     winrm_time = (time() - winrm_start) * 1000
 
     perc_packet_loss = 100-int(100.0 * ping_data['packets_received'] / ping_data['packets_sent'])
