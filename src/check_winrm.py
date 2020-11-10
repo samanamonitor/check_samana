@@ -314,43 +314,43 @@ def main():
 
     perc_packet_loss = 100-int(100.0 * ping_data['packets_received'] / ping_data['packets_sent'])
 
-    perf_data = "dns_resolution=%d;;;; ping_perc_packet_loss=%d;;;; ping_rtt=%d;;;; winrm_time=%d;;;;" %
-    (dns_time, perc_packet_loss, ping_data['avg'], winrm_time)
+    perf_data = "dns_resolution=%d;;;; ping_perc_packet_loss=%d;;;; ping_rtt=%d;;;; winrm_time=%d;;;;" % \
+      (dns_time, perc_packet_loss, ping_data['avg'], winrm_time)
 
     if dns_crit is not None and dns_crit < dns_time:
-      print "CRITICAL - DNS name resolution took longer than expected %d | %s\n%s." %
+      print "CRITICAL - DNS name resolution took longer than expected %d | %s\n%s." % \
         (dns_time, perf_data, out)
       exit(2)
     if dns_warn is not None and dns_warn < dns_time:
-      print "WARNING - DNS name resolution took longer than expected %d | %s\n%s." %
+      print "WARNING - DNS name resolution took longer than expected %d | %s\n%s." % \
         (dns_time, perf_data, out)
       exit(1)
     if packet_loss_crit is not None and packet_loss_crit < perc_packet_loss:
-      print "CRITICAL - PING lost %d\% packets | %s\n%s" %
+      print "CRITICAL - PING lost %d\% packets | %s\n%s" % \
         (perc_packet_loss, perf_data, out)
       exit(2)
     if packet_loss_warn is not None and packet_loss_warn < perc_packet_loss:
-      print "WARNING - PING lost %d\% packets | %s\n%s" %
+      print "WARNING - PING lost %d\% packets | %s\n%s" % \
         (perc_packet_loss, perf_data, out)
       exit(1)
     if ping_crit is not None and ping_crit < ping_data['avg']:
-      print "CRITICAL - PING rtt is greater than expected %d ms | %s\n%s" %
+      print "CRITICAL - PING rtt is greater than expected %d ms | %s\n%s" % \
         (ping_data['avg'], perf_data, out)
       exit(2)
     if ping_warn is not None and ping_warn < ping_data['avg']:
-      print "WARNING - PING rtt is greater than expected %d ms | %s\n%s" %
+      print "WARNING - PING rtt is greater than expected %d ms | %s\n%s" % \
         (ping_data['avg'], perf_data, out)
       exit(1)
     if winrm_crit is not None and winrm_crit < winrm_time:
-      print "CRITICAL - WinRM took longer than expected %d ms | %s\n%s" %
+      print "CRITICAL - WinRM took longer than expected %d ms | %s\n%s" % \
         (winrm_time, perf_data, out)
       exit(2)
     if winrm_warn is not None and winrm_warn < winrm_time:
-      print "WARNING - WinRM took longer than expected %d ms | %s\n%s" %
+      print "WARNING - WinRM took longer than expected %d ms | %s\n%s" % \
         (winrm_time, perf_data, out)
       exit(1)
 
-    print "OK - Data Collected | %s\n%s" % 
+    print "OK - Data Collected | %s\n%s" % \
         (winrm_time, perf_data, out)
     exit(0)
 
