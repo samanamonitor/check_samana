@@ -38,7 +38,7 @@ class WinRMScript:
   def run(self, scripturl):
     scriptpath = "c:\\samanamon"
     #scripturl="http://%s/%s" % (self.nagiosaddress, scriptname)
-    scriptname = url.split('/')[-1]
+    scriptname = scripturl.split('/')[-1]
     script = '''
 if (-Not (Test-Path %(scriptpath)s)) { mkdir %(scriptpath)s | Out-Null}
 "Environment prepared." | Out-Host
