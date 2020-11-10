@@ -261,8 +261,10 @@ def main():
     out = client.get(script)
     winrm_end = time()
 
-    perc_packet_loss = int(100.0 * float(ping_data['packets_received']) / float(ping_data['packets_sent']))
-    print "OK - Data Collected | ping_perc_packet_loss=%d;;;; ping_rtt=%f;;;;\n%s" % (perc_packet_loss, ping_data['avg'], out)
+    perc_packet_loss = 100-int(100.0 * float(ping_data['packets_received']) / float(ping_data['packets_sent']))
+    winrm_time = winrm_end - winrm_start
+    print "OK - Data Collected | ping_perc_packet_loss=%d;;;; ping_rtt=%fms;;;; winrm_time=%f;;;;\n%s" % (
+      perc_packet_loss, ping_data['avg'], winrm_time, out)
     return 0
 
   except Exception as err:
