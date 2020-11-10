@@ -317,8 +317,11 @@ def main():
 
     perc_packet_loss = 100-int(100.0 * ping_data['packets_received'] / ping_data['packets_sent'])
 
-    perf_data = "dns_resolution=%d;;;; ping_perc_packet_loss=%d;;;; ping_rtt=%d;;;; winrm_time=%d;;;;" % \
-      (dns_time, perc_packet_loss, ping_data['avg'], winrm_time)
+    perf_data = "dns_resolution=%d;%s;%s;; ping_perc_packet_loss=%d;%s;%s;; ping_rtt=%d;%s;%s;; winrm_time=%d;%s;%s;;" % \
+      (dns_time, dns_warn if dns_warn is not None else '', dns_crit if dns_crit is not None else '',
+        perc_packet_loss, packet_loss_warn if packet_loss_warn is not None else '', packet_loss_crit if packet_loss_crit is not None else '',
+        ping_data['avg'], ping_warn if ping_warn is not None else '', ping_crit if ping_crit is not None else '', 
+        winrm_time, winrm_warn if winrm_warn is not None else '', winrm_crit if winrm_crit is not None else '')
 
     if dns_crit is not None and dns_crit < dns_time:
       print "CRITICAL - DNS name resolution took longer than expected %d | %s\n%s." % \
