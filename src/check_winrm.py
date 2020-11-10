@@ -207,7 +207,7 @@ def ping_host(ip):
       raise ValueError("Cannot extract ping rtt times.")
     rtt = pat.groups()
 
-    data['packets_sent'], = int(packets[0])
+    data['packets_sent'] = int(packets[0])
     data['packets_received'] = int(packets[1])
     data['min'] = int(float(rtt[0]))
     data['avg'] = int(float(rtt[1]))
