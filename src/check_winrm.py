@@ -313,7 +313,7 @@ def main():
     winrm_start = time()
     client = WinRMScript(hostaddress, user_auth, nagiosaddress)
     out = client.get(script)
-    winrm_time = time() - winrm_start
+    winrm_time = (time() - winrm_start) * 1000
 
     perc_packet_loss = 100-int(100.0 * ping_data['packets_received'] / ping_data['packets_sent'])
 
