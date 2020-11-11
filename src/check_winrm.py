@@ -215,7 +215,7 @@ def ping_host(ip):
     data['max'] = int(float(rtt[2]))
     data['mdev'] = int(float(rtt[3]))
   except (ValueError, IndexError) as e:
-    print "UNKNOWN - ping output invalid %s\n%s" % (str(e), out[0])
+    print "UNKNOWN - Ping output invalid. %s\n%s" % (str(e), out[0])
     exit(3)
   except Exception as e:
     print "UNKNOWN - unexpected error %s\n%s\n%s\n%s" % (str(e), out[0], packets, rtt)

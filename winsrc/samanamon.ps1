@@ -1,5 +1,5 @@
-#$SamanaMonitorServer = Get-Content "$($PSScriptRoot)\samanamon.txt"
-$SamanaMonitorServer = "http://%NAGIOS_IP%:2379"
+#$SamanaMonitorURI = "http://%NAGIOS_IP%:2379"
+param($SamanaMonitorURI)
 
 $config = @{
 EventMinutes = 10
@@ -36,8 +36,8 @@ $md5 = New-Object -TypeName System.Security.Cryptography.MD5CryptoServiceProvide
 $utf8 = New-Object -TypeName System.Text.UTF8Encoding
 $ComputerID = [System.BitConverter]::ToString($md5.ComputeHash($utf8.GetBytes($ComputerFQDN))) -Replace '-'
 
-get-config -ServerUri $SamanaMonitorServer -Location "samanamonitor/config/global" -Config $config
-get-config -ServerUri $SamanaMonitorServer -Location "samanamonitor/config/$($ComputerID)" -Config $config
+get-config -ServerUri $SamanaMonitorURI -Location "samanamonitor/config/global" -Config $config
+get-config -ServerUri $SamanaMonitorURI -Location "samanamonitor/config/$($ComputerID)" -Config $config
 
 $data['ID'] = $ComputerID
 $query = "select PercentIdleTime, PercentInterruptTime, " + `
@@ -98,7 +98,7 @@ foreach($e in $config['EventList']) {
 
 $value = $data | ConvertTo-JSON -Compress
 $res = Invoke-WebRequest -UseBasicParsing -Method "PUT" -Body @{value=$value} `
-    -uri "$($SamanaMonitorServer)/v2/keys/samanamonitor/data/$($ComputerID)" `
+    -uri "$($SamanaMonitorURI)/v2/keys/samanamonitor/data/$($ComputerID)" `
     -ContentType "application/x-www-form-urlencoded"
 
 $ComputerID | Out-Host
