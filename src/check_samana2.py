@@ -257,18 +257,18 @@ def uptime(data, crit, warn):
     try:
         crit = float(crit)
         if val > crit:
-            return (2, "CRITICAL - of server is %.0f Hours" % val)
+            return (2, "CRITICAL - Uptime of server is %.0f Hours" % val)
     except:
         pass
 
     try:
         warn = float(warn)
         if val > warn:
-            return (1, "WARNING - of server is %.0f Hours" % val)
+            return (1, "WARNING - Uptime of server is %.0f Hours" % val)
     except:
         pass
 
-    return (0, "OK - of server is %.0f Hours" % val)
+    return (0, "OK - Uptime of server is %.0f Hours" % val)
 
 def main(argv):
     hostid = ''
