@@ -35,7 +35,7 @@ class WinRMScript:
       self.username = auth['domain'] + '\\' + auth['username']
     self.password = auth['password']
 
-  def run(self, scripturl):
+  def run(self, scripturl, scriptarguments):
     scriptpath = "c:\\samanamon"
     #scripturl="http://%s/%s" % (self.nagiosaddress, scriptname)
     scriptname = scripturl.split('/')[-1]
@@ -49,7 +49,7 @@ if (-Not (Test-Path %(scriptpath)s\\%(scriptname)s)) {
   exit 1 
 }
 "Downloaded Script." | Out-Host
-%(scriptpath)s\\%(scriptname)s | Out-Host
+%(scriptpath)s\\%(scriptname)s %(scriptarguments)s| Out-Host
 "Done executing script" | Out-Host
 del %(scriptpath)s\\%(scriptname)s
 rmdir %(scriptpath)s
@@ -57,6 +57,7 @@ rmdir %(scriptpath)s
 ''' % { 'scripturl': scripturl, 
       'scriptpath': scriptpath, 
       'scriptname': scriptname,
+      'scriptarguments': scriptarguments,
       'hostaddress': self.hostaddress
       }
 
@@ -139,7 +140,7 @@ to get a license.
 Copyright (c) 2019 Samana Group LLC
 
 Usage:
-  check_winrm.py -H <host name> < -d <user domain name> -u <username> -p <password> | -a <auth file> > (-n <nagios> -s <script name> | -U <script URL>) [-w <name resolution time warn (ms)>,<ping rtt warn (ms)>,<ping packet loss %>,<winrm time warn (ms)>] [-c <name resolution crit (ms)><ping rtt crit (ms)>,<ping packet loss %>,<warn time crit (ms)>]
+  check_winrm.py -H <host name> < -d <user domain name> -u <username> -p <password> | -a <auth file> > (-n <nagios> -s <script name> | -U <script URL>) [ -A "<script arguments in quotes>"] [-w <name resolution time warn (ms)>,<ping rtt warn (ms)>,<ping packet loss %>,<winrm time warn (ms)>] [-c <name resolution crit (ms)><ping rtt crit (ms)>,<ping packet loss %>,<warn time crit (ms)>]
   check_winrm -h
 
   <host domain name> Session Host server domain name
@@ -247,9 +248,10 @@ def main():
   packet_loss_crit = None
   script = 'samanamon.ps1'
   url = None
+  scriptarguments = ''
 
   try:
-    opts, args = getopt.getopt(sys.argv[1:], "H:d:u:p:ha:n:s:w:c:U:")
+    opts, args = getopt.getopt(sys.argv[1:], "H:d:u:p:ha:n:s:w:c:U:A:")
 
     for o, a in opts:
       if o == '-H':
@@ -272,6 +274,8 @@ def main():
         critical = a
       elif o == '-U':
         url = a
+      elif o == '-A':
+        scriptarguments = a
       elif o == '-h':
         raise Exception("Unknown argument")
 
@@ -319,7 +323,7 @@ def main():
 
     winrm_start = time()
     client = WinRMScript(hostaddress, user_auth)
-    out = client.run(url)
+    out = client.run(url, scriptarguments)
     winrm_time = (time() - winrm_start) * 1000
 
     perc_packet_loss = 100-int(100.0 * ping_data['packets_received'] / ping_data['packets_sent'])
