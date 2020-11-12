@@ -63,7 +63,7 @@ $data['TotalSwapSpaceSize'] = $Server.TotalSwapSpaceSize
 $data['TotalVirtualMemorySize'] = $Server.TotalVirtualMemorySize
 $data['TotalVisibleMemorySize'] = $Server.TotalVisibleMemorySize
 $data['NumberOfProcesses'] = $Server.NumberOfProcesses
-$data['UpTime'] = ((get-date).date - $Server.ConverttoDateTime($server.LastBootUpTime)).totalhours
+$data['UpTime'] = ([datetime](get-date).datetime - $Server.ConverttoDateTime($server.LastBootUpTime)).totalhours
 $data['Services'] = Get-Service
 
 
