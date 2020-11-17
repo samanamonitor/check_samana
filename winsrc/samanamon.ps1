@@ -52,14 +52,14 @@ $data['PercentProcessorTime'] = $Processor.PercentProcessorTime
 $data['PercentUserTime'] = $Processor.PercentUserTime
 
 $query = "select FreePhysicalMemory, FreeSpaceInPagingFiles, " + `
-    "FreeVirtualMemory, TotalSwapSpaceSize, TotalVirtualMemorySize, " + `
+    "FreeVirtualMemory, SizeStoredInPagingFiles, TotalVirtualMemorySize, " + `
     "TotalVisibleMemorySize, NumberOfProcesses, LastBootUpTime, " + `
     "CSName from win32_operatingsystem"
 $Server=Get-WmiObject -Query $query
 $data['FreePhysicalMemory'] = $Server.FreePhysicalMemory
 $data['FreeSpaceInPagingFiles'] = $Server.FreeSpaceInPagingFiles
 $data['FreeVirtualMemory'] = $Server.FreeVirtualMemory
-$data['TotalSwapSpaceSize'] = $Server.TotalSwapSpaceSize
+$data['SizeStoredInPagingFiles'] = $Server.TotalSwapSpaceSize
 $data['TotalVirtualMemorySize'] = $Server.TotalVirtualMemorySize
 $data['TotalVisibleMemorySize'] = $Server.TotalVisibleMemorySize
 $data['NumberOfProcesses'] = $Server.NumberOfProcesses
