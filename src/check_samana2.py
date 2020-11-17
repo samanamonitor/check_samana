@@ -92,8 +92,8 @@ def ram(data, crit, warn):
 def swap(data, crit, warn):
     state = "UNKNOWN"
     
-    total = float(data['TotalSwapSpaceSize']) / 1024
-    free = float(data['FreeSpaceInPagingFiles']) / 1024
+    total = float(data['TotalSwapSpaceSize']) / 1024 / 1024
+    free = float(data['FreeSpaceInPagingFiles']) / 1024 / 1024
     used = total - free
     percused = used * 100.0 / total
     percfree = free * 100.0 / total
