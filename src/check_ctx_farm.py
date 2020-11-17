@@ -196,6 +196,56 @@ $json
             "| unregistered={0};{1};{2};;".format(0, int(warn), int(crit)))
       exit(0)
 
+  def getLoad(self, hostname, domain, warn, crit):
+    MachineName = self.getMachineName(hostname, domain)
+    s = self.data.get(MachineName)
+
+    status = "UNKNOWN"
+    code = 3
+    if s is None:
+      print("{0} - {1} is not part of the citrix farm".format(status, MachineName))
+      exit(code)
+
+    if crit is None:
+      crit = ''
+    if warn is None:
+      warn = ''
+
+    if warn != '' and crit != '' and int(warn) > int(crit):
+      print("{0} - Warning cannot be higher than Critical".format(status))
+      exit(code)
+
+    load = s['data']['LoadIndex']
+    perf_data = "'load'={1};{2};{3};0;10000" % (load, warn, crit)
+    for i in s['data']['LoadIndexes']:
+      (index_name, index_value) = i.split(':')
+      index_name = unicodedata.normalize('NFKD', index_name).encode('ascii', 'ignore').translate(None, '$')
+      #out = "{0} '{1}'={2};;;0;10000".format(out, index_name, index_value)
+      print("{0} load is {1}".format(index_name, index_value))
+    #print out
+
+
+    for a in s['data']['LoadIndexes']
+    if crit != '' and load > int(crit):
+      status = "CRITICAL"
+      code = 2
+    elif warn != '' and load > int(warn):
+      status = "WARNING"
+      code = 1
+    else:
+      status = "OK"
+      code = 0
+    #out = "{0} - Server is at {1} Load | 'load'={1};{2};{3};0;10000 ".format(status, load, warn, crit)
+    print("{0} - Server is at {1} Load | {2}".format(status, perf_data))
+    #print("Individual Data; | ")
+    for i in s['data']['LoadIndexes']:
+      (index_name, index_value) = i.split(':')
+      index_name = unicodedata.normalize('NFKD', index_name).encode('ascii', 'ignore').translate(None, '$')
+      #out = "{0} '{1}'={2};;;0;10000".format(out, index_name, index_value)
+      print("{0} load is {1}".format(index_name, index_value))
+    #print out
+    exit(code)
+
   def getLoadIndex(self, hostname, domain, warn, crit):
     MachineName = self.getMachineName(hostname, domain)
     s = self.data.get(MachineName)
