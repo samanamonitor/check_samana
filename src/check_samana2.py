@@ -80,7 +80,7 @@ def ram(data, crit, warn):
         state = "OK"
         outval = 0
 
-    perfused = "Physical Memory Used'=%dG;%s;%s;0;100" % (
+    perfused = "Physical Memory Used'=%d;%s;%s;0;100" % (
         percused,
         warn if warn is not None else '',
         crit if crit is not None else '')
