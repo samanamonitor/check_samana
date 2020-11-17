@@ -1,0 +1,30 @@
+define page {
+    use_regex                          0
+    page_name                          %HOST%
+}
+
+define graph {
+    host_name                          %HOST%
+    service_desc                       CPU_Load
+}
+
+define graph {
+    host_name                          %HOST%
+    service_desc                       Memory_Utilization
+}
+
+define graph {
+    host_name                          %HOST%
+    service_desc                       Page_File_Utilization
+}
+
+define graph {
+    host_name                          %HOST%
+    service_desc                       Load_Session
+}
+
+define graph {
+    host_name                          %HOST%
+    service_desc                       Load_Server
+}
+
