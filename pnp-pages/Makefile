@@ -1,6 +1,6 @@
 HOSTS_DIR := /usr/local/pnp4nagios/var/perfdata
 PAGES_DIR := /usr/local/pnp4nagios/etc/pages
-HOSTS := $(sort $(dir $(wildcard $(HOSTS_DIR)/*/)))
+HOSTS := $(shell ls -1  $(HOSTS_DIR)/)
 PAGES_CONFIG := $(patsubst $(HOSTS_DIR)/%,$(PAGES_DIR)/%,$(HOSTS))
 PNP_USER := nagios
 PNP_GROUP := nagcmd
