@@ -89,6 +89,41 @@ def ram(data, crit, warn):
 
     return (outval, outmsg)
 
+def swap(data, crit, warn):
+    state = "UNKNOWN"
+    
+    total = float(data['TotalSwapSpaceSize']) / 1024
+    free = float(data['FreeSpaceInPagingFiles']) / 1024
+    used = total - free
+    percused = used * 100.0 / total
+    percfree = free * 100.0 / total
+
+    critval = 101
+    warnval = 101
+    if crit is not None:
+        critval = float(crit)
+    if warn is not None:
+        warnval = float(warn)
+
+    if percused > critval:
+        state = "CRITICAL"
+        outval = 2
+    elif percused > warnval:
+        state = "WARNING"
+        outval = 1
+    else:
+        state = "OK"
+        outval = 0
+
+    perfused = "Swap Memory Used=%d;%s;%s;0;100" % (
+        percused,
+        warn if warn is not None else '',
+        crit if crit is not None else '')
+    outmsg = "%s - Swap Memory: Total: %.2fGB - Used: %.2fGB (%.1f%%) - Free %.2fGB (%.2f%%) | %s" % (
+        state, total, used, percused, free, percfree, perfused)
+
+    return (outval, outmsg)
+
 def log(data, logname, crit, warn):
     state = "UNKNOWN"
     messages = ""
@@ -339,6 +374,8 @@ def main(argv):
         (outval, outmsg) = cpu(data, crit, warn)
     elif module == 'ram':
         (outval, outmsg) = ram(data, crit, warn)
+    elif module == 'swap':
+        (outval, outmsg) = swap(data, crit, warn)
     elif module == 'log':
         (outval, outmsg) = log(data, submod, crit, warn)
     elif module == 'services':
