@@ -3,4 +3,4 @@ PNP_USER := nagios
 PNP_GROUP := nagcmd
 
 $(TEMPLATE_DIR)/%.php: %.php
-	install -o $(PNP_USER) -g $(PNP_GROUP) $@ $^
+	install -o $(PNP_USER) -g $(PNP_GROUP) $^ $@
