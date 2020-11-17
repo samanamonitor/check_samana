@@ -7,8 +7,8 @@ PNP_GROUP := nagcmd
 
 all: $(PAGES_CONFIG)
 
-$(PAGES_DIR)/%.cfg: %.cfg
+$(PAGES_DIR)/%.cfg: %.pre
 	install -o $(PNP_USER) -g $(PNP_GROUP) $^ $@
 
-%.cfg: samana-host-summary.cfg-sample
-	sed -e "s/%HOST%/$(patsubst %.cfg,%,$@)/" $< > $@
+%.pre: samana-host-summary.cfg-sample
+	sed -e "s/%HOST%/$(patsubst %.pre,%,$@)/" $< > $@
