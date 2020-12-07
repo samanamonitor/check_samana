@@ -22,7 +22,7 @@ def application(environ, start_fn):
             start_fn('400 INVALID USER SID', [('Content-Type', 'text/plain')])
             return ["Invalid function %s\n" % func]
         start_fn('200 OK', [('Content-Type', 'application/json')])
-        return [json.dumps({'username': username, 'sid': user_sid})]
+        return [json.dumps({'username': search_data, 'sid': user_sid})]
     elif func == "xml":
         xmldata = get_user_xmldata(search_data)
         if xmldata is None:
