@@ -16,12 +16,13 @@ def application(environ, start_fn):
     if func == '':
         start_fn('200 OK', [('Content-Type', 'text/html')])
         return [query_page()]
-    elif func = 'userdata':
-        if user_sid is None:
+    elif func == 'userdata':
+        xmldata = get_user_xmldata(user_sid)
+        if xmldata is None:
             start_fn('400 INVALID USER', [('Content-Type', 'text/plain')])
             return ["Invalid function %s\n" % func]
         start_fn('200 OK', [('Content-Type', 'application/json')])
-        return [json.dumps({'username': username, 'sid': user_sid, 'xml': get_user_xmldata(user_sid)})]
+        return [json.dumps({'username': username, 'sid': user_sid, 'xml': xmldata})]
     elif func == "xml":
         user_sid = get_user_sid(username)
         if user_sid is None:
