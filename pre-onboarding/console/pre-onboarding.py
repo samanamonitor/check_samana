@@ -55,6 +55,8 @@ def query_page():
 </HTML>
 '''
 
+from itertools import izip
+
 def pairwise(iterable):
     "s -> (s0, s1), (s2, s3), (s4, s5), ..."
     a = iter(iterable)
@@ -67,7 +69,6 @@ def xml_2_hash(property_list):
     return out
 
 def get_printers(xmltxt):
-    from itertools import izip
     import xml.etree.ElementTree as et
     root = et.fromstring(xmltxt)
     if root[0].attrib['Type'] != "System.Collections.Hashtable":
