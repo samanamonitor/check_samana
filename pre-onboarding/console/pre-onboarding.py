@@ -11,16 +11,16 @@ def application(environ, start_fn):
         func=''
     if len(indata) > 2:
         search_data=indata[2]
+        if len(search_data.split('-')) == 8:
+            user_sid = search_data
+        else:
+            user_sid = get_user_sid(search_data)
+        if user_sid is None:
+            start_fn('400 INVALID USER SID', [('Content-Type', 'text/plain')])
+            return ["Invalid function %s\n" % func]
     else:
         search_data=None
 
-    if len(search_data.split('-')) == 8:
-        user_sid = search_data
-    else:
-        user_sid = get_user_sid(search_data)
-    if user_sid is None:
-        start_fn('400 INVALID USER SID', [('Content-Type', 'text/plain')])
-        return ["Invalid function %s\n" % func]
 
     if func == '':
         start_fn('200 OK', [('Content-Type', 'text/html')])
