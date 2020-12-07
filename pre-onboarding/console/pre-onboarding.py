@@ -70,7 +70,7 @@ def get_printers(xmltxt):
     from itertools import izip
     import xml.etree.ElementTree as et
     root = et.fromstring(xmltxt)
-    if root[0].attrib['Type'] != "System.Collections.HashTable":
+    if root[0].attrib['Type'] != "System.Collections.Hashtable":
         print "Invalid XML"
         return None
     printers = []
