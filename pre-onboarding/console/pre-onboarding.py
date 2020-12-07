@@ -37,7 +37,7 @@ def get_user_xmldata(objectSid):
         return None
     import base64
     data = base64.b64decode(data_b64)
-    return data.decode("UTF-8")
+    return data.decode("UTF-16")
 
 def get_user_sid(samaccountname):
     import ldap
