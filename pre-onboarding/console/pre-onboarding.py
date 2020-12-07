@@ -3,6 +3,11 @@
 import json
 from itertools import izip
 
+ldap_server='ldap://snv.net'
+username = "xd931@snv.net"
+password = "C.aes3dsT6zZ"
+basedn='dc=snv,dc=net'
+
 def application(environ, start_fn):
     indata=environ['PATH_INFO'].split('/')
     if len(indata) > 1:
@@ -117,12 +122,9 @@ def get_user_xmldata(objectSid):
 
 def get_user_sid(samaccountname):
     import ldap
-    l = ldap.initialize('ldap://snv.net')
-    username = "xd931@snv.net"
-    password = "C.aes3dsT6zZ"
+    l = ldap.initialize(ldap_server)
     l.protocol_version = ldap.VERSION3
     l.simple_bind_s(username, password)
-    basedn='dc=snv,dc=net'
     searchFilter="(samAccountName=%s)" % samaccountname
     searchAttribute=["objectSid"]
     searchScope=ldap.SCOPE_SUBTREE
@@ -138,6 +140,22 @@ def get_user_sid(samaccountname):
         return None
     return convert_sid_bin_txt(objectSid)
 
+def get_users_samaccountname(sid_list):
+    import ldap
+    l = ldap.initialize(ldap_server)
+    l.protocol_version = ldap.VERSION3
+    l.simple_bind_s(username, password)
+    searchFilter="(|" + ''.join(map(lambda x:"(objectSid=%s)" % x, sid_list)) + ")"
+    searchAttribute=["objectSid", "SamAccountName"]
+    searchScope=ldap.SCOPE_SUBTREE
+    search_id = l.search(basedn, searchScope, searchFilter, searchAttribute)
+    user_data = []
+    while True:
+        search_result = l.result(search_id, 0)
+        if search_result[0] != 100: break
+        user_data.append({'samaccountname': search_result[1][0][1]['sAMAccountName'], 
+            'sid': convert_sid_bin_txt(search_result[1][0][1]['objectSid'])})
+    return user_data
 
 def convert_sid_bin_txt(binary):
     '''
