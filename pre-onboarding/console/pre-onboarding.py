@@ -25,12 +25,18 @@ def application(environ, start_fn):
         return [json.dumps({'username': search_data, 'sid': user_sid})]
     elif func == "xml":
         xmldata = get_user_xmldata(search_data)
-        print xmldata
         if xmldata is None:
             start_fn('400 INVALID USER SID', [('Content-Type', 'text/plain')])
             return ["Invalid user SID %s\n" % search_data]
         start_fn('200 OK', [('Content-Type', 'application/xml')])
         return [ str(xmldata) ]
+    elif func == "printers":
+        printers = get_printers(search_data)
+        if printers is None:
+            start_fn('400 INVALID USER SID', [('Content-Type', 'text/plain')])
+            return ["Invalid user SID %s\n" % search_data]
+        start_fn('200 OK', [('Content-Type', 'application/json')])
+        return [ json.dumps(printers) ]
     else:
         start_fn('400 INVALID FUNC', [('Content-Type', 'text/plain')])
         return ["Invalid function %s\n" % func]
@@ -44,6 +50,34 @@ def query_page():
 </BODY>
 </HTML>
 '''
+
+def pairwise(iterable):
+    "s -> (s0, s1), (s2, s3), (s4, s5), ..."
+    a = iter(iterable)
+    return izip(a, a)
+
+def xml_2_hash(property_list):
+    out = {}
+    for p in property_list:
+        out[p.name] = p.text
+    return out
+
+def get_printers(xmltxt):
+    from itertools import izip
+    import xml.etree.ElementTree as et
+    tree = et.fromstring(xmltxt)
+    root = tree.getroot()
+    if root[0].attrib['Type'] != "System.Collections.HashTable":
+        print "Invalid XML"
+        return None
+    printers = []
+    for k,v in pairwise(root[0]):
+        if k.text == "printers" and v.attrib['Type'] == "System.Object[]":
+            for p in v:
+                printers += xml_2_hash(v)
+            break
+    return printers
+
 
 def get_user_xmldata(objectSid):
     import etcd
