@@ -9,27 +9,27 @@ def application(environ, start_fn):
     else:
         func=''
     if len(indata) > 2:
-        username=indata[2]
+        search_data=indata[2]
     else:
-        username=None
+        search_data=None
 
     if func == '':
         start_fn('200 OK', [('Content-Type', 'text/html')])
         return [query_page()]
     elif func == 'userdata':
-        xmldata = get_user_xmldata(user_sid)
-        if xmldata is None:
-            start_fn('400 INVALID USER', [('Content-Type', 'text/plain')])
+        user_sid = get_user_sid(search_data)
+        if user_sid is None:
+            start_fn('400 INVALID USER SID', [('Content-Type', 'text/plain')])
             return ["Invalid function %s\n" % func]
         start_fn('200 OK', [('Content-Type', 'application/json')])
-        return [json.dumps({'username': username, 'sid': user_sid, 'xml': xmldata})]
+        return [json.dumps({'username': username, 'sid': user_sid})]
     elif func == "xml":
-        user_sid = get_user_sid(username)
-        if user_sid is None:
-            start_fn('400 INVALID USER', [('Content-Type', 'text/plain')])
-            return ["Invalid function %s\n" % func]
+        xmldata = get_user_xmldata(search_data)
+        if xmldata is None:
+            start_fn('400 INVALID USER SID', [('Content-Type', 'text/plain')])
+            return ["Invalid user SID %s\n" % search_data]
         start_fn('200 OK', [('Content-Type', 'application/xml')])
-        return [str(get_user_xmldata(user_sid))]
+        return [ xmldata ]
     else:
         start_fn('400 INVALID FUNC', [('Content-Type', 'text/plain')])
         return ["Invalid function %s\n" % func]
