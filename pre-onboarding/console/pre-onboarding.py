@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import json
+from itertools import izip
 
 def application(environ, start_fn):
     indata=environ['PATH_INFO'].split('/')
@@ -27,6 +28,10 @@ def application(environ, start_fn):
     elif func == 'userdata':
         start_fn('200 OK', [('Content-Type', 'application/json')])
         return [json.dumps({'username': search_data, 'sid': user_sid})]
+    elif func == 'listusers':
+        user_list = get_user_list()
+        start_fn('200 OK', [('Content-Type', 'application/json')])
+        return [json.dumps(user_list)]
     elif func == "xml":
         xmldata = get_user_xmldata(user_sid)
         if xmldata is None:
@@ -59,8 +64,6 @@ def query_page():
 </HTML>
 '''
 
-from itertools import izip
-
 def pairwise(iterable):
     "s -> (s0, s1), (s2, s3), (s4, s5), ..."
     a = iter(iterable)
@@ -71,6 +74,19 @@ def xml_2_hash(property_list):
     for p in property_list:
         out[p.attrib['Name']] = p.text
     return out
+
+def get_user_list():
+    import etcd
+    client = etcd.Client(port=2379)
+    try:
+        sid_list = []
+        etcd_sid_list = client.get('/pre-onboarding').children
+        for item in etcd_sid_list:
+            sid_list.append(item.key.split('/')[-1])
+    except etcd.EtcdKeyNotFound:
+        print "No users found"
+        return None
+    return sid_list
 
 def get_printers(xmltxt):
     import xml.etree.ElementTree as et
