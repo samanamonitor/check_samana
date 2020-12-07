@@ -88,7 +88,7 @@ def get_user_xmldata(objectSid):
     client = etcd.Client(port=2379)
     try:
         data_b64 = client.get('/pre-onboarding/%s' % objectSid).value
-    except EtcdKeyNotFound:
+    except etcd.EtcdKeyNotFound:
         print "User not found"
         return None
     import base64
