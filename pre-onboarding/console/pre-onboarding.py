@@ -69,8 +69,7 @@ def xml_2_hash(property_list):
 def get_printers(xmltxt):
     from itertools import izip
     import xml.etree.ElementTree as et
-    tree = et.fromstring(xmltxt)
-    root = tree.getroot()
+    root = et.fromstring(xmltxt)
     if root[0].attrib['Type'] != "System.Collections.HashTable":
         print "Invalid XML"
         return None
