@@ -5,18 +5,24 @@ import json
 def application(environ, start_fn):
     indata=environ['PATH_INFO'].split('/')
     if len(indata) > 1:
-        username=indata[1]
+        func=indata[1]
     else:
-        username=''
-    if username == '':
+        func=''
+    if len(indata) > 2:
+        username=indata[2]
+    else:
+        username=None
+
+    if func == '':
         start_fn('200 OK', [('Content-Type', 'text/html')])
         return [query_page()]
-    else:
+    elif func = 'userdata':
+        start_fn('200 OK', [('Content-Type', 'application/json')])
+        return [json.dumps({'username': username, 'sid': user_sid, 'xml': get_user_xmldata(user_sid)})]
+    elif func == "xml":
         start_fn('200 OK', [('Content-Type', 'application/xml')])
         user_sid = get_user_sid(username)
         return [str(get_user_xmldata(user_sid))]
-        #return [json.dumps({'username': username, 'sid': user_sid, 'xml': get_user_xmldata(user_sid)})]
-    return ["Hello World!\n<br>%s" % username]
 
 def query_page():
     return '''
