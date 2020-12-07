@@ -44,6 +44,9 @@ def get_user_sid(samaccountname):
     except IndexError:
         print "Invalid ldap result"
         return None
+    except TypeError:
+        print "Invalid ldap result"
+        return None
     return convert_sid_bin_txt(objectSid)
 
 
