@@ -13,7 +13,7 @@ def application(environ, start_fn):
         return [query_page()]
     else:
         start_fn('200 OK', [('Content-Type', 'application/json')])
-        return [json.dumps({'username': username})]
+        return [json.dumps({'username': username, 'sid': get_user_sid(username)})]
     return ["Hello World!\n<br>%s" % username]
 
 def query_page():
@@ -25,3 +25,44 @@ def query_page():
 </BODY>
 </HTML>
 '''
+
+def get_user_sid(samaccountname):
+    import ldap
+    l = ldap.initialize('ldap://snv.net')
+    username = "xd931@snv.net"
+    password = "C.aes3dsT6zZ"
+    l.protocol_version = ldap.VERSION3
+    l.simple_bind_s(username, password)
+    basedn='snv.net'
+    searchFilter="(samAccountName=%s)" % samaccountname
+    searchAttribute=["objectSid"]
+    searchScope=ldap.SCOPE_SUBTREE
+    search_id = l.search(basedn, searchScope, searchFilter, searchAttribute)
+    search_result = l.result(search_id, 0)
+    try:
+        objectSid = search_result[1][0][1]['objectSid'][0]
+    except IndexError:
+        print "Invalid ldap result"
+        return None
+    return convert_sid_bin_txt(objectSid)
+
+
+def convert_sid_bin_txt(binary):
+    '''
+    code taken from: https://stackoverflow.com/questions/33188413/python-code-to-convert-from-objectsid-to-sid-representation
+    page references: http://blogs.msdn.com/b/oldnewthing/archive/2004/03/15/89753.aspx
+    and: http://codeimpossible.com/2008/04/07/Converting-a-Security-Identifier-from-binary-to-string/
+'''
+    import struct
+    version = struct.unpack('B', binary[0])[0]
+    # I do not know how to treat version != 1 (it does not exist yet)
+    assert version == 1, version
+    length = struct.unpack('B', binary[1])[0]
+    authority = struct.unpack('>Q', '\x00\x00' + binary[2:8])[0]
+    string = 'S-%d-%d' % (version, authority)
+    binary = binary[8:]
+    assert len(binary) == 4 * length
+    for i in xrange(length):
+        value = struct.unpack('<L', binary[4*i:4*(i+1)])[0]
+        string += '-%d' % value
+    return string
