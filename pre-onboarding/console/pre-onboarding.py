@@ -25,6 +25,7 @@ def application(environ, start_fn):
         return [json.dumps({'username': search_data, 'sid': user_sid})]
     elif func == "xml":
         xmldata = get_user_xmldata(search_data)
+        print xmldata
         if xmldata is None:
             start_fn('400 INVALID USER SID', [('Content-Type', 'text/plain')])
             return ["Invalid user SID %s\n" % search_data]
