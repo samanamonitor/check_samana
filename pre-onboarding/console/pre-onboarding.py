@@ -12,9 +12,10 @@ def application(environ, start_fn):
         start_fn('200 OK', [('Content-Type', 'text/html')])
         return [query_page()]
     else:
-        start_fn('200 OK', [('Content-Type', 'application/json')])
+        start_fn('200 OK', [('Content-Type', 'application/xml')])
         user_sid = get_user_sid(username)
-        return [json.dumps({'username': username, 'sid': user_sid, 'xml': get_user_xmldata(user_sid)})]
+        return [get_user_xmldata(user_sid)]
+        #return [json.dumps({'username': username, 'sid': user_sid, 'xml': get_user_xmldata(user_sid)})]
     return ["Hello World!\n<br>%s" % username]
 
 def query_page():
