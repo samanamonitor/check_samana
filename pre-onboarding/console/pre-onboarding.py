@@ -13,32 +13,36 @@ def application(environ, start_fn):
     else:
         search_data=None
 
+    if len(search_data.split('-')) == 8:
+        user_sid = search_data
+    else:
+        user_sid = get_user_sid(search_data)
+    if user_sid is None:
+        start_fn('400 INVALID USER SID', [('Content-Type', 'text/plain')])
+        return ["Invalid function %s\n" % func]
+
     if func == '':
         start_fn('200 OK', [('Content-Type', 'text/html')])
         return [query_page()]
     elif func == 'userdata':
-        user_sid = get_user_sid(search_data)
-        if user_sid is None:
-            start_fn('400 INVALID USER SID', [('Content-Type', 'text/plain')])
-            return ["Invalid function %s\n" % func]
         start_fn('200 OK', [('Content-Type', 'application/json')])
         return [json.dumps({'username': search_data, 'sid': user_sid})]
     elif func == "xml":
-        xmldata = get_user_xmldata(search_data)
+        xmldata = get_user_xmldata(user_sid)
         if xmldata is None:
             start_fn('400 INVALID USER SID', [('Content-Type', 'text/plain')])
-            return ["Invalid user SID %s\n" % search_data]
+            return ["Invalid user %s\n" % search_data]
         start_fn('200 OK', [('Content-Type', 'application/xml')])
         return [ str(xmldata) ]
     elif func == "printers":
-        xmldata = get_user_xmldata(search_data)
+        xmldata = get_user_xmldata(user_sid)
         if xmldata is None:
-            start_fn('400 INVALID USER SID', [('Content-Type', 'text/plain')])
-            return ["Invalid user SID %s\n" % search_data]
+            start_fn('400 XML DATA', [('Content-Type', 'text/plain')])
+            return ["Invalid XML data for %s\n" % search_data]
         printers = get_printers(str(xmldata))
         if printers is None:
-            start_fn('400 INVALID USER SID', [('Content-Type', 'text/plain')])
-            return ["Invalid user SID %s\n" % search_data]
+            start_fn('400 PRINTER DATA', [('Content-Type', 'text/plain')])
+            return ["Invalid printer data for %s\n" % search_data]
         start_fn('200 OK', [('Content-Type', 'application/json')])
         return [ json.dumps(printers) ]
     else:
