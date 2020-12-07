@@ -153,7 +153,7 @@ def get_users_samaccountname(sid_list):
     while True:
         search_result = l.result(search_id, 0)
         if search_result[0] != 100: break
-        user_data.append({'samaccountname': search_result[1][0][1]['sAMAccountName'], 
+        user_data.append({'samaccountname': search_result[1][0][1]['sAMAccountName'][0], 
             'sid': convert_sid_bin_txt(search_result[1][0][1]['objectSid'][0])})
     return user_data
 
