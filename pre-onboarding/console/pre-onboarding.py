@@ -14,7 +14,7 @@ def application(environ, start_fn):
     else:
         start_fn('200 OK', [('Content-Type', 'application/xml')])
         user_sid = get_user_sid(username)
-        return [get_user_xmldata(user_sid)]
+        return [str(get_user_xmldata(user_sid))]
         #return [json.dumps({'username': username, 'sid': user_sid, 'xml': get_user_xmldata(user_sid)})]
     return ["Hello World!\n<br>%s" % username]
 
