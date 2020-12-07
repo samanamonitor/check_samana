@@ -13,7 +13,8 @@ def application(environ, start_fn):
         return [query_page()]
     else:
         start_fn('200 OK', [('Content-Type', 'application/json')])
-        return [json.dumps({'username': username, 'sid': get_user_sid(username)})]
+        user_sid = get_user_sid(username)
+        return [json.dumps({'username': username, 'sid': user_sid, 'xml': get_user_xmldata(user_sid)})]
     return ["Hello World!\n<br>%s" % username]
 
 def query_page():
@@ -25,6 +26,18 @@ def query_page():
 </BODY>
 </HTML>
 '''
+
+def get_user_xmldata(objectSid):
+    import etcd
+    client = etcd.Client(port=2379)
+    try:
+        data_b64 = client.get('/pre-onboarding/%s' % objectSid).value
+    except EtcdKeyNotFound:
+        print "User not found"
+        return None
+    import base64
+    data = base64.b64decode(data_b64)
+    return data.decode("UTF-8")
 
 def get_user_sid(samaccountname):
     import ldap
