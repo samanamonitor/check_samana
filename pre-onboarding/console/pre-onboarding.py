@@ -31,7 +31,11 @@ def application(environ, start_fn):
         start_fn('200 OK', [('Content-Type', 'application/xml')])
         return [ str(xmldata) ]
     elif func == "printers":
-        printers = get_printers(search_data)
+        xmldata = get_user_xmldata(search_data)
+        if xmldata is None:
+            start_fn('400 INVALID USER SID', [('Content-Type', 'text/plain')])
+            return ["Invalid user SID %s\n" % search_data]
+        printers = get_printers(xmldata)
         if printers is None:
             start_fn('400 INVALID USER SID', [('Content-Type', 'text/plain')])
             return ["Invalid user SID %s\n" % search_data]
