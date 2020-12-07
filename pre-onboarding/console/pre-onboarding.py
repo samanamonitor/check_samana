@@ -65,7 +65,7 @@ def pairwise(iterable):
 def xml_2_hash(property_list):
     out = {}
     for p in property_list:
-        out[p.name] = p.text
+        out[p.Name] = p.text
     return out
 
 def get_printers(xmltxt):
