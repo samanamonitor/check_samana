@@ -35,7 +35,7 @@ def application(environ, start_fn):
         if xmldata is None:
             start_fn('400 INVALID USER SID', [('Content-Type', 'text/plain')])
             return ["Invalid user SID %s\n" % search_data]
-        printers = get_printers(xmldata)
+        printers = get_printers(str(xmldata))
         if printers is None:
             start_fn('400 INVALID USER SID', [('Content-Type', 'text/plain')])
             return ["Invalid user SID %s\n" % search_data]
