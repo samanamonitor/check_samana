@@ -33,7 +33,7 @@ def get_user_sid(samaccountname):
     password = "C.aes3dsT6zZ"
     l.protocol_version = ldap.VERSION3
     l.simple_bind_s(username, password)
-    basedn='snv.net'
+    basedn='dc=snv,dc=net'
     searchFilter="(samAccountName=%s)" % samaccountname
     searchAttribute=["objectSid"]
     searchScope=ldap.SCOPE_SUBTREE
