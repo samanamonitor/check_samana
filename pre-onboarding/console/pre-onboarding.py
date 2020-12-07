@@ -30,7 +30,7 @@ def application(environ, start_fn):
             start_fn('400 INVALID USER SID', [('Content-Type', 'text/plain')])
             return ["Invalid user SID %s\n" % search_data]
         start_fn('200 OK', [('Content-Type', 'application/xml')])
-        return [ xmldata ]
+        return [ str(xmldata) ]
     else:
         start_fn('400 INVALID FUNC', [('Content-Type', 'text/plain')])
         return ["Invalid function %s\n" % func]
