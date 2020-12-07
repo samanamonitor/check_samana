@@ -91,7 +91,7 @@ def get_user_list():
     except etcd.EtcdKeyNotFound:
         print "No users found"
         return None
-    return sid_list
+    return get_users_samaccountname(sid_list)
 
 def get_printers(xmltxt):
     import xml.etree.ElementTree as et
