@@ -60,6 +60,7 @@ def application(environ, start_fn):
         return ["Invalid function %s\n" % func]
 
 def query_page():
+    l=''
     with open("/usr/local/www/wsgi-scripts/index.thtml", "r") as f:
         l = f.read()
     return l
