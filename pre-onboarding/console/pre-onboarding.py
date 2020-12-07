@@ -60,14 +60,9 @@ def application(environ, start_fn):
         return ["Invalid function %s\n" % func]
 
 def query_page():
-    return '''
-<HTML>
-<HEAD><TITLE>Pre-Onboarding Console</TITLE>
-<BODY>
-    <H1><CENTER>Pre-Onboarding Console</CENTER></H1>
-</BODY>
-</HTML>
-'''
+    with open("index.thtml", "r") as f:
+        l = f.read()
+    return l
 
 def pairwise(iterable):
     "s -> (s0, s1), (s2, s3), (s4, s5), ..."
