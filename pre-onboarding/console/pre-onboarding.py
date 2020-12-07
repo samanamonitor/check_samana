@@ -78,7 +78,7 @@ def get_printers(xmltxt):
     for k,v in pairwise(root[0]):
         if k.text == "printers" and v.attrib['Type'] == "System.Object[]":
             for printer in v:
-                printers += xml_2_hash(printer)
+                printers.append( xml_2_hash(printer))
             break
     return printers
 
