@@ -44,14 +44,25 @@ def application(environ, start_fn):
     elif func == "printers":
         xmldata = get_user_xmldata(user_sid)
         if xmldata is None:
-            start_fn('400 XML DATA', [('Content-Type', 'text/plain')])
+            start_fn('400 INVALID XML DATA', [('Content-Type', 'text/plain')])
             return ["Invalid XML data for %s\n" % search_data]
         printers = get_printers(str(xmldata))
         if printers is None:
-            start_fn('400 PRINTER DATA', [('Content-Type', 'text/plain')])
+            start_fn('400 INVALID PRINTER DATA', [('Content-Type', 'text/plain')])
             return ["Invalid printer data for %s\n" % search_data]
         start_fn('200 OK', [('Content-Type', 'application/json')])
         return [ json.dumps(printers) ]
+    elif func == "drives":
+        xmldata = get_user_xmldata(user_sid)
+        if xmldata is None:
+            start_fn('400 INVALID XML DATA', [('Content-Type', 'text/plain')])
+            return ["Invalid XML data for %s\n" % search_data]
+        drives = get_drives(str(xmldata))
+        if drives is None:
+            start_fn('400 INVALID DRIVE DATA', [('Content-Type', 'text/plain')])
+            return ["Invalid drive data for %s\n" % search_data]
+        start_fn('200 OK', [('Content-Type', 'application/json')])
+        return [ json.dumps(drives) ]
     else:
         start_fn('400 INVALID FUNC', [('Content-Type', 'text/plain')])
         return ["Invalid function %s\n" % func]
@@ -94,6 +105,18 @@ def get_printers(xmltxt):
             break
     return printers
 
+def get_drives(xmltxt):
+    import xml.etree.ElementTree as et
+    root = et.fromstring(xmltxt)
+    if root[0].attrib['Type'] != "System.Collections.Hashtable":
+        print "Invalid XML"
+        return None
+    drives = []
+    for k,v in pairwise(root[0])
+        if k.text == "drives" and v.attrib['Type'] == "System.Object[]":
+            for drive in v:
+                drives.append(xml_2_hash(drive))
+            break
 
 def get_user_xmldata(objectSid):
     import etcd
