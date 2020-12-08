@@ -1,5 +1,6 @@
 function load_users() {
-    $.ajax({
-        url: 'go/listusers'
-    })
+    $.getJSON('go/listusers', function(data) {
+        alert(data)
+        }
+    )
 }
