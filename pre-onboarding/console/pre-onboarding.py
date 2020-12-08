@@ -140,7 +140,7 @@ def get_icons(xmltxt):
     for k,v in pairwise(root[0]):
         if k.text == "icons" and v.attrib['Type'] == "System.Object[]":
             for icon in v:
-                icons.append(icon)
+                icons.append(icon.text)
             break
     return icon
 
