@@ -3,7 +3,7 @@ function load_users() {
 }
 
 function show_users(data) {
-    for(i=0; i<data.length(); i++) {
+    for(i=0; i<data.length; i++) {
         u = $($("#usertemplate").html());
         user_name = u.find(".user-name");
         user_name.text(data[i]['samaccountname']);
