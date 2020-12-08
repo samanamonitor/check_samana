@@ -24,11 +24,23 @@ function show_data(e) {
 }
 
 function show_printers(data) {
-    //alert(data);
+    tbody = $("#printers-table").find("tbody");
+    tbody.html("");
+    for(i=0; i < data.length; i++) {
+        if(data[i]['DisplayRoot'] == null) continue;
+        tbody.append(
+            $("<tr>").append(
+                    $("<td>").html(data[i]['Name'])
+                ).append(
+                    $("<td>").html(data[i]['ShareName'])
+                )
+            );
+    }
 }
 
 function show_drives(data) {
     tbody = $("#drives-table").find("tbody");
+    tbody.html("");
     for(i=0; i < data.length; i++) {
         if(data[i]['DisplayRoot'] == null) continue;
         tbody.append(
