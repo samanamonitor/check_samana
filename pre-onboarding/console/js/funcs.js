@@ -8,14 +8,13 @@ function show_users(data) {
         user_name = u.find(".user-name");
         user_name.text(data[i]['samaccountname']);
         user_name.attr("sid", data[i]['sid']);
-        u.click(show_data)
+        user_name.click(show_data);
         $("#userlist").append(u)
 
     }
 }
 
 function show_data(e) {
-    sid_object = $(e.target).find(".user-name");
-    sid = sid_object.attr("sid");
+    sid = $(e.target).attr("sid");
     alert(sid);
 }
