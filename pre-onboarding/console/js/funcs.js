@@ -15,6 +15,6 @@ function show_users(data) {
 }
 
 function show_data(e) {
-    sid = $(e.target).attr("sid");
+    sid = $(e.target).find(".user-name").attr("sid");
     alert(sid);
 }
