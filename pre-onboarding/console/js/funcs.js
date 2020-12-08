@@ -17,7 +17,7 @@ function show_users(data) {
 function show_data(e) {
     sid = $(e.target).attr("sid");
     username = $(e.target).text();
-    $(".modal").find(".modal-title").text(sid);
+    $(".modal").find(".modal-title").text(username);
     $(".modal").modal();
     $.getJSON('go/printers/' + sid, show_printers);
     $.getJSON('go/drives/' + sid, show_drives);
