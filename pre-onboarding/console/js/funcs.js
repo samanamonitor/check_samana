@@ -27,7 +27,6 @@ function show_printers(data) {
     tbody = $("#printers-table").find("tbody");
     tbody.html("");
     for(i=0; i < data.length; i++) {
-        if(data[i]['DisplayRoot'] == null) continue;
         tbody.append(
             $("<tr>").append(
                     $("<td>").html(data[i]['Name'])
