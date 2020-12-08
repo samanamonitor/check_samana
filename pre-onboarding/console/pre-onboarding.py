@@ -112,7 +112,7 @@ def get_drives(xmltxt):
         print "Invalid XML"
         return None
     drives = []
-    for k,v in pairwise(root[0])
+    for k,v in pairwise(root[0]):
         if k.text == "drives" and v.attrib['Type'] == "System.Object[]":
             for drive in v:
                 drives.append(xml_2_hash(drive))
