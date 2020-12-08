@@ -140,10 +140,9 @@ def get_icons(xmltxt):
     for k,v in pairwise(root[0]):
         if k.text == "icons" and v.attrib['Type'] == "System.Object[]":
             for icon in v:
-                print icon.text
                 icons.append(icon.text)
             break
-    return icon
+    return icons
 
 def get_user_xmldata(objectSid):
     import etcd
