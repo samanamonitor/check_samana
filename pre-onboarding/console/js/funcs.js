@@ -3,6 +3,6 @@ function load_users() {
 }
 
 function show_users(data) {
-    u = $("#usertemplate").html().clone();
+    u = $("#usertemplate").html();
     $("#userlist").append(u)
 }
