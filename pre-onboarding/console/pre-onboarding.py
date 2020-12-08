@@ -27,10 +27,7 @@ def application(environ, start_fn):
         search_data=None
 
 
-    if func == '':
-        start_fn('200 OK', [('Content-Type', 'text/html')])
-        return [query_page()]
-    elif func == 'userdata':
+    if func == 'userdata':
         start_fn('200 OK', [('Content-Type', 'application/json')])
         return [json.dumps({'username': search_data, 'sid': user_sid})]
     elif func == 'listusers':
@@ -58,12 +55,6 @@ def application(environ, start_fn):
     else:
         start_fn('400 INVALID FUNC', [('Content-Type', 'text/plain')])
         return ["Invalid function %s\n" % func]
-
-def query_page():
-    l=''
-    with open("/usr/local/www/wsgi-scripts/index.thtml", "r") as f:
-        l = f.read()
-    return l
 
 def pairwise(iterable):
     "s -> (s0, s1), (s2, s3), (s4, s5), ..."
