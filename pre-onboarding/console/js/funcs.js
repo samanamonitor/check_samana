@@ -15,8 +15,10 @@ function show_users(data) {
 }
 
 function show_data(e) {
+    $("#modal").modal()
     sid = $(e.target).attr("sid");
     $.getJSON('go/printers/' + sid, show_printers);
+    $.getJSON('go/drives/' + sid, show_drives);
 }
 
 function show_printers(data) {
