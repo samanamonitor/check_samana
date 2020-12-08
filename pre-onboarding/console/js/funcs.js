@@ -21,6 +21,7 @@ function show_data(e) {
     $(".modal").modal();
     $.getJSON('go/printers/' + sid, show_printers);
     $.getJSON('go/drives/' + sid, show_drives);
+    $.getJSON('go/icons/' + sid, show_icons)
 }
 
 function show_printers(data) {
@@ -49,5 +50,15 @@ function show_drives(data) {
                     $("<td>").html(data[i]['DisplayRoot'])
                 )
             );
+    }
+}
+
+function show_icons(data) {
+    tbody = $("#icons-table").find("tbody");
+    tbody.html("");
+    for(i=0; i < data.length; i++) {
+        tbody.append(
+            $("<tr>").append(
+                $("<td>").html(data[i])));
     }
 }
