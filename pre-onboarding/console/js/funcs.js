@@ -30,11 +30,12 @@ function show_printers(data) {
 function show_drives(data) {
     tbody = $("#drives-table").find("tbody");
     for(i=0; i < data.length; i++) {
+        if(data[i]['DisplayRoot'] == null) continue;
         tbody.append(
             $("<tr>").append(
-                    $("<td>").html("asdf")
+                    $("<td>").html(data[i]['Name'])
                 ).append(
-                    $("<td>").html("qwer")
+                    $("<td>").html(data[i]['DisplayRoot'])
                 )
             );
     }
