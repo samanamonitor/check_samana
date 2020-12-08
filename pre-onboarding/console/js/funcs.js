@@ -22,5 +22,9 @@ function show_data(e) {
 }
 
 function show_printers(data) {
-    alert(data)
+    //alert(data);
+}
+
+function show_drives(data) {
+
 }
