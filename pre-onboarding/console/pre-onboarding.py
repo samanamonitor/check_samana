@@ -63,6 +63,17 @@ def application(environ, start_fn):
             return ["Invalid drive data for %s\n" % search_data]
         start_fn('200 OK', [('Content-Type', 'application/json')])
         return [ json.dumps(drives) ]
+    elif func == "icons":
+        xmldata = get_user_xmldata(user_sid)
+        if xmldata is None:
+            start_fn('400 INVALID XML DATA', [('Content-Type', 'text/plain')])
+            return ["Invalid XML data for %s\n" % search_data]
+        icons = get_icons(str(xmldata))
+        if icons is None:
+            start_fn('400 INVALID ICON DATA', [('Content-Type', 'text/plain')])
+            return ["Invalid icon data for %s\n" % search_data]
+        start_fn('200 OK', [('Content-Type', 'application/json')])
+        return [ json.dumps(icons) ]
     else:
         start_fn('400 INVALID FUNC', [('Content-Type', 'text/plain')])
         return ["Invalid function %s\n" % func]
@@ -118,6 +129,20 @@ def get_drives(xmltxt):
                 drives.append(xml_2_hash(drive))
             break
     return drives
+
+def get_icons(xmltxt):
+    import xml.etree.ElementTree as et
+    root = et.fromstring(xmltxt)
+    if root[0].attrib['Type'] != "System.Collections.Hashtable":
+        print "Invalid XML"
+        return None
+    icons = []
+    for k,v in pairwise(root[0]):
+        if k.text == "icons" and v.attrib['Type'] == "System.Object[]":
+            for icon in v:
+                icons.append(icon.text())
+            break
+    return icon
 
 def get_user_xmldata(objectSid):
     import etcd
