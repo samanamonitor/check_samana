@@ -3,7 +3,6 @@ function load_users() {
 }
 
 function show_users(data) {
-    u = $("#usertemplate").innerhtml().clone()
-    u.removeClass("invisible");
+    u = $("#usertemplate").html().clone();
     $("#userlist").append(u)
 }
