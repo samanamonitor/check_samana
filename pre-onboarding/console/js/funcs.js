@@ -7,5 +7,10 @@ function show_users(data) {
     user_name = u.find(".user-name");
     user_name.text("hello");
     user_name.attr("sid", "asdf");
+    user_name.click(show_data)
     $("#userlist").append(u)
+}
+
+function show_data(e) {
+    alert("test");
 }
