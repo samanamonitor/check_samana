@@ -16,5 +16,9 @@ function show_users(data) {
 
 function show_data(e) {
     sid = $(e.target).attr("sid");
-    alert(sid);
+    $.getJSON('go/printers/' + sid, show_printers);
+}
+
+function show_printers(data) {
+    alert(data)
 }
