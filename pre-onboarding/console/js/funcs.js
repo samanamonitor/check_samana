@@ -28,5 +28,14 @@ function show_printers(data) {
 }
 
 function show_drives(data) {
-
+    tbody = $("#drives-table").find("tbody");
+    for(i=0; i < data.length; i++) {
+        tbody.append(
+            $("<tr>").append(
+                    $("<td>").html("asdf")
+                ).append(
+                    $("<td>").html("qwer")
+                )
+            );
+    }
 }
