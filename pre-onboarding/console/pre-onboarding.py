@@ -129,7 +129,7 @@ def get_drives(xmltxt):
                 drives.append(xml_2_hash(drive))
             break
         else:
-            print v
+            print v.attrib['Name']
             drives.append(xml_2_hash(v))
     return drives
 
