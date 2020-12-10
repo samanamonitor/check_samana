@@ -42,8 +42,8 @@ function show_drives(data) {
     tbody = $("#drives-table").find("tbody");
     tbody.html("");
     for(i=0; i < data.length; i++) {
-        if(data[i]['DisplayRoot'] == null) continue;
         if("DisplayRoot" in data[i]){
+            if(data[i]['DisplayRoot'] == null) continue;
             name=data[i]['Name'];
             path=data[i]['DisplayRoot'];
         } else {
