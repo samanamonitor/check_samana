@@ -28,11 +28,18 @@ function show_printers(data) {
     tbody = $("#printers-table").find("tbody");
     tbody.html("");
     for(i=0; i < data.length; i++) {
+        name=data[i]['Name']
+        if("ShareName" in data[i]){
+            path=data[i]['ShareName'];
+        }
+        else if ("Location" in data[i]){
+            path=data[i][:location]''
+        }
         tbody.append(
             $("<tr>").append(
-                    $("<td>").html(data[i]['Name'])
+                    $("<td>").html(name)
                 ).append(
-                    $("<td>").html(data[i]['ShareName'])
+                    $("<td>").html(path)
                 )
             );
     }
