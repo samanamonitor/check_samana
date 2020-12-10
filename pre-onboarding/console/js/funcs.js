@@ -43,11 +43,18 @@ function show_drives(data) {
     tbody.html("");
     for(i=0; i < data.length; i++) {
         if(data[i]['DisplayRoot'] == null) continue;
+        if("DisplayRoot" in data[i]){
+            name=data[i]['Name'];
+            path=data[i]['DisplayRoot'];
+        } else {
+            name=data[i]['LocalPath'];
+            path=data[i]['RemotePath'];
+        }
         tbody.append(
             $("<tr>").append(
-                    $("<td>").html(data[i]['Name'])
+                    $("<td>").html(name)
                 ).append(
-                    $("<td>").html(data[i]['DisplayRoot'])
+                    $("<td>").html(path)
                 )
             );
     }
