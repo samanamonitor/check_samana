@@ -33,7 +33,7 @@ function show_printers(data) {
             path=data[i]['ShareName'];
         }
         else if ("Location" in data[i]){
-            path=data[i][:location]''
+            path=data[i]["Location"];
         }
         tbody.append(
             $("<tr>").append(
