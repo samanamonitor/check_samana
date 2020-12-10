@@ -29,7 +29,7 @@ function show_printers(data) {
     tbody.html("");
     for(i=0; i < data.length; i++) {
         name=data[i]['Name']
-        if("ShareName" in data[i] && data[i]["ShareName"] != ""){
+        if("ShareName" in data[i] && data[i]["ShareName"] != null && data[i]["ShareName"] != ""){
             path=data[i]['ShareName'];
         }
         else if ("Location" in data[i]){
