@@ -128,7 +128,7 @@ def get_drives(xmltxt):
             for drive in v:
                 drives.append(xml_2_hash(drive))
             break
-        else:
+        elif k.text == "drives":
             print v.attrib['Type']
             drives.append(xml_2_hash(v))
     return drives
