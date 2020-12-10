@@ -128,6 +128,8 @@ def get_drives(xmltxt):
             for drive in v:
                 drives.append(xml_2_hash(drive))
             break
+        else:
+            drives.append(xml_2_hash(v))
     return drives
 
 def get_icons(xmltxt):
