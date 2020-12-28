@@ -8,6 +8,44 @@ username = "xd931@snv.net"
 password = "C.aes3dsT6zZ"
 basedn='dc=snv,dc=net'
 
+installed_apps = {
+    "Accessibility\\",
+    "Accessories\\",
+    "Administrative Tools\\",
+    "Check Point\\Check Point Endpoint Security VPN",
+    "Cisco\\Cisco AnyConnect Secure Mobility Client\\Cisco AnyConnect Diagnostics and Reporting Tool",
+    "Cisco\\Cisco AnyConnect Secure Mobility Client\\Cisco AnyConnect Secure Mobility Client",
+    "Cisco Webex Meetings\\Cisco Webex Meetings",
+    "Cisco Webex Meetings Desktop App\\Uninstall",
+    "Cisco Webex Productivity Tools\\Check for Updates...",
+    "Cisco Webex Productivity Tools\\Help",
+    "Cisco Webex Productivity Tools\\Preferences",
+    "Cisco Webex Productivity Tools\\Send Problem Report",
+    "Cisco Webex Productivity Tools\\Uninstall",
+    "McAfee\\McAfee Endpoint Security",
+    "Microsoft Endpoint Manager\\Configuration Manager\\Software Center",
+    "Microsoft Office Tools\\Database Compare",
+    "Microsoft Office Tools\\Office Language Preferences",
+    "Microsoft Office Tools\\Office Upload Center",
+    "Microsoft Office Tools\\Skype for Business Recording Manager",
+    "Microsoft Office Tools\\Spreadsheet Compare",
+    "Microsoft Office Tools\\Telemetry Dashboard for Office",
+    "Microsoft Office Tools\\Telemetry Log for Office",
+    "System Tools\\",
+    "Windows PowerShell\\",
+    "Acrobat Reader DC",
+    "Adobe Acrobat DC",
+    "Citrix Workspace",
+    "Excel",
+    "Google Chrome",
+    "OneNote 2016",
+    "Outlook",
+    "PowerPoint",
+    "Publisher",
+    "Skype for Business",
+    "Word",
+}
+
 def application(environ, start_fn):
     indata=environ['PATH_INFO'].split('/')
     if len(indata) > 1:
@@ -143,6 +181,12 @@ def get_icons(xmltxt):
     for k,v in pairwise(root[0]):
         if k.text == "icons" and v.attrib['Type'] == "System.Object[]":
             for icon in v:
+                found = False
+                for i in installed_apps:
+                    if icon.text[:-4].startswith(i)
+                        found = True
+                        break
+                if found: continue
                 icons.append(icon.text[:-4])
             break
     return icons
