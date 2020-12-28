@@ -183,7 +183,7 @@ def get_icons(xmltxt):
             for icon in v:
                 found = False
                 for i in installed_apps:
-                    if icon.text[:-4].startswith(i)
+                    if icon.text[:-4].startswith(i):
                         found = True
                         break
                 if found: continue
