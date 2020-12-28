@@ -125,7 +125,7 @@ def application(environ, start_fn):
             start_fn('400 INVALID DATA', [('Content-Type', 'text/plain')])
             return ["Invalid data for %s\n" % search_data]
         start_fn('200 OK', [('Content-Type', 'application/json')])
-        return [ csv ]
+        return [ json.dumps(csv) ]
     else:
         start_fn('400 INVALID FUNC', [('Content-Type', 'text/plain')])
         return ["Invalid function %s\n" % func]
@@ -213,7 +213,6 @@ def get_icons(xmltxt):
 def get_csv(user_sid, xmltxt):
     out = []
     icons = get_icons(xmltxt)
-    print icons
     for icon in icons:
         out.append([user_sid, icon, "", ""])
     return out
