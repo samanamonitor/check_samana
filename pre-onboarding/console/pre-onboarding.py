@@ -22,7 +22,7 @@ installed_apps = {
     "Cisco Webex Productivity Tools\\Preferences",
     "Cisco Webex Productivity Tools\\Send Problem Report",
     "Cisco Webex Productivity Tools\\Uninstall",
-    "LenderWorkbench\LenderWorkBench Production",
+    "LenderWorkbench\\LenderWorkBench Production",
     "McAfee\\McAfee Endpoint Security",
     "Microsoft Endpoint Manager\\Configuration Manager\\Software Center",
     "Microsoft Office Tools\\Database Compare",
