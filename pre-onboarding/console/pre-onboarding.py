@@ -115,6 +115,17 @@ def application(environ, start_fn):
             return ["Invalid icon data for %s\n" % search_data]
         start_fn('200 OK', [('Content-Type', 'application/json')])
         return [ json.dumps(icons) ]
+    elif func == "csv":
+        xmldata = get_user_xmldata(user_sid)
+        if xmldata is None:
+            start_fn('400 INVALID XML DATA', [('Content-Type', 'text/plain')])
+            return ["Invalid XML data for %s\n" % search_data]
+        csv = get_csv(user_sid, xmldata)
+        if csv is None:
+            start_fn('400 INVALID DATA', [('Content-Type', 'text/plain')])
+            return ["Invalid data for %s\n" % search_data]
+        start_fn('200 OK', [('Content-Type', 'application/json')])
+        return [ csv ]
     else:
         start_fn('400 INVALID FUNC', [('Content-Type', 'text/plain')])
         return ["Invalid function %s\n" % func]
@@ -198,6 +209,13 @@ def get_icons(xmltxt):
             icons = filter_icons([icon.text[:-4] for icon in v], installed_apps)
             break
     return icons
+
+def get_csv(user_sid, xmltxt):
+    out = []
+    icons = get_icons(xmltxt)
+    for icon in icons:
+        out.append([user_sid, icon, "", ""])
+    return out
 
 def get_user_xmldata(objectSid):
     import etcd
