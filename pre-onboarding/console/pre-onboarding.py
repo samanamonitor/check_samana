@@ -117,8 +117,6 @@ def application(environ, start_fn):
         return [ json.dumps(icons) ]
     elif func == "csv":
         xmldata = get_user_xmldata(user_sid)
-        start_fn('400 INVALID XML DATA', [('Content-Type', 'text/plain')])
-        return ["Invalid XML data for %s\n" % search_data]
         if xmldata is None:
             start_fn('400 INVALID XML DATA', [('Content-Type', 'text/plain')])
             return ["Invalid XML data for %s\n" % search_data]
@@ -215,6 +213,7 @@ def get_icons(xmltxt):
 def get_csv(user_sid, xmltxt):
     out = []
     icons = get_icons(xmltxt)
+    print icons
     for icon in icons:
         out.append([user_sid, icon, "", ""])
     return out
