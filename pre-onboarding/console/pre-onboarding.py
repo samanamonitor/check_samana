@@ -116,6 +116,8 @@ def application(environ, start_fn):
         start_fn('200 OK', [('Content-Type', 'application/json')])
         return [ json.dumps(icons) ]
     elif func == "csv":
+        start_fn('400 INVALID XML DATA', [('Content-Type', 'text/plain')])
+        return ["Invalid XML data for %s\n" % search_data]
         xmldata = get_user_xmldata(user_sid)
         if xmldata is None:
             start_fn('400 INVALID XML DATA', [('Content-Type', 'text/plain')])
