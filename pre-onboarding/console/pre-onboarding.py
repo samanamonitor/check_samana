@@ -174,6 +174,18 @@ def get_drives(xmltxt):
             drives.append(xml_2_hash(v))
     return drives
 
+def filter_icons(icon_list, filter_out):
+    out = []
+    for icon in icon_list:
+        found = False
+        for i in installed_apps:
+            if icon.startswith(i):
+                found = True
+                break
+        if found: continue
+        out.append(icon)
+    return out
+
 def get_icons(xmltxt):
     import xml.etree.ElementTree as et
     root = et.fromstring(xmltxt)
@@ -183,14 +195,7 @@ def get_icons(xmltxt):
     icons = []
     for k,v in pairwise(root[0]):
         if k.text == "icons" and v.attrib['Type'] == "System.Object[]":
-            for icon in v:
-                found = False
-                for i in installed_apps:
-                    if icon.text[:-4].startswith(i):
-                        found = True
-                        break
-                if found: continue
-                icons.append(icon.text[:-4])
+            icons = filter_icons([icon.text[:-4] for icon in v], installed_apps)
             break
     return icons
 
