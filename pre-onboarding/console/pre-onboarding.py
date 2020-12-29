@@ -96,7 +96,7 @@ def xml_2_hash(property_list):
         out[p.attrib['Name']] = p.text
     return out
 
-def get_sid_list(search_data):
+def get_sid_list(search_data_list):
     sid_list = []
 
     for i in search_data_list:
