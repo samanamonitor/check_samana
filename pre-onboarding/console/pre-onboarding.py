@@ -57,8 +57,6 @@ def application(environ, start_fn):
             func = indata[1]
         except IndexError:
             raise IndexError('400 INVALID FUNC', "Invalid Function %s" % func)
-            start_fn('400 INVALID FUNC', )
-            return ["Invalid function %s\n" % func]
         params = indata[2:]
         output = [ "UNKNOWN" ]
 
