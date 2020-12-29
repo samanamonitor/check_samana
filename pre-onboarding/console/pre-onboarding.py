@@ -122,15 +122,15 @@ def application(environ, start_fn):
         if xmldata is None:
             start_fn('400 INVALID XML DATA', [('Content-Type', 'text/plain')])
             return ["Invalid XML data for %s\n" % search_data]
-        csv_arr = get_csv(user_sid, xmldata)
+        csv_arr = get_csv(search_data, xmldata)
+        if csv_arr is None:
+            start_fn('400 INVALID DATA', [('Content-Type', 'text/plain')])
+            return ["Invalid data for %s\n" % search_data]
         csv_io = StringIO()
         csv_wr = csv.writer(csv_io)
         csv_wr.writerows(csv_arr)
-        if csv is None:
-            start_fn('400 INVALID DATA', [('Content-Type', 'text/plain')])
-            return ["Invalid data for %s\n" % search_data]
         start_fn('200 OK', [('Content-Type', 'text/csv')])
-        return [ csv_wr.getvalue() ]
+        return [ csv_io.getvalue() ]
     else:
         start_fn('400 INVALID FUNC', [('Content-Type', 'text/plain')])
         return ["Invalid function %s\n" % func]
