@@ -232,7 +232,7 @@ def get_icons(params=None, sid_list=None, output="array"):
         return [ json.dumps(icons) ]
 
 def get_csv(params=None, sid_list=None):
-    if sid_list = None:
+    if sid_list is None:
         sid_list = get_sid_list(get_param_user_list(params))
 
     from StringIO import StringIO
