@@ -223,15 +223,15 @@ def get_csv(user_sid, xmltxt):
     out = []
     icons = get_icons(xmltxt)
     for icon in icons:
-        out.append([user_sid, icon, "", "", ""])
+        out.append([user_sid, icon, "", "", "", ""])
 
     drives = get_drives(xmltxt)
     for drive in drives:
-        out.append([user_sid, "", drive['LocalPath'], drive['RemotePath'], ""])
+        out.append([user_sid, "", drive['LocalPath'], drive['RemotePath'], "", ""])
 
     printers = get_printers(xmltxt)
     for printer in printers:
-        out.append([user_sid, "", "", "", str(printer)])
+        out.append([user_sid, "", "", "", printer['Name'], printer.get('ShareName', printer.get('Location', '--'))])
 
     return out
 
