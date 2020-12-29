@@ -127,7 +127,7 @@ def get_param_user_list(params):
     return user_list.split(',') 
 
 def get_userdata(params=None, sid_list=None):
-    if sid_list = None:
+    if sid_list == None:
         sid_list = get_sid_list(get_param_user_list(params))
 
     start_fn('200 OK', [('Content-Type', 'application/json')])
