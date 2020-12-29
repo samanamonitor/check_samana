@@ -231,7 +231,7 @@ def get_csv(user_sid, xmltxt):
 
     printers = get_printers(xmltxt)
     for printer in printers:
-        out.append([user_sid, "", "", "", printer['Name'], printer.get('ShareName', printer.get('Location', '--'))])
+        out.append([user_sid, "", "", "", printer['Name'], printer.get('ShareName', printer.get('PortName', '--'))])
 
     return out
 
