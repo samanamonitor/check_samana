@@ -148,7 +148,7 @@ def get_listusers():
     return [json.dumps(get_users_samaccountname(sid_list))]
 
 def get_xml(params=None, sid_list=None):
-    if sid_list = None:
+    if sid_list is None:
         sid_list = get_sid_list(get_param_user_list(params))
 
     xmldata = get_user_xmldata(sid_list[0])
@@ -157,7 +157,7 @@ def get_xml(params=None, sid_list=None):
     return [ str(xmldata) ]
 
 def get_printers(params=None, sid_list=None, output="array"):
-    if sid_list = None:
+    if sid_list is None:
         sid_list = get_sid_list(get_param_user_list(params))
 
     import xml.etree.ElementTree as et
