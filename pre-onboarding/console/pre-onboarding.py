@@ -167,7 +167,7 @@ def get_printers(params=None, sid_list=None, output="array"):
         xmltxt = get_user_xmldata(sid)
         root = et.fromstring(xmltxt)
         if root[0].attrib['Type'] != "System.Collections.Hashtable":
-            raise Exception('400 INVALID XML', "Invalid xml text: %s" xmltxt)
+            raise Exception('400 INVALID XML', "Invalid xml text: %s" % xmltxt)
         for k,v in pairwise(root[0]):
             if k.text == "printers" and v.attrib['Type'] == "System.Object[]":
                 for printer in v:
@@ -191,7 +191,7 @@ def get_drives(params=None, sid_list=None, output="array"):
         xmltxt = get_user_xmldata(sid)
         root = et.fromstring(xmltxt)
         if root[0].attrib['Type'] != "System.Collections.Hashtable":
-            raise Exception('400 INVALID XML', "Invalid xml text: %s" xmltxt)
+            raise Exception('400 INVALID XML', "Invalid xml text: %s" % xmltxt)
 
         for k,v in pairwise(root[0]):
             if k.text == "drives" and v.attrib['Type'] == "System.Object[]":
@@ -219,7 +219,7 @@ def get_icons(params=None, sid_list=None, output="array"):
         xmltxt = get_user_xmldata(sid)
         root = et.fromstring(xmltxt)
         if root[0].attrib['Type'] != "System.Collections.Hashtable":
-            raise Exception('400 INVALID XML', "Invalid xml text: %s" xmltxt)
+            raise Exception('400 INVALID XML', "Invalid xml text: %s" % xmltxt)
 
         for k,v in pairwise(root[0]):
             if k.text == "icons" and v.attrib['Type'] == "System.Object[]":
