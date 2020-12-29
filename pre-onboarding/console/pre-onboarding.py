@@ -223,11 +223,11 @@ def get_csv(user_sid, xmltxt):
     out = []
     icons = get_icons(xmltxt)
     for icon in icons:
-        out.append([user_sid, icon, "", ""])
+        out.append([user_sid, icon, "", "", ""])
 
     drives = get_drives(xmltxt)
     for drive in drives:
-        out.append([user_sid, "", str(drive), ""])
+        out.append([user_sid, "", drive['LocalPath'], drive['RemotePath'], ""])
 
     return out
 
