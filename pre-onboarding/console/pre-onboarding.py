@@ -63,25 +63,27 @@ def application(environ, start_fn):
         output = [ "UNKNOWN" ]
 
         if func == 'userdata':
-            return get_userdata(params, output="wsgi")
+            output = get_userdata(params, output="wsgi")
         elif func == 'listusers':
-            return get_listusers()
+            output = get_listusers()
         elif func == "xml":
-            return get_xml(params)
+            output = get_xml(params)
         elif func == "printers":
-            return get_printers(params, output="wsgi")
+            output = get_printers(params, output="wsgi")
         elif func == "drives":
-            return get_drives(params, output="wsgi")
+            output = get_drives(params, output="wsgi")
         elif func == "icons":
-            return get_icons(params, output="wsgi")
+            output = get_icons(params, output="wsgi")
         elif func == "csv":
-            return get_csv(params)
+            output = get_csv(params)
         else:
             raise Exception('400 INVALID FUNC', "Invalid function %s\n" % func)
 
     except Exception as e:
         start_fn(e[0], [('Content-Type', 'text/plain')])
         return e[1]
+
+    return output
 
 
 def pairwise(iterable):
