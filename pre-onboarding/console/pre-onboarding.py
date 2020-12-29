@@ -219,7 +219,8 @@ def get_csv(user_sid, xmltxt):
     csv_io = StringIO()
     csv_wr = csv.writer(csv_io)
 
-    out = []
+    csv_wr.writerow(["User", "Type", "Icon", "Drive Letter", "UNC", "Printer Name", "Port/Share Name"])
+
     icons = get_icons(xmltxt)
     for icon in icons:
         csv_wr.writerow([user_sid, "icon", icon, "", "", "", ""])
@@ -236,8 +237,6 @@ def get_csv(user_sid, xmltxt):
         if printer_data is None or printer_data == "":
             printer_data = "--"
         csv_wr.writerow([user_sid, "printer", "", "", "", printer['Name'], printer_data])
-
-    csv_wr.writeheader(["User", "Type", "Icon", "Drive Letter", "UNC", "Printer Name", "Port/Share Name"])
 
     return csv_io.getvalue()
 
