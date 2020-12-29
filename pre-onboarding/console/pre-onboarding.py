@@ -51,48 +51,51 @@ installed_apps = {
 
 def application(environ, start_fn):
     indata=environ['PATH_INFO'].split('/')
-    if len(indata) > 1:
-        func=indata[1]
-    else:
-        func=''
-    if len(indata) > 2:
-        search_data=indata[2]
-        if len(search_data.split('-')) == 8:
-            user_sid = search_data
-        else:
-            user_sid = get_user_sid(search_data)
-        if user_sid is None:
-            start_fn('400 INVALID USER SID', [('Content-Type', 'text/plain')])
+
+    try:
+        try:
+            func = indata[1]
+        except IndexError:
+            raise IndexError('400 INVALID FUNC', "Invalid Function %s" % func)
+            start_fn('400 INVALID FUNC', )
             return ["Invalid function %s\n" % func]
+        params = indata[2:]
+
+        if func == 'userdata':
+            return get_userdata(params)
+        elif func == 'listusers':
+            return get_listusers()
+        elif func == "xml":
+            return get_xml(params)
+        elif func == "printers":
+            return get_printers(params)
+
+
+
+    except Exception as e:
+        start_fn(e[0], [('Content-Type', 'text/plain')])
+        return e[1]
+
+
+    if len(indata) > 1:
+        search_data=indata[2]
+        user_sid = []
+        search_data_list = search_data.split(',')
+
+        for i in search_data_list:
+            user_sid.append(get_user_sid(i))
+
+        if len(user_sid) == 0:
+            start_fn('400 INVALID USER SID', [('Content-Type', 'text/plain')])
+            return ["Invalid user data %s\n" % search_data]
     else:
         search_data=None
 
 
-    if func == 'userdata':
-        start_fn('200 OK', [('Content-Type', 'application/json')])
-        return [json.dumps({'username': search_data, 'sid': user_sid})]
-    elif func == 'listusers':
-        user_list = get_user_list()
-        start_fn('200 OK', [('Content-Type', 'application/json')])
-        return [json.dumps(user_list)]
-    elif func == "xml":
-        xmldata = get_user_xmldata(user_sid)
-        if xmldata is None:
-            start_fn('400 INVALID USER SID', [('Content-Type', 'text/plain')])
-            return ["Invalid user %s\n" % search_data]
-        start_fn('200 OK', [('Content-Type', 'application/xml')])
-        return [ str(xmldata) ]
-    elif func == "printers":
-        xmldata = get_user_xmldata(user_sid)
-        if xmldata is None:
-            start_fn('400 INVALID XML DATA', [('Content-Type', 'text/plain')])
-            return ["Invalid XML data for %s\n" % search_data]
-        printers = get_printers(str(xmldata))
-        if printers is None:
-            start_fn('400 INVALID PRINTER DATA', [('Content-Type', 'text/plain')])
-            return ["Invalid printer data for %s\n" % search_data]
-        start_fn('200 OK', [('Content-Type', 'application/json')])
-        return [ json.dumps(printers) ]
+
+
+
+
     elif func == "drives":
         xmldata = get_user_xmldata(user_sid)
         if xmldata is None:
@@ -104,6 +107,7 @@ def application(environ, start_fn):
             return ["Invalid drive data for %s\n" % search_data]
         start_fn('200 OK', [('Content-Type', 'application/json')])
         return [ json.dumps(drives) ]
+
     elif func == "icons":
         xmldata = get_user_xmldata(user_sid)
         if xmldata is None:
@@ -115,6 +119,7 @@ def application(environ, start_fn):
             return ["Invalid icon data for %s\n" % search_data]
         start_fn('200 OK', [('Content-Type', 'application/json')])
         return [ json.dumps(icons) ]
+
     elif func == "csv":
         xmldata = get_user_xmldata(user_sid)
         if xmldata is None:
@@ -144,49 +149,15 @@ def xml_2_hash(property_list):
         out[p.attrib['Name']] = p.text
     return out
 
-def get_user_list():
-    import etcd
-    client = etcd.Client(port=2379)
-    try:
-        sid_list = []
-        etcd_sid_list = client.get('/pre-onboarding').children
-        for item in etcd_sid_list:
-            sid_list.append(item.key.split('/')[-1])
-    except etcd.EtcdKeyNotFound:
-        print "No users found"
-        return None
-    return get_users_samaccountname(sid_list)
+def get_sid_list(search_data):
+    sid_list = []
 
-def get_printers(xmltxt):
-    import xml.etree.ElementTree as et
-    root = et.fromstring(xmltxt)
-    if root[0].attrib['Type'] != "System.Collections.Hashtable":
-        print "Invalid XML"
-        return None
-    printers = []
-    for k,v in pairwise(root[0]):
-        if k.text == "printers" and v.attrib['Type'] == "System.Object[]":
-            for printer in v:
-                printers.append( xml_2_hash(printer))
-            break
-    return printers
+    for i in search_data_list:
+        sid_list.append(get_user_sid(i))
 
-def get_drives(xmltxt):
-    import xml.etree.ElementTree as et
-    root = et.fromstring(xmltxt)
-    if root[0].attrib['Type'] != "System.Collections.Hashtable":
-        print "Invalid XML"
-        return None
-    drives = []
-    for k,v in pairwise(root[0]):
-        if k.text == "drives" and v.attrib['Type'] == "System.Object[]":
-            for drive in v:
-                drives.append(xml_2_hash(drive))
-            break
-        elif k.text == "drives":
-            print v.attrib['Type']
-            drives.append(xml_2_hash(v))
-    return drives
+    if len(sid_list) == 0:
+        raise IndexError('400 INVALID USER SID', "Invalid user data %s\n" % search_data)
+    return sid_list
 
 def filter_icons(icon_list, filter_out):
     out = []
@@ -200,45 +171,157 @@ def filter_icons(icon_list, filter_out):
         out.append(icon)
     return out
 
-def get_icons(xmltxt):
-    import xml.etree.ElementTree as et
-    root = et.fromstring(xmltxt)
-    if root[0].attrib['Type'] != "System.Collections.Hashtable":
-        print "Invalid XML"
-        return None
-    icons = []
-    for k,v in pairwise(root[0]):
-        if k.text == "icons" and v.attrib['Type'] == "System.Object[]":
-            icons = filter_icons([icon.text[:-4] for icon in v], installed_apps)
-            break
-    return icons
+def get_param_user_list(params):
+   try:
+        user_list=params[0]
+    except IndexError:
+        raise IndexError('400 INVALID USER SID', "Invalid user data %s\n" % user_list)
+    return user_list.split(',') 
 
-def get_csv(user_sid, xmltxt):
+def get_userdata(params=None, sid_list=None):
+    if sid_list = None:
+        sid_list = get_sid_list(get_param_user_list(params))
+
+    start_fn('200 OK', [('Content-Type', 'application/json')])
+    return [json.dumps(map(lambda un, sid: {'username': un, 'sid': sid}), search_data_list, user_sid )]
+
+def get_listusers():
+    import etcd
+    client = etcd.Client(port=2379)
+    try:
+        sid_list = []
+        etcd_sid_list = client.get('/pre-onboarding').children
+        for item in etcd_sid_list:
+            sid_list.append(item.key.split('/')[-1])
+    except etcd.EtcdKeyNotFound:
+        raise etcd.EtcdKeyNotFound('400 NO USERS FOUND', "No users found")
+
+    start_fn('200 OK', [('Content-Type', 'application/json')])
+    return [json.dumps(get_users_samaccountname(sid_list))]
+
+def get_xml(params=None, sid_list=None):
+    if sid_list = None:
+        sid_list = get_sid_list(get_param_user_list(params))
+
+    xmldata = get_user_xmldata(sid_list[0])
+
+    start_fn('200 OK', [('Content-Type', 'application/xml')])
+    return [ str(xmldata) ]
+
+def get_printers(params=None, sid_list=None, output="array"):
+    if sid_list = None:
+        sid_list = get_sid_list(get_param_user_list(params))
+
+    import xml.etree.ElementTree as et
+
+    printers = []
+    for sid in sid_list:
+        xmltxt = get_user_xmldata(sid)
+        root = et.fromstring(xmltxt)
+        if root[0].attrib['Type'] != "System.Collections.Hashtable":
+            raise Exception('400 INVALID XML', "Invalid xml text: %s" xmltxt)
+        for k,v in pairwise(root[0]):
+            if k.text == "printers" and v.attrib['Type'] == "System.Object[]":
+                for printer in v:
+                    printers.append( xml_2_hash(printer))
+                break
+
+    if output == "array":
+        return printers
+    elif output == "wsgi":
+        start_fn('200 OK', [('Content-Type', 'application/json')])
+        return [ json.dumps(printers) ]
+    
+def get_drives(params=None, sid_list=None, output="array"):
+    if sid_list is None:
+        sid_list = get_sid_list(get_param_user_list(params))
+
+    import xml.etree.ElementTree as et
+
+    drives = []
+    for sid in sid_list:
+        xmltxt = get_user_xmldata(sid)
+        root = et.fromstring(xmltxt)
+        if root[0].attrib['Type'] != "System.Collections.Hashtable":
+            raise Exception('400 INVALID XML', "Invalid xml text: %s" xmltxt)
+
+        for k,v in pairwise(root[0]):
+            if k.text == "drives" and v.attrib['Type'] == "System.Object[]":
+                for drive in v:
+                    drives.append(xml_2_hash(drive))
+                break
+            elif k.text == "drives":
+                print v.attrib['Type']
+                drives.append(xml_2_hash(v))
+
+    if output == "array":
+        return drives
+    elif output == "wsgi":
+        start_fn('200 OK', [('Content-Type', 'application/json')])
+        return [ json.dumps(drives) ]
+
+def get_icons(params=None, sid_list=None, output="array"):
+    if sid_list is None:
+        sid_list = get_sid_list(get_param_user_list(params))
+
+    import xml.etree.ElementTree as et
+
+    icons = []
+    for sid in sid_list:
+        xmltxt = get_user_xmldata(sid)
+        root = et.fromstring(xmltxt)
+        if root[0].attrib['Type'] != "System.Collections.Hashtable":
+            raise Exception('400 INVALID XML', "Invalid xml text: %s" xmltxt)
+
+        for k,v in pairwise(root[0]):
+            if k.text == "icons" and v.attrib['Type'] == "System.Object[]":
+                icons = filter_icons([icon.text[:-4] for icon in v], installed_apps)
+                break
+    if output == "array":
+        return icons
+    elif output == "wsgi":
+        start_fn('200 OK', [('Content-Type', 'application/json')])
+        return [ json.dumps(icons) ]
+
+def get_csv(params=None, sid_list=None):
+    if sid_list = None:
+        sid_list = get_sid_list(get_param_user_list(params))
+
     from StringIO import StringIO
+    import xml.etree.ElementTree as et
     import csv
+
     csv_io = StringIO()
     csv_wr = csv.writer(csv_io)
 
     csv_wr.writerow(["User", "Type", "Icon", "Drive Letter", "UNC", "Printer Name", "Port/Share Name"])
 
-    icons = get_icons(xmltxt)
+    for sid in sid_list:
+        csv_wr.writerows(get_user_array(sid))
+
+    start_fn('200 OK', [('Content-Type', 'text/csv'), 
+        ("Content-Disposition", "attachment;filename=%s.csv" % search_data)])
+    return [ csv_io.getvalue() ]
+
+def get_user_array(sid):
+    out = []
+    icons = get_icons(sid_list=[sid])
     for icon in icons:
-        csv_wr.writerow([user_sid, "icon", icon, "", "", "", ""])
+        out.append([sid, "icon", icon, "", "", "", ""])
 
-    drives = get_drives(xmltxt)
+    drives = get_drives(sid_list=[sid])
     for drive in drives:
-        csv_wr.writerow([user_sid, "drive", "", drive['LocalPath'], drive['RemotePath'], "", ""])
+        out.append([sid, "drive", "", drive['LocalPath'], drive['RemotePath'], "", ""])
 
-    printers = get_printers(xmltxt)
+    printers = get_printers(sid_list=[sid])
     for printer in printers:
         printer_data = printer.get('ShareName', "")
         if printer_data is None or printer_data == "":
             printer_data = printer.get('PortName', "")
         if printer_data is None or printer_data == "":
             printer_data = "--"
-        csv_wr.writerow([user_sid, "printer", "", "", "", printer['Name'], printer_data])
-
-    return csv_io.getvalue()
+        out.append([sid, "printer", "", "", "", printer['Name'], printer_data])
+    return out
 
 def get_user_xmldata(objectSid):
     import etcd
@@ -246,47 +329,52 @@ def get_user_xmldata(objectSid):
     try:
         data_b64 = client.get('/pre-onboarding/%s' % objectSid).value
     except etcd.EtcdKeyNotFound:
-        print "User not found"
-        return None
+        raise etcd.EtcdKeyNotFound("400 USER NOT FOUND", "User data not in store")
+
     import base64
     data = base64.b64decode(data_b64)
     return data.decode("UTF-16").encode("UTF-8")
 
-def get_user_sid(samaccountname):
+def get_user_sid(data):
+    if len(data.split('-')) == 8:
+        return data
+
     import ldap
-    l = ldap.initialize(ldap_server)
-    l.protocol_version = ldap.VERSION3
-    l.simple_bind_s(username, password)
-    searchFilter="(samAccountName=%s)" % samaccountname
-    searchAttribute=["objectSid"]
-    searchScope=ldap.SCOPE_SUBTREE
-    search_id = l.search(basedn, searchScope, searchFilter, searchAttribute)
-    search_result = l.result(search_id, 0)
     try:
+        l = ldap.initialize(ldap_server)
+        l.protocol_version = ldap.VERSION3
+        l.simple_bind_s(username, password)
+        searchFilter="(samAccountName=%s)" % data
+        searchAttribute=["objectSid"]
+        searchScope=ldap.SCOPE_SUBTREE
+        search_id = l.search(basedn, searchScope, searchFilter, searchAttribute)
+        search_result = l.result(search_id, 0)
         objectSid = search_result[1][0][1]['objectSid'][0]
     except IndexError:
-        print "Invalid ldap result"
-        return None
+        raise IndexError('400 Invalid LDAP result', "IndexError: Invalid LDAP result searchFilter=%s")
     except TypeError:
-        print "Invalid ldap result"
-        return None
+        raise TypeError('400 Invalid LDAP result', "TypeError: Invalid LDAP result searchFilter=%s")
+
     return convert_sid_bin_txt(objectSid)
 
 def get_users_samaccountname(sid_list):
     import ldap
-    l = ldap.initialize(ldap_server)
-    l.protocol_version = ldap.VERSION3
-    l.simple_bind_s(username, password)
-    searchFilter="(|" + ''.join(map(lambda x:"(objectSid=%s)" % x, sid_list)) + ")"
-    searchAttribute=["objectSid", "SamAccountName"]
-    searchScope=ldap.SCOPE_SUBTREE
-    search_id = l.search(basedn, searchScope, searchFilter, searchAttribute)
-    user_data = []
-    while True:
-        search_result = l.result(search_id, 0)
-        if search_result[0] != 100: break
-        user_data.append({'samaccountname': search_result[1][0][1]['sAMAccountName'][0], 
-            'sid': convert_sid_bin_txt(search_result[1][0][1]['objectSid'][0])})
+    try:
+        l = ldap.initialize(ldap_server)
+        l.protocol_version = ldap.VERSION3
+        l.simple_bind_s(username, password)
+        searchFilter="(|" + ''.join(map(lambda x:"(objectSid=%s)" % x, sid_list)) + ")"
+        searchAttribute=["objectSid", "SamAccountName"]
+        searchScope=ldap.SCOPE_SUBTREE
+        search_id = l.search(basedn, searchScope, searchFilter, searchAttribute)
+        user_data = []
+        while True:
+            search_result = l.result(search_id, 0)
+            if search_result[0] != 100: break
+            user_data.append({'samaccountname': search_result[1][0][1]['sAMAccountName'][0], 
+                'sid': convert_sid_bin_txt(search_result[1][0][1]['objectSid'][0])})
+    except Exception as e:
+        raise Exception('400 NO SAMACCOUNTNAME', "Unable to get sAMAccountName from %s" str(sid_list))
     return user_data
 
 def convert_sid_bin_txt(binary):
