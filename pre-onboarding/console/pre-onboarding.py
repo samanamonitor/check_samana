@@ -322,7 +322,7 @@ def get_users_samaccountname(sid_list):
             user_data.append({'samaccountname': search_result[1][0][1]['sAMAccountName'][0], 
                 'sid': convert_sid_bin_txt(search_result[1][0][1]['objectSid'][0])})
     except Exception as e:
-        raise Exception('400 NO SAMACCOUNTNAME', "Unable to get sAMAccountName from %s" str(sid_list))
+        raise Exception('400 NO SAMACCOUNTNAME', "Unable to get sAMAccountName from %s" % str(sid_list))
     return user_data
 
 def convert_sid_bin_txt(binary):
