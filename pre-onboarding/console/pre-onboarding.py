@@ -116,25 +116,19 @@ def application(environ, start_fn):
         start_fn('200 OK', [('Content-Type', 'application/json')])
         return [ json.dumps(icons) ]
     elif func == "csv":
-        from StringIO import StringIO
-        import csv
-        csv_io = StringIO()
-        csv_wr = csv.writer(csv_io)
-
         xmldata = get_user_xmldata(user_sid)
         if xmldata is None:
             start_fn('400 INVALID XML DATA', [('Content-Type', 'text/plain')])
             return ["Invalid XML data for %s\n" % search_data]
 
-        csv_arr = get_csv(search_data, xmldata)
-        if csv_arr is None:
+        csv_data = get_csv(search_data, xmldata)
+        if csv_data is None:
             start_fn('400 INVALID DATA', [('Content-Type', 'text/plain')])
             return ["Invalid data for %s\n" % search_data]
-        csv_wr.writerows(csv_arr)
 
         start_fn('200 OK', [('Content-Type', 'text/csv'), 
             ("Content-Disposition", "attachment;filename=%s.csv" % search_data)])
-        return [ csv_io.getvalue() ]
+        return [ csv_data ]
     else:
         start_fn('400 INVALID FUNC', [('Content-Type', 'text/plain')])
         return ["Invalid function %s\n" % func]
@@ -220,14 +214,19 @@ def get_icons(xmltxt):
     return icons
 
 def get_csv(user_sid, xmltxt):
+    from StringIO import StringIO
+    import csv
+    csv_io = StringIO()
+    csv_wr = csv.writer(csv_io)
+
     out = []
     icons = get_icons(xmltxt)
     for icon in icons:
-        out.append([user_sid, icon, "", "", "", ""])
+        out.append([user_sid, "icon", icon, "", "", "", ""])
 
     drives = get_drives(xmltxt)
     for drive in drives:
-        out.append([user_sid, "", drive['LocalPath'], drive['RemotePath'], "", ""])
+        out.append([user_sid, "drive", "", drive['LocalPath'], drive['RemotePath'], "", ""])
 
     printers = get_printers(xmltxt)
     for printer in printers:
@@ -236,9 +235,10 @@ def get_csv(user_sid, xmltxt):
             printer_data = printer.get('PortName', "")
         if printer_data is None or printer_data == "":
             printer_data = "--"
-        out.append([user_sid, "", "", "", printer['Name'], printer_data])
+        out.append([user_sid, "printer", "", "", "", printer['Name'], printer_data])
+    csv_wr.writerows(out)
 
-    return out
+    return csv_io.getvalue()
 
 def get_user_xmldata(objectSid):
     import etcd
