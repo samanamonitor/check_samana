@@ -222,11 +222,11 @@ def get_csv(user_sid, xmltxt):
     out = []
     icons = get_icons(xmltxt)
     for icon in icons:
-        out.append([user_sid, "icon", icon, "", "", "", ""])
+        csv_wr.writerow([user_sid, "icon", icon, "", "", "", ""])
 
     drives = get_drives(xmltxt)
     for drive in drives:
-        out.append([user_sid, "drive", "", drive['LocalPath'], drive['RemotePath'], "", ""])
+        csv_wr.writerow([user_sid, "drive", "", drive['LocalPath'], drive['RemotePath'], "", ""])
 
     printers = get_printers(xmltxt)
     for printer in printers:
@@ -235,8 +235,9 @@ def get_csv(user_sid, xmltxt):
             printer_data = printer.get('PortName', "")
         if printer_data is None or printer_data == "":
             printer_data = "--"
-        out.append([user_sid, "printer", "", "", "", printer['Name'], printer_data])
-    csv_wr.writerows(out)
+        csv_wr.writerow([user_sid, "printer", "", "", "", printer['Name'], printer_data])
+
+    csv_wr.writeheader(["User", "Type", "Icon", "Drive Letter", "UNC", "Printer Name", "Port/Share Name"])
 
     return csv_io.getvalue()
 
