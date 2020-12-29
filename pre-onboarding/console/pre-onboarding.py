@@ -60,83 +60,29 @@ def application(environ, start_fn):
             start_fn('400 INVALID FUNC', )
             return ["Invalid function %s\n" % func]
         params = indata[2:]
+        output = [ "UNKNOWN" ]
 
         if func == 'userdata':
-            return get_userdata(params)
+            return get_userdata(params, output="wsgi")
         elif func == 'listusers':
             return get_listusers()
         elif func == "xml":
             return get_xml(params)
         elif func == "printers":
-            return get_printers(params)
-
-
+            return get_printers(params, output="wsgi")
+        elif func == "drives":
+            return get_drives(params, output="wsgi")
+        elif func == "icons":
+            return get_icons(params, output="wsgi")
+        elif func == "csv":
+            return get_csv(params)
+        else:
+            raise Exception('400 INVALID FUNC', "Invalid function %s\n" % func)
 
     except Exception as e:
         start_fn(e[0], [('Content-Type', 'text/plain')])
         return e[1]
 
-
-    if len(indata) > 1:
-        search_data=indata[2]
-        user_sid = []
-        search_data_list = search_data.split(',')
-
-        for i in search_data_list:
-            user_sid.append(get_user_sid(i))
-
-        if len(user_sid) == 0:
-            start_fn('400 INVALID USER SID', [('Content-Type', 'text/plain')])
-            return ["Invalid user data %s\n" % search_data]
-    else:
-        search_data=None
-
-
-
-
-
-
-    elif func == "drives":
-        xmldata = get_user_xmldata(user_sid)
-        if xmldata is None:
-            start_fn('400 INVALID XML DATA', [('Content-Type', 'text/plain')])
-            return ["Invalid XML data for %s\n" % search_data]
-        drives = get_drives(str(xmldata))
-        if drives is None:
-            start_fn('400 INVALID DRIVE DATA', [('Content-Type', 'text/plain')])
-            return ["Invalid drive data for %s\n" % search_data]
-        start_fn('200 OK', [('Content-Type', 'application/json')])
-        return [ json.dumps(drives) ]
-
-    elif func == "icons":
-        xmldata = get_user_xmldata(user_sid)
-        if xmldata is None:
-            start_fn('400 INVALID XML DATA', [('Content-Type', 'text/plain')])
-            return ["Invalid XML data for %s\n" % search_data]
-        icons = get_icons(str(xmldata))
-        if icons is None:
-            start_fn('400 INVALID ICON DATA', [('Content-Type', 'text/plain')])
-            return ["Invalid icon data for %s\n" % search_data]
-        start_fn('200 OK', [('Content-Type', 'application/json')])
-        return [ json.dumps(icons) ]
-
-    elif func == "csv":
-        xmldata = get_user_xmldata(user_sid)
-        if xmldata is None:
-            start_fn('400 INVALID XML DATA', [('Content-Type', 'text/plain')])
-            return ["Invalid XML data for %s\n" % search_data]
-
-        csv_data = get_csv(search_data, xmldata)
-        if csv_data is None:
-            start_fn('400 INVALID DATA', [('Content-Type', 'text/plain')])
-            return ["Invalid data for %s\n" % search_data]
-
-        start_fn('200 OK', [('Content-Type', 'text/csv'), 
-            ("Content-Disposition", "attachment;filename=%s.csv" % search_data)])
-        return [ csv_data ]
-    else:
-        start_fn('400 INVALID FUNC', [('Content-Type', 'text/plain')])
-        return ["Invalid function %s\n" % func]
 
 def pairwise(iterable):
     "s -> (s0, s1), (s2, s3), (s4, s5), ..."
