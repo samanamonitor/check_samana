@@ -229,6 +229,10 @@ def get_csv(user_sid, xmltxt):
     for drive in drives:
         out.append([user_sid, "", drive['LocalPath'], drive['RemotePath'], ""])
 
+    printers = get_printers(xmltxt)
+    for printer in printers:
+        out.append([user_sid, "", "", "", str(printer)])
+
     return out
 
 def get_user_xmldata(objectSid):
