@@ -232,6 +232,7 @@ def get_csv(user_sid, xmltxt):
     printers = get_printers(xmltxt)
     for printer in printers:
         printer_data = printer.get('ShareName')
+        printer_data = str(printer)
         if printer_data == "":
             printer_data = printer.get('PortName')
         if printer_data == "":
