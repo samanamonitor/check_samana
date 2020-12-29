@@ -120,8 +120,8 @@ def filter_icons(icon_list, filter_out):
     return out
 
 def get_param_user_list(params):
-   try:
-        user_list=params[0]
+    try:
+        user_list = params[0]
     except IndexError:
         raise IndexError('400 INVALID USER SID', "Invalid user data %s\n" % user_list)
     return user_list.split(',') 
