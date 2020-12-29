@@ -129,7 +129,8 @@ def application(environ, start_fn):
         csv_io = StringIO()
         csv_wr = csv.writer(csv_io)
         csv_wr.writerows(csv_arr)
-        start_fn('200 OK', [('Content-Type', 'text/csv')])
+        start_fn('200 OK', [('Content-Type', 'text/csv'), 
+            ("Content-Disposition", "attachment;filename=%s.csv" % search_data)])
         return [ csv_io.getvalue() ]
     else:
         start_fn('400 INVALID FUNC', [('Content-Type', 'text/plain')])
