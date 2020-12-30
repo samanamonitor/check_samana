@@ -6,19 +6,21 @@ function show_users(data) {
     for(i=0; i<data.length; i++) {
         u = $($("#usertemplate").html());
         user_name = u.find(".user-name");
-        user_name.text(data[i]['samaccountname'] + " - " + data[i]['displayName']);
-        user_name.attr("sid", data[i]['sid']);
-        user_name.click(show_data);
+        user_name.text(data[i]['samaccountname'] + " - " + data[i]['displayName'])
+            .attr("sid", data[i]['sid'])
+            .attr("displayName", user_name.text())
+            .click(show_data);
         $("#userlist").append(u)
         view = u.find(".btn-primary")
         view.attr("sid", data[i]['sid'])
+            .attr("displayName", username.text())
             .click(show_data);
     }
 }
 
 function show_data(e) {
     sid = $(e.target).attr("sid");
-    username = $(e.target).text();
+    username = $(e.target).attr("displayName");
     $(".modal").find(".modal-title").text(username);
     $(".modal").modal();
     $.getJSON('go/printers/' + sid, show_printers);
