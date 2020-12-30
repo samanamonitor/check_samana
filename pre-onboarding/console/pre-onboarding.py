@@ -333,7 +333,7 @@ def get_users_samaccountname(sid_list):
         l.protocol_version = ldap.VERSION3
         l.simple_bind_s(username, password)
         searchFilter="(|" + ''.join(map(lambda x:"(objectSid=%s)" % x, sid_list)) + ")"
-        searchAttribute=["objectSid", "SamAccountName"]
+        searchAttribute=["objectSid", "SamAccountName", "displayName"]
         searchScope=ldap.SCOPE_SUBTREE
         search_id = l.search(basedn, searchScope, searchFilter, searchAttribute)
         user_data = []
@@ -341,7 +341,9 @@ def get_users_samaccountname(sid_list):
             search_result = l.result(search_id, 0)
             if search_result[0] != 100: break
             user_data.append({'samaccountname': search_result[1][0][1]['sAMAccountName'][0], 
-                'sid': convert_sid_bin_txt(search_result[1][0][1]['objectSid'][0])})
+                'sid': convert_sid_bin_txt(search_result[1][0][1]['objectSid'][0]),
+                'displayName': search_result[1][0][1]['displayName'][0])})
+
     except Exception as e:
         raise Exception('400 NO SAMACCOUNTNAME', "Unable to get sAMAccountName from %s" % str(sid_list))
     return user_data
