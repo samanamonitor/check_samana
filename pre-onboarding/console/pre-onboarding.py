@@ -252,21 +252,21 @@ def get_csv(params=None, sid_list=None):
 
     csv_wr.writerow(["User", "Type", "Icon", "Drive Letter", "UNC", "Printer Name", "Port/Share Name"])
 
-    users = map(lambda s, n: (s, n), sid_list, get_users_samaccountname(sid_list))
-    for sid, sAMAccountName in users:
-        csv_wr.writerows(get_user_array(sid, sAMAccountName))
+    users = get_users_samaccountname(sid_list)
+    for user in users:
+        csv_wr.writerows(get_user_array(user))
 
     return [ csv_io.getvalue() ]
 
-def get_user_array(sid, samAccountName):
+def get_user_array(user):
     out = []
-    icons = get_icons(sid_list=[sid])
+    icons = get_icons(sid_list=[user['sid']])
     for icon in icons:
-        out.append([samAccountName, "icon", icon, "", "", "", ""])
+        out.append([user['samaccountname'], "icon", icon, "", "", "", ""])
 
     drives = get_drives(sid_list=[sid])
     for drive in drives:
-        out.append([samAccountName, "drive", "", drive['LocalPath'], drive['RemotePath'], "", ""])
+        out.append([user['samaccountname'], "drive", "", drive['LocalPath'], drive['RemotePath'], "", ""])
 
     printers = get_printers(sid_list=[sid])
     for printer in printers:
@@ -275,7 +275,7 @@ def get_user_array(sid, samAccountName):
             printer_data = printer.get('PortName', "")
         if printer_data is None or printer_data == "":
             printer_data = "--"
-        out.append([samAccountName, "printer", "", "", "", printer['Name'], printer_data])
+        out.append([user['samaccountname'], "printer", "", "", "", printer['Name'], printer_data])
     return out
 
 def get_user_xmldata(objectSid):
