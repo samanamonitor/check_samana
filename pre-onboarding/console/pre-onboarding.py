@@ -2,6 +2,8 @@
 
 import json
 from itertools import izip
+import traceback
+import sys
 
 ldap_server='ldap://snv.net'
 username = "xd931@snv.net"
@@ -86,6 +88,8 @@ def application(environ, start_fn):
             raise Exception('400 INVALID FUNC', "Invalid function %s\n" % func)
 
     except Exception as e:
+        print e
+        traceback.print_exc(file=sys.stderr)
         try:
             start_fn(e[0], [('Content-Type', 'text/plain')])
             return e[1]
