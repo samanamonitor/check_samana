@@ -86,7 +86,6 @@ def application(environ, start_fn):
             raise Exception('400 INVALID FUNC', "Invalid function %s\n" % func)
 
     except Exception as e:
-        print e
         start_fn(e[0], [('Content-Type', 'text/plain')])
         return e[1]
 
@@ -111,7 +110,7 @@ def get_sid_list(search_data_list):
         sid_list.append(get_user_sid(i))
 
     if len(sid_list) == 0:
-        raise IndexError('400 INVALID USER SID', "Invalid user data %s\n" % search_data)
+        raise IndexError('400 INVALID USER SID', "Invalid user data %s\n" % str(search_data_list))
     return sid_list
 
 def filter_icons(icon_list, filter_out):
