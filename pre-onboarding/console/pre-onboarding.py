@@ -86,6 +86,7 @@ def application(environ, start_fn):
             raise Exception('400 INVALID FUNC', "Invalid function %s\n" % func)
 
     except Exception as e:
+        print e
         start_fn(e[0], [('Content-Type', 'text/plain')])
         return e[1]
 
