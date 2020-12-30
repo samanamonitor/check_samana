@@ -264,11 +264,11 @@ def get_user_array(user):
     for icon in icons:
         out.append([user['samaccountname'], "icon", icon, "", "", "", ""])
 
-    drives = get_drives(sid_list=[sid])
+    drives = get_drives(sid_list=[user['sid']])
     for drive in drives:
         out.append([user['samaccountname'], "drive", "", drive['LocalPath'], drive['RemotePath'], "", ""])
 
-    printers = get_printers(sid_list=[sid])
+    printers = get_printers(sid_list=[user['sid']])
     for printer in printers:
         printer_data = printer.get('ShareName', "")
         if printer_data is None or printer_data == "":
