@@ -83,12 +83,11 @@ def application(environ, start_fn):
         elif func == "csv":
             output = get_csv(params)
             start_fn('200 OK', [('Content-Type', 'text/csv'), 
-                ("Content-Disposition", "attachment;filename=data.csv%s" % search_data)])
+                ("Content-Disposition", "attachment;filename=data.csv")])
         else:
             raise Exception('400 INVALID FUNC', "Invalid function %s\n" % func)
 
     except Exception as e:
-        print e
         traceback.print_exc(file=sys.stderr)
         try:
             start_fn(e[0], [('Content-Type', 'text/plain')])
