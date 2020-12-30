@@ -62,18 +62,26 @@ def application(environ, start_fn):
 
         if func == 'userdata':
             output = get_userdata(params, output="wsgi")
+            start_fn('200 OK', [('Content-Type', 'application/json')])
         elif func == 'listusers':
             output = get_listusers()
+            start_fn('200 OK', [('Content-Type', 'application/json')])
         elif func == "xml":
             output = get_xml(params)
+            start_fn('200 OK', [('Content-Type', 'application/xml')])
         elif func == "printers":
             output = get_printers(params, output="wsgi")
+            start_fn('200 OK', [('Content-Type', 'application/json')])
         elif func == "drives":
+            start_fn('200 OK', [('Content-Type', 'application/json')])
             output = get_drives(params, output="wsgi")
         elif func == "icons":
             output = get_icons(params, output="wsgi")
+            start_fn('200 OK', [('Content-Type', 'application/json')])
         elif func == "csv":
             output = get_csv(params)
+            start_fn('200 OK', [('Content-Type', 'text/csv'), 
+                ("Content-Disposition", "attachment;filename=%s.csv" % search_data)])
         else:
             raise Exception('400 INVALID FUNC', "Invalid function %s\n" % func)
 
@@ -129,7 +137,6 @@ def get_userdata(params=None, sid_list=None):
     if sid_list == None:
         sid_list = get_sid_list(get_param_user_list(params))
 
-    start_fn('200 OK', [('Content-Type', 'application/json')])
     return [json.dumps(map(lambda un, sid: {'username': un, 'sid': sid}), search_data_list, user_sid )]
 
 def get_listusers():
@@ -143,7 +150,6 @@ def get_listusers():
     except etcd.EtcdKeyNotFound:
         raise etcd.EtcdKeyNotFound('400 NO USERS FOUND', "No users found")
 
-    start_fn('200 OK', [('Content-Type', 'application/json')])
     return [json.dumps(get_users_samaccountname(sid_list))]
 
 def get_xml(params=None, sid_list=None):
@@ -152,7 +158,6 @@ def get_xml(params=None, sid_list=None):
 
     xmldata = get_user_xmldata(sid_list[0])
 
-    start_fn('200 OK', [('Content-Type', 'application/xml')])
     return [ str(xmldata) ]
 
 def get_printers(params=None, sid_list=None, output="array"):
@@ -176,7 +181,6 @@ def get_printers(params=None, sid_list=None, output="array"):
     if output == "array":
         return printers
     elif output == "wsgi":
-        start_fn('200 OK', [('Content-Type', 'application/json')])
         return [ json.dumps(printers) ]
     
 def get_drives(params=None, sid_list=None, output="array"):
@@ -204,7 +208,6 @@ def get_drives(params=None, sid_list=None, output="array"):
     if output == "array":
         return drives
     elif output == "wsgi":
-        start_fn('200 OK', [('Content-Type', 'application/json')])
         return [ json.dumps(drives) ]
 
 def get_icons(params=None, sid_list=None, output="array"):
@@ -227,7 +230,6 @@ def get_icons(params=None, sid_list=None, output="array"):
     if output == "array":
         return icons
     elif output == "wsgi":
-        start_fn('200 OK', [('Content-Type', 'application/json')])
         return [ json.dumps(icons) ]
 
 def get_csv(params=None, sid_list=None):
@@ -246,8 +248,6 @@ def get_csv(params=None, sid_list=None):
     for sid in sid_list:
         csv_wr.writerows(get_user_array(sid))
 
-    start_fn('200 OK', [('Content-Type', 'text/csv'), 
-        ("Content-Disposition", "attachment;filename=%s.csv" % search_data)])
     return [ csv_io.getvalue() ]
 
 def get_user_array(sid):
