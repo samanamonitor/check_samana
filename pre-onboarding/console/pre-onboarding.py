@@ -252,12 +252,13 @@ def get_csv(params=None, sid_list=None):
 
     csv_wr.writerow(["User", "Type", "Icon", "Drive Letter", "UNC", "Printer Name", "Port/Share Name"])
 
-    for sid in sid_list:
-        csv_wr.writerows(get_user_array(sid))
+    users = map(lambda s, n: (s, n), sid_list, get_users_samaccountname(sid_list))
+    for sid, sAMAccountName in users:
+        csv_wr.writerows(get_user_array(sid, sAMAccountName))
 
     return [ csv_io.getvalue() ]
 
-def get_user_array(sid):
+def get_user_array(sid, samAccountName):
     out = []
     icons = get_icons(sid_list=[sid])
     for icon in icons:
