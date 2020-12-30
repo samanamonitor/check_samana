@@ -277,10 +277,9 @@ def get_user_array(user):
 
     drives = get_drives(sid_list=[user['sid']])
     for drive in drives:
-        if ''
         if 'LocalPath' not in drive:
             out.append([user['samaccountname'], "drive", "", "old version - rerun script on local PC", "", "", ""])
-            continue
+            break
         out.append([user['samaccountname'], "drive", "", drive['LocalPath'], drive['RemotePath'], "", ""])
 
     printers = get_printers(sid_list=[user['sid']])
