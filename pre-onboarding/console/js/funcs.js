@@ -19,6 +19,10 @@ function show_users(data) {
         download.attr("sid", data[i]['sid'])
             .click(download_data);
     }
+    $("#userlist").append(
+        $("<button>").text("Download All")
+            .addClass("btn btn-info btn-sm")
+            .attr("type", "button"));
 }
 
 function show_data(e) {
