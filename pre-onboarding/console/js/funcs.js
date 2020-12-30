@@ -22,7 +22,8 @@ function show_users(data) {
     $("#userlist").prepend(
         $("<button>").text("Download All")
             .addClass("btn btn-info btn-sm")
-            .attr("type", "button"));
+            .attr("type", "button")
+            .click(download_all));
 }
 
 function show_data(e) {
@@ -32,12 +33,16 @@ function show_data(e) {
     $(".modal").modal();
     $.getJSON('go/printers/' + sid, show_printers);
     $.getJSON('go/drives/' + sid, show_drives);
-    $.getJSON('go/icons/' + sid, show_icons)
+    $.getJSON('go/icons/' + sid, show_icons);
 }
 
 function download_data(e) {
     sid = $(e.target).attr("sid");
-    document.location.replace('go/csv/' + sid)
+    document.location.replace('go/csv/' + sid);
+}
+
+function download_all(e) {
+    document.location.replace('go/csvall/');
 }
 
 function show_printers(data) {
