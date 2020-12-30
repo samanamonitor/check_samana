@@ -157,6 +157,7 @@ def get_listusers(output="array"):
         sid_list = []
         etcd_sid_list = client.get('/pre-onboarding').children
         for item in etcd_sid_list:
+            print item.key
             sid_list.append(item.key.split('/')[-1].encode("ascii"))
     except etcd.EtcdKeyNotFound:
         raise etcd.EtcdKeyNotFound('400 NO USERS FOUND', "No users found")
