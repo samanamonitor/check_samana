@@ -81,14 +81,13 @@ def application(environ, start_fn):
         elif func == "csv":
             output = get_csv(params)
             start_fn('200 OK', [('Content-Type', 'text/csv'), 
-                ("Content-Disposition", "attachment;filename=%s.csv" % search_data)])
+                ("Content-Disposition", "attachment;filename=data.csv%s" % search_data)])
         else:
             raise Exception('400 INVALID FUNC', "Invalid function %s\n" % func)
 
     except Exception as e:
-        print e
-        print len(e)
-        if isinstance(e, list):
+        print type(e)
+        if e[0] is not None:
             start_fn(e[0], [('Content-Type', 'text/plain')])
             return e[1]
         else:
