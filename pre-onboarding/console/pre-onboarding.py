@@ -262,11 +262,11 @@ def get_user_array(sid, samAccountName):
     out = []
     icons = get_icons(sid_list=[sid])
     for icon in icons:
-        out.append([sid, "icon", icon, "", "", "", ""])
+        out.append([samAccountName, "icon", icon, "", "", "", ""])
 
     drives = get_drives(sid_list=[sid])
     for drive in drives:
-        out.append([sid, "drive", "", drive['LocalPath'], drive['RemotePath'], "", ""])
+        out.append([samAccountName, "drive", "", drive['LocalPath'], drive['RemotePath'], "", ""])
 
     printers = get_printers(sid_list=[sid])
     for printer in printers:
@@ -275,7 +275,7 @@ def get_user_array(sid, samAccountName):
             printer_data = printer.get('PortName', "")
         if printer_data is None or printer_data == "":
             printer_data = "--"
-        out.append([sid, "printer", "", "", "", printer['Name'], printer_data])
+        out.append([samAccountName, "printer", "", "", "", printer['Name'], printer_data])
     return out
 
 def get_user_xmldata(objectSid):
