@@ -277,7 +277,7 @@ def get_user_array(user):
 
     drives = get_drives(sid_list=[user['sid']])
     for drive in drives:
-        print user
+        print drive
         out.append([user['samaccountname'], "drive", "", drive['LocalPath'], drive['RemotePath'], "", ""])
 
     printers = get_printers(sid_list=[user['sid']])
