@@ -266,22 +266,7 @@ def get_csv(params=None, sid_list=None):
     return [ csv_io.getvalue() ]
 
 def get_csvall():
-    sid_list = get_listusers()
-
-    from StringIO import StringIO
-    import xml.etree.ElementTree as et
-    import csv
-
-    csv_io = StringIO()
-    csv_wr = csv.writer(csv_io)
-
-    csv_wr.writerow(["User", "Type", "Icon", "Drive Letter", "UNC", "Printer Name", "Port/Share Name"])
-
-    users = get_users_samaccountname(sid_list)
-    for user in users:
-        csv_wr.writerows(get_user_array(user))
-
-    return [ csv_io.getvalue() ]
+    return get_csv(sid_list=get_listusers())
 
 def get_user_array(user):
     out = []
