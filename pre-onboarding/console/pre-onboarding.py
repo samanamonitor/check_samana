@@ -277,7 +277,9 @@ def get_user_array(user):
 
     drives = get_drives(sid_list=[user['sid']])
     for drive in drives:
-        print drive
+        if 'LocalPath' not in drive:
+            print "Failed drive for user %s - will continue: %s" % (user['samaccountname'], drive)
+            continue
         out.append([user['samaccountname'], "drive", "", drive['LocalPath'], drive['RemotePath'], "", ""])
 
     printers = get_printers(sid_list=[user['sid']])
