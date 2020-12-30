@@ -273,14 +273,14 @@ def get_user_array(user):
     out = []
     icons = get_icons(sid_list=[user['sid']])
     for icon in icons:
-        out.append([user['samaccountname'], "icon", icon, "", "", "", ""])
+        out.append([user['samaccountname'], user['displayName'], "icon", icon, "", "", "", ""])
 
     drives = get_drives(sid_list=[user['sid']])
     for drive in drives:
         if 'LocalPath' not in drive:
-            out.append([user['samaccountname'], "drive", "", "old version - rerun script on local PC", "", "", ""])
+            out.append([user['samaccountname'], user['displayName'], "drive", "", "old version - rerun script on local PC", "", "", ""])
             break
-        out.append([user['samaccountname'], "drive", "", drive['LocalPath'], drive['RemotePath'], "", ""])
+        out.append([user['samaccountname'], user['displayName'], "drive", "", drive['LocalPath'], drive['RemotePath'], "", ""])
 
     printers = get_printers(sid_list=[user['sid']])
     for printer in printers:
@@ -289,7 +289,7 @@ def get_user_array(user):
             printer_data = printer.get('PortName', "")
         if printer_data is None or printer_data == "":
             printer_data = "--"
-        out.append([user['samaccountname'], "printer", "", "", "", printer['Name'], printer_data])
+        out.append([user['samaccountname'], user['displayName'], "printer", "", "", "", printer['Name'], printer_data])
     return out
 
 def get_user_xmldata(objectSid):
