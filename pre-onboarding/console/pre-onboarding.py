@@ -86,12 +86,10 @@ def application(environ, start_fn):
             raise Exception('400 INVALID FUNC', "Invalid function %s\n" % func)
 
     except Exception as e:
-        print type(e)
-        print "test: .%s." % e[1]
-        if e[0] is not None:
+        try:
             start_fn(e[0], [('Content-Type', 'text/plain')])
             return e[1]
-        else:
+        except:
             start_fn("400 UNKNOWN", [('Content-Type', 'text/plain')])
             return [ "UNKNOWN" ]
 
