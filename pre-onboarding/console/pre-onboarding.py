@@ -261,7 +261,6 @@ def get_csv(params=None, sid_list=None):
 
     users = get_users_samaccountname(sid_list)
     for user in users:
-        print user
         csv_wr.writerows(get_user_array(user))
 
     return [ csv_io.getvalue() ]
@@ -289,6 +288,7 @@ def get_user_array(user):
         if printer_data is None or printer_data == "":
             printer_data = "--"
         out.append([user['samaccountname'], "printer", "", "", "", printer['Name'], printer_data])
+    print out
     return out
 
 def get_user_xmldata(objectSid):
