@@ -87,8 +87,14 @@ def application(environ, start_fn):
 
     except Exception as e:
         print e
-        start_fn(e[0], [('Content-Type', 'text/plain')])
-        return e[1]
+        print len(e)
+        if isinstance(e, list):
+            start_fn(e[0], [('Content-Type', 'text/plain')])
+            return e[1]
+        else:
+            start_fn("400 UNKNOWN", [('Content-Type', 'text/plain')])
+            return [ "UNKNOWN" ]
+
 
     return output
 
