@@ -66,7 +66,7 @@ def application(environ, start_fn):
             output = get_userdata(params, output="wsgi")
             start_fn('200 OK', [('Content-Type', 'application/json')])
         elif func == 'listusers':
-            output = get_listusers()
+            output = get_listusers(output="wsgi")
             start_fn('200 OK', [('Content-Type', 'application/json')])
         elif func == "xml":
             output = get_xml(params)
@@ -83,7 +83,11 @@ def application(environ, start_fn):
         elif func == "csv":
             output = get_csv(params)
             start_fn('200 OK', [('Content-Type', 'text/csv'), 
-                ("Content-Disposition", "attachment;filename=data.csv")])
+                ("Content-Disposition", "attachment;filename=preonboarding.csv")])
+        elif func == "csvall":
+            output = get_csvall()
+            start_fn('200 OK', [('Content-Type', 'text/csv'), 
+                ("Content-Disposition", "attachment;filename=preonboarding.csv")])
         else:
             raise Exception('400 INVALID FUNC', "Invalid function %s\n" % func)
 
@@ -146,7 +150,7 @@ def get_userdata(params=None, sid_list=None):
 
     return [json.dumps(map(lambda un, sid: {'username': un, 'sid': sid}), search_data_list, user_sid )]
 
-def get_listusers():
+def get_listusers(output="array"):
     import etcd
     client = etcd.Client(port=2379)
     try:
@@ -157,7 +161,10 @@ def get_listusers():
     except etcd.EtcdKeyNotFound:
         raise etcd.EtcdKeyNotFound('400 NO USERS FOUND', "No users found")
 
-    return [json.dumps(get_users_samaccountname(sid_list))]
+    if output == "array":
+        return sid_list
+    if output == "wsgi":
+        return [json.dumps(get_users_samaccountname(sid_list))]
 
 def get_xml(params=None, sid_list=None):
     if sid_list is None:
@@ -242,6 +249,24 @@ def get_icons(params=None, sid_list=None, output="array"):
 def get_csv(params=None, sid_list=None):
     if sid_list is None:
         sid_list = get_sid_list(get_param_user_list(params))
+
+    from StringIO import StringIO
+    import xml.etree.ElementTree as et
+    import csv
+
+    csv_io = StringIO()
+    csv_wr = csv.writer(csv_io)
+
+    csv_wr.writerow(["User", "Type", "Icon", "Drive Letter", "UNC", "Printer Name", "Port/Share Name"])
+
+    users = get_users_samaccountname(sid_list)
+    for user in users:
+        csv_wr.writerows(get_user_array(user))
+
+    return [ csv_io.getvalue() ]
+
+def get_csvall():
+    sid_list = get_listusers()
 
     from StringIO import StringIO
     import xml.etree.ElementTree as et
