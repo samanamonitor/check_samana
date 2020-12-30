@@ -87,6 +87,7 @@ def application(environ, start_fn):
 
     except Exception as e:
         print type(e)
+        print "test: .%s." % e[0]
         if e[0] is not None:
             start_fn(e[0], [('Content-Type', 'text/plain')])
             return e[1]
