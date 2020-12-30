@@ -266,7 +266,8 @@ def get_csv(params=None, sid_list=None):
     return [ csv_io.getvalue() ]
 
 def get_csvall():
-    return get_csv(sid_list=get_listusers())
+    sid_list = get_listusers()
+    return get_csv(sid_list=sid_list)
 
 def get_user_array(user):
     out = []
