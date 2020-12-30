@@ -13,7 +13,7 @@ function show_users(data) {
         $("#userlist").append(u)
         view = u.find(".btn-primary")
         view.attr("sid", data[i]['sid'])
-            .attr("displayName", username.text())
+            .attr("displayName", user_name.text())
             .click(show_data);
     }
 }
