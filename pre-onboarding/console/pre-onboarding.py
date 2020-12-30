@@ -301,7 +301,7 @@ def get_user_xmldata(objectSid):
 
     import base64
     data = base64.b64decode(data_b64)
-    return data.decode("UTF-16").encode("UTF-8")
+    return data.decode("UTF-16").encode("ascii")
 
 def get_user_sid(data):
     if len(data.split('-')) == 8:
