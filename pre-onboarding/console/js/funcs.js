@@ -15,6 +15,9 @@ function show_users(data) {
         view.attr("sid", data[i]['sid'])
             .attr("displayName", user_name.text())
             .click(show_data);
+        download = u.find(".btn-info");
+        download.attr("sid", data[i]['sid'])
+            .click(download_data);
     }
 }
 
@@ -26,6 +29,11 @@ function show_data(e) {
     $.getJSON('go/printers/' + sid, show_printers);
     $.getJSON('go/drives/' + sid, show_drives);
     $.getJSON('go/icons/' + sid, show_icons)
+}
+
+function download_data(e) {
+    sid = $(e.target).attr("sid");
+    document.location.replace('go/csv/' + sid)
 }
 
 function show_printers(data) {
