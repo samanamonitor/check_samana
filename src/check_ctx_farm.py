@@ -225,7 +225,7 @@ $json
     #print out
 
 
-    for a in s['data']['LoadIndexes']
+    #for a in s['data']['LoadIndexes']
     if crit != '' and load > int(crit):
       status = "CRITICAL"
       code = 2
