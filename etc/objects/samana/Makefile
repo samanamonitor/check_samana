@@ -5,7 +5,8 @@ MODE ?= 0664
 
 INSTALL_FILES = $(wildcard *.cfg)
 
-install: $(INSTALL_FILES)
+install:
+	$(MAKE) $(INSTALL_FILES)
 
 %.cfg:
 	install -D -g $(GROUP) -o $(USER) -m $(MODE) $@ $(INSTALL_PATH)
