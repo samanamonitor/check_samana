@@ -5,4 +5,4 @@ INSTALLERS := nagios pnp4nagios
 install: $(INSTALLERS)
 
 $(INSTALLERS):
-	$(MAKE) $(INSTALLERS)
+	$(MAKE) -C $(INSTALLERS)
