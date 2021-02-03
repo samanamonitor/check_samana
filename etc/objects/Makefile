@@ -4,5 +4,7 @@ DIRS = $(sort $(dir $(wildcard ../objects/*/)))
 
 .PHONY: $(DIRS)
 
-install:
-	$(MAKE) -C $(DIRS) INSTALL_BASE=$(INSTALL_BASE)/objects
+install: $(DIRS)
+
+$(DIRS):
+	$(MAKE) -C $@ INSTALL_BASE=$(INSTALL_BASE)/objects
