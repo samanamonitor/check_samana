@@ -1,12 +1,14 @@
-SRC_CEPH=check_ceph_df2 \
-	check_ceph_mon2 \
-	check_ceph_osd2
+NAGIOS_LIBEXEC ?= $(INSTALL_BASE)/usr/local/nagios/libexec
+NAGIOS_USER ?= nagios
+NAGIOS_GROUP ?= nagios
+FILE_MODE := 0664
 
-SRC_SAMANA2=check_samana2.py \
-	check_winrm.py 
+INSTALL_FILES = $(wildcard check*)
 
-SRC_CTX_FARM=check_ctx_farm.py \
-	check_ctx_apps.py
+.PHONY: $(INSTALL_FILES)
 
-install: $(SRC_SAMANA2) $(SRC_CTX_FARM)
-	install $^ /usr/local/nagios/libexec
+install:
+	$(MAKE) $(INSTALL_FILES)
+
+$(INSTALL_FILES):
+	install -D -g $(NAGIOS_GROUP) -o $(NAGIOS_USER) -m $(FILE_MODE) $@ $(NAGIOS_LIBEXEC)/$@
