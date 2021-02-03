@@ -1,4 +1,5 @@
-INSTALL_PATH ?= /etc/nagios/objects/samana
+INSTALL_BASE ?= /etc/nagios/objects
+INSTALL_PATH ?= $(INSTALL_BASE)/samana
 USER ?= nagios
 GROUP ?= nagios
 MODE ?= 0664
