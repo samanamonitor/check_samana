@@ -1,4 +1,4 @@
-ETC_PATH ?= $(INSTALL_BASE)/etc/nagios
+NAGIOS_ETC ?= $(INSTALL_BASE)/etc/nagios
 
 install:
-	$(MAKE) -C objects INSTALL_BASE=$(ETC_PATH)/objects
+	$(MAKE) -C objects INSTALL_BASE=$(NAGIOS_ETC)/objects

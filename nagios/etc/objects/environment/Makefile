@@ -1,9 +1,9 @@
-INSTALL_BASE ?= /etc/nagios/objects
+NAGIOS_ETC ?= $(INSTALL_BASE)/etc/nagios
+INSTALL_PATH ?= $(NAGIOS_ETC)/objects/$(CUSTOMER)
 CUSTOMER ?= environment
-INSTALL_PATH ?= $(INSTALL_BASE)/$(CUSTOMER)
-USER ?= nagios
-GROUP ?= nagios
-MODE ?= 0664
+NAGIOS_USER ?= nagios
+NAGIOS_GROUP ?= nagios
+FILE_MODE ?= 0664
 
 INSTALL_FILES = $(wildcard *.cfg)
 
@@ -13,4 +13,4 @@ install:
 .PHONY: $(INSTALL_FILES)
 
 $(INSTALL_FILES):
-	install -D -g $(GROUP) -o $(USER) -m $(MODE) $@ $(INSTALL_PATH)/$@
+	install -D -g $(NAGIOS_GROUP) -o $(NAGIOS_USER) -m $(FILE_MODE) $@ $(INSTALL_PATH)/$@
