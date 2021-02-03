@@ -5,6 +5,9 @@ PAGES_CONFIG := $(patsubst %,$(PAGES_DIR)/%.cfg,$(HOSTS))
 PNP_USER := nagios
 PNP_GROUP := nagcmd
 
+install:
+	: "Not Implemented"
+
 all: $(PAGES_CONFIG)
 
 $(PAGES_DIR)/%.cfg: %.pre
