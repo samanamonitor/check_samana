@@ -7,6 +7,7 @@
 * INSTALL_BASE default */etc/nagios*
 * USER default *nagios*
 * GROUP default *nagios*
+* CUSTOMER default *environment*
 
 ## Install with variables
 `make install INSTALL_BASE=/usr/local/nagios/etc USER=nag GROUP=nagcmd`
