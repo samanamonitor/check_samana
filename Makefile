@@ -1,13 +1,4 @@
-all:
-	$(MAKE) etc
-	$(MAKE) winsrc
-	$(MAKE) src
+INSTALLERS := nagios
 
-src:
-	$(MAKE) -C src install
-
-etc:
-	$(MAKE) -C etc install
-
-winsrc:
-	$(MAKE) -C winsrc install
+install:
+	$(MAKE) -C $(INSTALLERS)
