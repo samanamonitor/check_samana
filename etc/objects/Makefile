@@ -1,6 +1,6 @@
 INSTALL_BASE ?= /etc/nagios/
 
-DIRS = $(sort $(dir $(wildcard ../objects/*/)))
+DIRS = $(wildcard */.)
 
 .PHONY: $(DIRS)
 
