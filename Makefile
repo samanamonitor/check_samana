@@ -1,4 +1,8 @@
 INSTALLERS := nagios pnp4nagios
 
-install:
+.PHONY: $(INSTALLERS)
+
+install: $(INSTALLERS)
+
+$(INSTALLERS):
 	$(MAKE) -C $(INSTALLERS)
