@@ -4,7 +4,7 @@
 `make install`
 
 ## Relevant variables
-* INSTALL_BASE default */etc/nagios*
+* INSTALL_BASE default */* which will put all files in */etc/nagios/objects*
 * USER default *nagios*
 * GROUP default *nagios*
 * CUSTOMER default *environment*
