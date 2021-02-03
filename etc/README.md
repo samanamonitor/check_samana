@@ -3,7 +3,7 @@
 ## Default install
 `make install`
 
-Relevant variables
+## Relevant variables
 * INSTALL_BASE default */etc/nagios*
 * USER default *nagios*
 * GROUP default *nagios*
