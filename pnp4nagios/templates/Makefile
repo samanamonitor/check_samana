@@ -1,6 +1,7 @@
-TEMPLATE_DIR := /usr/local/pnp4nagios/share/templates
-PNP_USER := nagios
-PNP_GROUP := nagcmd
+INSTALL_BASE ?= /usr/local/pnp4nagios/
+PNP_USER ?= nagios
+PNP_GROUP ?= nagcmd
+TEMPLATE_DIR := $(INSTALL_BASE)/share/templates
 SRC_FILES := $(wildcard *.php)
 DST_FILES := $(patsubst %.php,$(TEMPLATE_DIR)/%.php,$(SRC_FILES))
 
