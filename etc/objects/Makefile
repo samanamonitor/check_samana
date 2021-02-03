@@ -1,5 +1,4 @@
-INSTALL_BASE ?= /etc/nagios
-INSTALL_PATH ?= $(INSTALL_BASE)/objects
+INSTALL_BASE ?= /etc/nagios/
 
 install:
-	$(MAKE) -C samana INSTALL_BASE=$(INSTALL_PATH)
+	$(MAKE) -C samana INSTALL_BASE=$(INSTALL_BASE)/objects
