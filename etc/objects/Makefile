@@ -1,4 +1,6 @@
 INSTALL_BASE ?= /etc/nagios/
 
+DIRS = $(sort $(dir $(wildcard ../objects/*/)))
+
 install:
-	$(MAKE) -C samana INSTALL_BASE=$(INSTALL_BASE)/objects
+	$(MAKE) -C $(DIRS) INSTALL_BASE=$(INSTALL_BASE)/objects
