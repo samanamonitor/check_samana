@@ -8,5 +8,5 @@ INSTALL_FILES = $(wildcard *.cfg)
 install:
 	$(MAKE) $(INSTALL_FILES)
 
-%.cfg:
+$(INSTALL_FILES):
 	install -D -g $(GROUP) -o $(USER) -m $(MODE) $@ $(INSTALL_PATH)
