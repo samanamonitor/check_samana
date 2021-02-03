@@ -1,4 +1,4 @@
-HTML_PATH=/var/www/html
+HTML_PATH ?= $(INSTALL_BASE)/var/www/html
 NAGIOS_USER ?= nagios
 NAGIOS_GROUP ?= nagios
 FILE_MODE := 0664
