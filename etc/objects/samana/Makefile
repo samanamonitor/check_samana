@@ -11,4 +11,4 @@ install:
 .PHONY: $(INSTALL_FILES)
 
 $(INSTALL_FILES):
-	install -D -g $(GROUP) -o $(USER) -m $(MODE) $@ $(INSTALL_PATH)
+	install -D -g $(GROUP) -o $(USER) -m $(MODE) $@ $(INSTALL_PATH)/
