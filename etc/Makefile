@@ -1,4 +1,4 @@
-INSTALL_PATH ?= /etc/nagios/objects
+INSTALL_BASE ?= /etc/nagios/
 
 install:
 	$(MAKE) -C objects
