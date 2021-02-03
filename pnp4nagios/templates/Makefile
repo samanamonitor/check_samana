@@ -1,11 +1,16 @@
-INSTALL_BASE ?= /usr/local/pnp4nagios/
+PNP_BASE ?= $(INSTALL_BASE)/usr/local/pnp4nagios/
+PNP_SHARE ?= $(PNP_BASE)/share
+TEMPLATE_DIR := $(PNP_SHARE)/templates
 PNP_USER ?= nagios
-PNP_GROUP ?= nagcmd
-TEMPLATE_DIR := $(INSTALL_BASE)/share/templates
-SRC_FILES := $(wildcard *.php)
-DST_FILES := $(patsubst %.php,$(TEMPLATE_DIR)/%.php,$(SRC_FILES))
+PNP_GROUP ?= nagios
+FILE_MODE := 0664
 
-install: $(DST_FILES)
+INSTALL_FILES := $(wildcard *.php)
 
-$(TEMPLATE_DIR)/%.php: %.php
-	install -o $(PNP_USER) -g $(PNP_GROUP) $^ $@
+.PHONY: $(INSTALL_FILES)
+
+install:
+	$(MAKE) $(INSTALL_FILES)
+
+$(INSTALL_FILES):
+	install -D -g $(PNP_GROUP) -o $(PNP_USER) -m $(FILE_MODE) $@ $(TEMPLATE_DIR)/$@
