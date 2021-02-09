@@ -362,7 +362,7 @@ def main(argv):
     if hostid == "" or module == "":
         help()
 
-    if test is None:
+    if test is not None:
         try:
             with open(test, "r") as f:
                 data = json.load(f)
