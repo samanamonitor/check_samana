@@ -141,7 +141,20 @@ def log(data, logname, crit, warn):
     if logname not in data['Events'] or data['Events'][logname] is None:
         return (3, 'UNKNOWN - Event log %s not configured.' % logname)
 
-    val = len(data['Events'][logname])
+    events = data['Events'][logname]
+
+    if isinstance(events, dict):
+        if len(events) == 0:
+            events = []
+        else:
+            events = [ events ]
+    elif isinstance(events, list):
+        pass
+    else:
+        return (3, 'UNKNOWN - Invalid log data(%s): %s' % (logname, data['Events'][logname]))
+
+    val = len(events)
+
     if 'Truncated' in data['Events'] and logname in data['Events']['Truncated'] or val > critval:
         state = "CRITICAL"
         outval = 2
@@ -154,14 +167,11 @@ def log(data, logname, crit, warn):
 
     if outval > 0:
         messages = "\n"
-        if logname in data['Events']:
-            for i in data['Events'][logname]:
-                if 'Message' in i:
-                    messages += i['Message'] + "\n"
-                else:
-                    messages += "<UNKNOWN>\n"
-        else:
-            messages = "Not configured to pull Log"
+        for i in events:
+            if 'Message' in i:
+                messages += i['Message'] + "\n"
+            else:
+                messages += "<UNKNOWN>\n"
 
     outmsg = "%s - Error or Warning Events=%d %s" %  \
         (state, val, messages)
@@ -315,10 +325,11 @@ def main(argv):
     search = ""
     incl = ''
     excl = ''
+    test = None
     global debug
 
     try:
-        opts, args = getopt.getopt(argv, "H:m:c:w:p:s:r:i:e:l:x:d")
+        opts, args = getopt.getopt(argv, "H:m:c:w:p:s:r:i:e:l:x:dt:")
     except getopt.GetoptError:
         help()
     
@@ -345,27 +356,37 @@ def main(argv):
             excl = arg
         elif opt == "-d":
             debug = 1
+        elif opt == "-t":
+            test = arg
 
     if hostid == "" or module == "":
         help()
 
-    c = etcd.Client(port=2379)
-
-    try:
-        data =json.loads(c.get("/samanamonitor/data/%s" % hostid).value)
-        age_secs = time.time() - data['epoch']
-        if age_secs > 600:
-            print "UNKNOWN - Data is too old %d seconds" % age_secs
+    if test is None:
+        try:
+            with open(test, "r") as f:
+                data = json.load(f)
+        except:
+            print "UNKNOWN - Unable to load data from file %s" % test
             exit(3)
-    except etcd.EtcdKeyNotFound:
-        print "UNKNOWN - ServerID \"%s\" not found in the database" % hostid
-        exit(3)
-    except ValueError:
-        print "UNKNOWN - Data for ServerID \"%s\" is corrupt" % hostid
-        exit(3)
-    except etcd.EtcdException as e:
-        print "UNKNOWN - Server not responding. %s" % str(e)
-        exit(3)
+    else:
+        c = etcd.Client(port=2379)
+
+        try:
+            data =json.loads(c.get("/samanamonitor/data/%s" % hostid).value)
+            age_secs = time.time() - data['epoch']
+            if age_secs > 600:
+                print "UNKNOWN - Data is too old %d seconds" % age_secs
+                exit(3)
+        except etcd.EtcdKeyNotFound:
+            print "UNKNOWN - ServerID \"%s\" not found in the database" % hostid
+            exit(3)
+        except ValueError:
+            print "UNKNOWN - Data for ServerID \"%s\" is corrupt" % hostid
+            exit(3)
+        except etcd.EtcdException as e:
+            print "UNKNOWN - Server not responding. %s" % str(e)
+            exit(3)
 
     outmsg = "UNKNOWN - Data is unavailable"
     outval = 3 
