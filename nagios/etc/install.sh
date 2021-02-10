@@ -26,7 +26,7 @@ if [ ! -f ${NAGIOS_CFG} ]; then
     exit 1
 fi
 
-case $1 in:
+case "$1" in
 'enable')
     enable
     ;;
