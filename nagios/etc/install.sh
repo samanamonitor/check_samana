@@ -6,12 +6,12 @@ CUSTOMER=environment
 
 enable() {
     CFG_DIR="cfg_dir=${NAGIOS_ETC}/objects/samana"
-    if $(grep -q "${CFG_DIR}" ${NAGIOS_CFG}); then 
+    if ! $(grep -q "${CFG_DIR}" ${NAGIOS_CFG}); then 
         echo "${CFG_DIR}" >> ${NAGIOS_CFG};
     fi
 
     CFG_DIR="cfg_dir=${NAGIOS_ETC}/objects/${CUSTOMER}"
-    if $(grep -q "${CFG_DIR}" ${NAGIOS_CFG}); then 
+    if ! $(grep -q "${CFG_DIR}" ${NAGIOS_CFG}); then 
         echo "${CFG_DIR}" >> ${NAGIOS_CFG};
     fi    
 }
