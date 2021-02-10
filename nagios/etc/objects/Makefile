@@ -7,4 +7,4 @@ DIRS = $(wildcard */.)
 install: $(DIRS)
 
 $(DIRS):
-	$(MAKE) -C $@ INSTALL_BASE=$(INSTALL_BASE)/objects
+	$(MAKE) -C $@
