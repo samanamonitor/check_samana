@@ -17,8 +17,8 @@ enable() {
 }
 
 disable() {
-    sed -i -e "/#cfg_dir=${NAGIOS_ETC}/objects/${CUSTOMER}/d" $NAGIOS_CFG
-    sed -i -e "/#cfg_dir=${NAGIOS_ETC}/objects/samana/d" $NAGIOS_CFG
+    sed -i -e "#^cfg_dir=${NAGIOS_ETC}/objects/${CUSTOMER}#d" $NAGIOS_CFG
+    sed -i -e "#^cfg_dir=${NAGIOS_ETC}/objects/samana#d" $NAGIOS_CFG
 }
 
 if [ ! -f ${NAGIOS_CFG} ]; then
