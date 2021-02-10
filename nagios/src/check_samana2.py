@@ -359,7 +359,7 @@ def main(argv):
         elif opt == "-t":
             test = arg
 
-    if hostid == "" or module == "":
+    if module == "":
         help()
 
     if test is not None:
@@ -370,6 +370,10 @@ def main(argv):
             print "UNKNOWN - Unable to load data from file %s" % test
             exit(3)
     else:
+        if hostid == "": 
+            print "UNKNOWN - Host ID not specified."
+            exit(3)
+
         c = etcd.Client(port=2379)
 
         try:
