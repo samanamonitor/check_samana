@@ -1,7 +1,7 @@
 NAGIOS_LIBEXEC ?= $(INSTALL_BASE)/usr/local/nagios/libexec
 NAGIOS_USER ?= nagios
 NAGIOS_GROUP ?= nagios
-FILE_MODE := 0664
+FILE_MODE := 0755
 
 INSTALL_FILES = $(wildcard check*)
 
