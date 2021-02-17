@@ -97,7 +97,7 @@ def auth_file(authfile):
       linenum = 0
       for l in f:
         linenum += 1
-        #line = l.split("#")[0]
+        line = l #.split("#")[0]
         line = line.strip()
         d = line.split('=')
         if len(d) != 2: continue
