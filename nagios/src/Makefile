@@ -3,7 +3,7 @@ NAGIOS_USER ?= nagios
 NAGIOS_GROUP ?= nagios
 FILE_MODE := 0755
 
-INSTALL_FILES = $(wildcard check*)
+INSTALL_FILES = $(wildcard check*) slack_nagios
 
 .PHONY: $(INSTALL_FILES)
 
