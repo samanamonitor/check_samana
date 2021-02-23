@@ -43,7 +43,8 @@ class CitrixXD:
       last_update = None
       r = 0
 
-    if load_from_server and (last_update is None or r > 0.5):
+#    if load_from_server and (last_update is None or r > 0.5):
+    if load_from_server:
       self.updateCache()
 
   def getCache(self):
