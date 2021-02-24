@@ -42,14 +42,15 @@ def cpu(data, crit, warn):
         state = "OK"
         outval = 0
     
-    perfusage = "cpu=%.0f;%s;%s;0;%d" % (
+    perfusage = "cpuLoad=%.0f;%s;%s;0;%d" % (
         val, 
         warn if warn is not None else '', 
         crit if crit is not None else '', 
         graphmax)
-    perfpriv = "priv=%.0f;;;" % data['PercentPrivilegedTime']
-    perfuser = "user=%.0f;;;" % data['PercentUserTime']
-    perfirq  = "interrupt=%.0f;;;" % data['PercentInterruptTime']
+    # TODO: need to create script to migrate old data to include these values on old systems
+    perfpriv = "" #"priv=%.0f;;;" % data['PercentPrivilegedTime']
+    perfuser = "" #"user=%.0f;;;" % data['PercentUserTime']
+    perfirq  = "" #"interrupt=%.0f;;;" % data['PercentInterruptTime']
     outmsg = "%s - CPU Usage %0.f %%| %s %s %s %s" % (
         state, val, perfusage, perfpriv, perfuser, perfirq)
     return (outval, outmsg)
@@ -80,7 +81,9 @@ def ram(data, crit, warn):
         state = "OK"
         outval = 0
 
-    perfused = "Physical Memory Used=%d;%s;%s;0;100" % (
+    perfused = "'Physical Memory Used'=%d;;;0;%d 'Physical Memory Utilization'=%d;%s;%s;0;100" % (
+        free,
+        total,
         percused,
         warn if warn is not None else '',
         crit if crit is not None else '')

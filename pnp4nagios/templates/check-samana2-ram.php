@@ -7,7 +7,7 @@ $opt[1] = "--vertical-label 'Used RAM' -l0 --upper-limit 100 --color CANVAS#F2F2
 #
 #
 #
-$def[1]  = rrd::def("var1", $RRDFILE[1], $DS[1], "AVERAGE");
+$def[1]  = rrd::def("var1", $RRDFILE[1], $DS[2], "AVERAGE");
 
 if ($WARN[1] != "") {
     $def[1] .= "HRULE:$WARN[1]#FFE459 ";
