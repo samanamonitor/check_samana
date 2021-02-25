@@ -462,8 +462,8 @@ def main():
     else:
       raise Exception("Module not implemented")
 
-  except getopt.GetoptError e:
-    print "Invalid parameter: %s" % str(e)
+  except getopt.GetoptError as err:
+    print "Invalid parameter: %s" % str(err)
     usage()
     exit(3)
   except Exception as err:
