@@ -74,7 +74,7 @@ class CitrixXD:
       json.dumps(self.data),
       )
 
-  def getLoad(self):
+  def getLoadIndex(self):
     return (
       int(self.data['LoadIndex']),
       "Load is %d" % int(self.data['LoadIndex']),
