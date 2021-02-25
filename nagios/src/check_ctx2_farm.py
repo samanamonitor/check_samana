@@ -32,12 +32,13 @@ class CitrixXD:
 
     try:
       http = urllib3.PoolManager()
-      r = http.requst('GET', 'http://localhost:2379' + path)
+      r = http.request('GET', 'http://localhost:2379' + path)
+      if r.status != 200: raise KeyError
       self.data =json.loads(r.data)
       age_secs = time.time() - self.data['epoch']
       if age_secs > 600:
         raise CXDToolOld("UNKNOWN - Data is too old %d seconds" % age_secs)
-    except etcd.EtcdKeyNotFound:
+    except KeyError:
       if hostname is not None:
         raise CXDNotFound("UNKNOWN - Server \"%s\" not found in the database" % hostname)
       if deliverygroup is not None:
