@@ -35,7 +35,7 @@ class CitrixXD:
     try:
         c = etcd.Client(port=2379)
         self.data =json.loads(c.get(path).value)
-        age_secs = time.time() - data['epoch']
+        age_secs = time.time() - self.data['epoch']
         if age_secs > 600:
           raise CXDToolOld("UNKNOWN - Data is too old %d seconds" % age_secs)
     except etcd.EtcdKeyNotFound:
