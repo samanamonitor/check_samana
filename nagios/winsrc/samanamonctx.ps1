@@ -18,6 +18,7 @@ Function get-config {
 
 Add-PSSnapin Citrix.*
 
+$ComputerName=$env:COMPUTERNAME.ToLower()
 $Farm = @{
     "TotalServers"=0; 
     "TotalLoad"=0; 
@@ -27,7 +28,7 @@ $Farm = @{
 }
 $DesktopGroup = @{}
 Get-BrokerDesktopGroup -MaxRecordCount 5000 | ForEach {
-    $DesktopGroup[$_.Name] = @{ 
+    $DesktopGroup[$_.Name.ToLower()] = @{
         "TotalServers"=0; 
         "TotalLoad"=0; 
         "SessionCount"=0; 
@@ -36,20 +37,20 @@ Get-BrokerDesktopGroup -MaxRecordCount 5000 | ForEach {
     }
 }
 
-Get-BrokerMachine -MaxRecordCount 5000 ForEach {
-    $dg = $DesktopGroup[$_.DesktopGroupName]
+Get-BrokerMachine -MaxRecordCount 5000 | ForEach {
+    $dg = $DesktopGroup[$_.DesktopGroupName.ToLower()]
     $dg["TotalServers"] += 1
     $Farm["TotalServers"] += 1
     $dg["SessionCount"] += $_.SessionCount
     $Farm["SessionCount"] += $_.SessionCount
-    if ($_.RegistrationState == "Registered" -and -not $_.InMaintenanceMode) {
+    if ($_.RegistrationState -eq "Registered" -and -not $_.InMaintenanceMode) {
         $dg["TotalLoad"] += $_.LoadIndex
         $Farm["TotalLoad"] += $_.LoadIndex
     } else {
         $dg["TotalLoad"] += 10000
         $Farm["TotalLoad"] += 10000
     }
-    if ($_.RegistrationState == "Registered") {
+    if ($_.RegistrationState -eq "Registered") {
         $dg["Registered"] += 1
         $Farm["Registered"] += 1
     }
@@ -59,26 +60,26 @@ Get-BrokerMachine -MaxRecordCount 5000 ForEach {
     }
 
     $epoch = [Math]::Floor([decimal](Get-Date(Get-Date).ToUniversalTime()-uformat "%s"))
-    $_ | Add-Member -NotePropertyName epoch
+    $_ | Add-Member -NotePropertyName epoch -NotePropertyValue 0
     $value = $_ | ConvertTo-JSON -Compress
     $res = Invoke-WebRequest -UseBasicParsing -Method "PUT" -Body @{value=$value} `
-        -uri "$($SamanaMonitorURI)/v2/keys/samanamonitor/ctx_data/$($env:COMPUTERNAME)/hosts/$($_.DnsName)" `
+        -uri "$($SamanaMonitorURI)/v2/keys/samanamonitor/ctx_data/$($ComputerName)/hosts/$($_.DnsName)" `
         -ContentType "application/x-www-form-urlencoded"
 }
 
 $DesktopGroup.Keys | ForEach {
-    $dg = $DesktopGroup[$_]
+    $dg = $DesktopGroup[$_.ToLower()]
     $dg["epoch"] = [Math]::Floor([decimal](Get-Date(Get-Date).ToUniversalTime()-uformat "%s"))
     $value = $dg | ConvertTo-JSON -Compress
     $res = Invoke-WebRequest -UseBasicParsing -Method "PUT" -Body @{value=$value} `
-        -uri "$($SamanaMonitorURI)/v2/keys/samanamonitor/ctx_data/$($env:COMPUTERNAME)/desktopgroup/$($_)" `
+        -uri "$($SamanaMonitorURI)/v2/keys/samanamonitor/ctx_data/$($ComputerName)/desktopgroup/$($_)" `
         -ContentType "application/x-www-form-urlencoded"
 
 }
 $Farm["epoch"] = [Math]::Floor([decimal](Get-Date(Get-Date).ToUniversalTime()-uformat "%s"))
 $value = $Farm | ConvertTo-JSON -Compress
 $res = Invoke-WebRequest -UseBasicParsing -Method "PUT" -Body @{value=$value} `
-    -uri "$($SamanaMonitorURI)/v2/keys/samanamonitor/ctx_data/$($env:COMPUTERNAME)/farm" `
+    -uri "$($SamanaMonitorURI)/v2/keys/samanamonitor/ctx_data/$($ComputerName)/farm" `
     -ContentType "application/x-www-form-urlencoded"
 
 $DnsName | Out-Host
