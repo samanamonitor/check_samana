@@ -82,4 +82,4 @@ $res = Invoke-WebRequest -UseBasicParsing -Method "PUT" -Body @{value=$value} `
     -uri "$($SamanaMonitorURI)/v2/keys/samanamonitor/ctx_data/$($ComputerName)/farm" `
     -ContentType "application/x-www-form-urlencoded"
 
-$DnsName | Out-Host
+$ComputerName | Out-Host
