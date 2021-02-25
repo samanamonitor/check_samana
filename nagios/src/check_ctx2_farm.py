@@ -29,6 +29,9 @@ class CitrixXD:
       path += "/host/" + host
     elif deliverygroup is not None:
       path += "/deliverygroup/" + deliverygroup
+    else
+      path += "/farm"
+
     try:
         c = etcd.Client(port=2379)
         self.data =json.loads(c.get(path).value)
@@ -377,7 +380,7 @@ to get a license.
 Copyright (c) 2017 Samana Group LLC
 
 Usage:
-  check_ctx_farm.py -D <ddc> -S <host domain name> -H <host name> < -d <user domain name> -u <username> -p <password> | -a <auth file> > [-r <refresh interval>] -m <module> -w <warning> -c <critical> -l
+  check_ctx_farm.py -D <ddc> -m <module> -w <warning> -c <critical> [ [-H <host name>] | [-g <delivery group name>] ]
   check_ctx_farm.py -h
 
   <ddc> Citrix Desktop Deliver Controller hostname or IP address
