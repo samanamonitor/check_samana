@@ -72,19 +72,26 @@ class CitrixXD:
       0,
       "Data Follows",
       json.dumps(self.data),
+      None, # data min
+      None  # data max
       )
 
   def getLoadIndex(self):
     return (
       int(self.data['LoadIndex']),
       "Load is %d" % int(self.data['LoadIndex']),
-      "")
+      "",
+      0,
+      10000
+      )
 
   def getLoadUser(self):
     return (
       int(self.data['SessionCount']),
       "Users connected %d" % int(self.data['SessionCount']),
-      ""
+      "",
+      None,
+      None
       )
 
   def getInMaintenance(self):
@@ -93,7 +100,9 @@ class CitrixXD:
     return (
       str(self.data['InMaintenanceMode']).ToLower(),
       "Server %s in Maintenance Mode" % "IS" if self.data['InMaintenanceMode'] else "IS NOT"
-      ""
+      "",
+      None,
+      None
       )
 
   def getRegistrationState(self):
@@ -102,7 +111,9 @@ class CitrixXD:
     return (
       str(self.data['RegistrationState']).ToLower(),
       "Server registration state is %s" % self.data['RegistrationState'],
-      ""
+      "",
+      None,
+      None
       )
 
   def getDesktopGroupName(self):
@@ -111,7 +122,9 @@ class CitrixXD:
     return (
       self.data['DesktopGroupName'].ToLower(),
       "Server is in %s Delivery Group" % self.data['DesktopGroupName'],
-      ""
+      "",
+      None,
+      None
       )
 
 def nagios_output(output, warning=None, critical=None, expected_text=None, perfmin=None, perfmax=None):
@@ -139,8 +152,8 @@ def nagios_output(output, warning=None, critical=None, expected_text=None, perfm
     warning = None
     str_warning = ''
 
-  perfmin = '' if perfmin is None else perfmin
-  perfmax = '' if perfmax is None else perfmin
+  perfmin = '' if output[3] is None else output[3]
+  perfmax = '' if output[4] is None else output[4]
 
   perfdata = "%d;%s;%s;%s;%s" % (output[0], str_warning, str_critical, perfmin, perfmax)
   if critical is not None and output[0] > critical:
