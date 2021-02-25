@@ -22,7 +22,7 @@ class CitrixXD:
 
     self.data = {}
     self.ddc = ddc
-    path = "/samanamonitor/ctx_data/%s" % ddc
+    path = "/v2/keys/samanamonitor/ctx_data/%s" % ddc
     if hostname is not None:
       path += "/hosts/" + hostname
     elif deliverygroup is not None:
