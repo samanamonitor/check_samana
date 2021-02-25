@@ -225,18 +225,17 @@ def main():
       output = machines.getRawData()
     elif module == 'InMaintenance':
       output = machines.getInMaintenance()
+      if expected_text is None: expected_text = ''
     elif module == 'RegistrationState':
       output = machines.getRegistrationState()
+      if expected_text is None: expected_text = ''
+    elif module == 'DeliveryGroupName':
+      output = machines.getCatalogName()
+      if expected_text is None: expected_text = ''
     elif module == 'LoadIndex':
       output = machines.getLoadIndex()
     elif module == 'LoadUser':
       output = machines.getLoadUser()
-    elif module == 'CatalogName':
-      output = machines.getCatalogName()
-    elif module == 'DeliveryGroupLoadIndex':
-      output = machines.getDeliveryGroupLoadIndex()
-    elif module == 'DeliveryGroupLoadUser':
-      output = machines.getDeliveryGroupLoadUser()
     else:
       raise Exception("Module not implemented")
 
