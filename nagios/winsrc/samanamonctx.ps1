@@ -21,7 +21,7 @@ Add-PSSnapin Citrix.*
 $ComputerName=$env:COMPUTERNAME.ToLower()
 $Farm = @{
     "TotalServers"=0; 
-    "TotalLoad"=0; 
+    "LoadIndex"=0; 
     "SessionCount"=0; 
     "InMaintenanceMode" = 0; 
     "Registered" = 0;
@@ -30,7 +30,7 @@ $DesktopGroup = @{}
 Get-BrokerDesktopGroup -MaxRecordCount 5000 | ForEach {
     $DesktopGroup[$_.Name.ToLower()] = @{
         "TotalServers"=0; 
-        "TotalLoad"=0; 
+        "LoadIndex"=0; 
         "SessionCount"=0; 
         "InMaintenanceMode" = 0; 
         "Registered" = 0;
@@ -44,11 +44,11 @@ Get-BrokerMachine -MaxRecordCount 5000 | ForEach {
     $dg["SessionCount"] += $_.SessionCount
     $Farm["SessionCount"] += $_.SessionCount
     if ($_.RegistrationState -eq "Registered" -and -not $_.InMaintenanceMode) {
-        $dg["TotalLoad"] += $_.LoadIndex
-        $Farm["TotalLoad"] += $_.LoadIndex
+        $dg["LoadIndex"] += $_.LoadIndex
+        $Farm["LoadIndex"] += $_.LoadIndex
     } else {
-        $dg["TotalLoad"] += 10000
-        $Farm["TotalLoad"] += 10000
+        $dg["LoadIndex"] += 10000
+        $Farm["LoadIndex"] += 10000
     }
     if ($_.RegistrationState -eq "Registered") {
         $dg["Registered"] += 1
@@ -70,6 +70,7 @@ Get-BrokerMachine -MaxRecordCount 5000 | ForEach {
 
 $DesktopGroup.Keys | ForEach {
     $dg = $DesktopGroup[$_.ToLower()]
+    $dg['LoadIndex'] /= $dg['TotalServers']
     $dg["epoch"] = [Math]::Floor([decimal](Get-Date(Get-Date).ToUniversalTime()-uformat "%s"))
     $value = $dg | ConvertTo-JSON -Compress
     $res = Invoke-WebRequest -UseBasicParsing -Method "PUT" -Body @{value=$value} `
@@ -78,6 +79,7 @@ $DesktopGroup.Keys | ForEach {
 
 }
 $Farm["epoch"] = [Math]::Floor([decimal](Get-Date(Get-Date).ToUniversalTime()-uformat "%s"))
+$Farm['LoadIndex'] /= $Farm['TotalServers']
 $value = $Farm | ConvertTo-JSON -Compress
 $res = Invoke-WebRequest -UseBasicParsing -Method "PUT" -Body @{value=$value} `
     -uri "$($SamanaMonitorURI)/v2/keys/samanamonitor/ctx_data/$($ComputerName)/farm" `
