@@ -41,11 +41,13 @@ class CitrixXD:
     path = "/v2/keys/samanamonitor/ctx_data/%s" % ddc
     if hostname is not None:
       path += "/hosts/" + hostname
-      self.type = 2
+      self.type = TYPE_SERVER
     elif deliverygroup is not None:
       path += "/desktopgroup/" + deliverygroup
+      self.type = TYPE_DESKTOPGROUP
     else:
       path += "/farm"
+      self.type = TYPE_FARM
 
     try:
       http = urllib3.PoolManager()
