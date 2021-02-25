@@ -248,7 +248,7 @@ def main():
     usage()
     exit(3)
 
-    exit(nagios_output(output, warn, crit, expected_text))
+  exit(nagios_output(output, warn, crit, expected_text))
 
 if __name__ == "__main__":
   main()
