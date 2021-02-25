@@ -41,13 +41,13 @@ Get-BrokerMachine -MaxRecordCount 5000 ForEach {
     $dg["TotalServers"] += 1
     $Farm["TotalServers"] += 1
     $dg["SessionCount"] += $_.SessionCount
-    $Farm["SessionCount" += $_.SessionCount
+    $Farm["SessionCount"] += $_.SessionCount
     if ($_.RegistrationState == "Registered" -and -not $_.InMaintenanceMode) {
         $dg["TotalLoad"] += $_.LoadIndex
         $Farm["TotalLoad"] += $_.LoadIndex
     } else {
         $dg["TotalLoad"] += 10000
-        $Farm["TotalLoad" += 10000
+        $Farm["TotalLoad"] += 10000
     }
     if ($_.RegistrationState == "Registered") {
         $dg["Registered"] += 1
