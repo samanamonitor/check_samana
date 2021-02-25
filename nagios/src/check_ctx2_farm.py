@@ -81,7 +81,7 @@ class CitrixXD:
     if self.type == TYPE_FARM or self.type == TYPE_DESKTOPGROUP:
       addl_data = "%s\n%s\n%s" % (
         "Total Servers: %d" % self.data['TotalServers'],
-        "Maintenance Servers: %d", % self.data['InMaintenanceMode'],
+        "Maintenance Servers: %d" % self.data['InMaintenanceMode'],
         "Registered Servers: %d" % self.data['Registered'],
         )
     return (
