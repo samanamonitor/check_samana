@@ -35,7 +35,7 @@ class CitrixXD:
       r = http.request('GET', 'http://localhost:2379' + path)
       if r.status != 200: raise KeyError
       etcdres = json.loads(r.data)
-      print etcdres
+      print etcdres['node']
       self.data =json.loads(etcdres['node'])
       if 'epoch' not in self.data: raise ValueError
       age_secs = time.time() - self.data['epoch']
