@@ -18,15 +18,15 @@ class CXDInvalidData(Exception):
   pass
 
 class CitrixXD:
-  def __init__(self, ddc=None, host=None, deliverygroup=None):
+  def __init__(self, ddc=None, hostname=None, deliverygroup=None):
     if ddc is None:
       raise Exception("The DDC is a mandatory argument")
 
     self.data = {}
     self.ddc = ddc
     path = "/samanamonitor/ctx_data/%s" % ddc
-    if host is not None:
-      path += "/host/" + host
+    if hostname is not None:
+      path += "/host/" + hostname
     elif deliverygroup is not None:
       path += "/deliverygroup/" + deliverygroup
     else:
