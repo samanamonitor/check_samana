@@ -29,7 +29,7 @@ class CitrixXD:
       path += "/host/" + host
     elif deliverygroup is not None:
       path += "/deliverygroup/" + deliverygroup
-    else
+    else:
       path += "/farm"
 
     try:
@@ -384,13 +384,7 @@ Usage:
   check_ctx_farm.py -h
 
   <ddc> Citrix Desktop Deliver Controller hostname or IP address
-  <host domain name> Session Host server domain name
   <host name> Session Host server to be queried
-  <domain name> domain name the Session Host is a member of
-  <username> UPN of the user in the domain with privileges in the Citrix Farm to collect data
-  <password> password of the user with privileges in the Citrix Farm
-  <auth file> file name containing user's credentials
-  <refresh interval> Seconds to keep cache of the farm locally. default=600
   <module> Module to be queried
     rawData: Will print out raw data comming from the DDC about the hostname
     InMaintenance: will return the time the server has been in maintenance
@@ -409,19 +403,12 @@ Usage:
   print(usage)
 
 def main():
-  refresh_interval = 600
   ddc = None
-  u_domain = None
   hostname = None
-  h_domain = None
-  username = None
-  password = None
   module = None
   warn = None
   crit = None
   deliverygroup = None
-  authfile = None
-  load_from_server = False
   try:
     opts, args = getopt.getopt(sys.argv[1:], "D:H:hm:w:c:g:")
 
