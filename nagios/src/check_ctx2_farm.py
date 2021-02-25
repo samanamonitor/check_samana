@@ -75,6 +75,7 @@ class CitrixXD:
       )
 
   def getLoadIndex(self):
+    print "hello"
     return (
       int(self.data['LoadIndex']),
       "Load is %d" % int(self.data['LoadIndex']),
