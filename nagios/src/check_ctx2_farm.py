@@ -75,7 +75,6 @@ class CitrixXD:
       )
 
   def getLoadIndex(self):
-    print "hello"
     return (
       int(self.data['LoadIndex']),
       "Load is %d" % int(self.data['LoadIndex']),
@@ -235,6 +234,7 @@ def main():
       if expected_text is None: expected_text = ''
     elif module == 'LoadIndex':
       output = machines.getLoadIndex()
+      print "hello"
     elif module == 'LoadUser':
       output = machines.getLoadUser()
     else:
