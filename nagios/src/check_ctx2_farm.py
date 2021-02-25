@@ -139,8 +139,8 @@ def nagios_output(output, warning=None, critical=None, expected_text=None, perfm
     warning = None
     str_warning = ''
 
-  perfmin = '' if perfmin is None
-  perfmax = '' if perfmax is None
+  perfmin = '' if perfmin is None else perfmin
+  perfmax = '' if perfmax is None else perfmin
 
   perfdata = "%d;%s;%s;%d;%d" % (output[0], str_warning, str_critical, perfmin, perfmax)
   if critical is not None and output[0] > critical:
