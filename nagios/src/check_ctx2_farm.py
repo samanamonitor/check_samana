@@ -35,10 +35,10 @@ class CitrixXD:
       r = http.request('GET', 'http://localhost:2379' + path)
       if r.status != 200: raise KeyError
       self.data =json.loads(r.data)
+      if 'epoch' not in self.data: raise ValueError
       age_secs = time.time() - self.data['epoch']
       if age_secs > 600:
         raise CXDToolOld("UNKNOWN - Data is too old %d seconds" % age_secs)
-      print r.data
     except KeyError:
       if hostname is not None:
         raise CXDNotFound("UNKNOWN - Server \"%s\" not found in the database" % hostname)
