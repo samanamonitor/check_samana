@@ -34,8 +34,8 @@ class CitrixXD:
       http = urllib3.PoolManager()
       r = http.request('GET', 'http://localhost:2379' + path)
       if r.status != 200: raise KeyError
-      print r.data
       self.data =json.loads(r.data)
+      print r.data
       age_secs = time.time() - self.data['epoch']
       if age_secs > 600:
         raise CXDToolOld("UNKNOWN - Data is too old %d seconds" % age_secs)
