@@ -243,7 +243,7 @@ def main():
     usage()
     exit(3)
   except Exception as err:
-    print "UNKNOWN - %s" + str(err)
+    print "UNKNOWN - %s" % str(err)
     usage()
     exit(3)
 
