@@ -117,7 +117,7 @@ class CitrixXD:
 def nagios_output(output, warning=None, critical=None, expected_text=None, perfmin=None, perfmax=None):
   print output
   if expected_text is not None:
-    if expected_text == output[0]:
+    if expected_text == output[0] || expected_text == '':
       print "OK - %s" % output[1]
       print output[2]
       return 0
@@ -223,6 +223,7 @@ def main():
 
     if module == 'rawData':
       output = machines.getRawData()
+      if expected_text is None: expected_text = ''
     elif module == 'InMaintenance':
       output = machines.getInMaintenance()
       if expected_text is None: expected_text = ''
