@@ -36,7 +36,7 @@ class CitrixXD:
       if r.status != 200: raise KeyError
       etcdres = json.loads(r.data)
       print etcdres['node']['value']
-      self.data =json.loads(etcdres['node'])
+      self.data =json.loads(etcdres['node']['value'])
       if 'epoch' not in self.data: raise ValueError
       age_secs = time.time() - self.data['epoch']
       if age_secs > 600:
