@@ -115,7 +115,6 @@ class CitrixXD:
       )
 
 def nagios_output(output, warning=None, critical=None, expected_text=None, perfmin=None, perfmax=None):
-  print output
   if expected_text is not None:
     if expected_text == output[0] or expected_text == '':
       print "OK - %s" % output[1]
