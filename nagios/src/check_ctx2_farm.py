@@ -26,7 +26,7 @@ class CitrixXD:
     self.ddc = ddc
     path = "/samanamonitor/ctx_data/%s" % ddc
     if hostname is not None:
-      path += "/host/" + hostname
+      path += "/hosts/" + hostname
     elif deliverygroup is not None:
       path += "/deliverygroup/" + deliverygroup
     else:
@@ -40,7 +40,7 @@ class CitrixXD:
           raise CXDToolOld("UNKNOWN - Data is too old %d seconds" % age_secs)
     except etcd.EtcdKeyNotFound:
       if hostname is not None:
-        raise CXDNotFound("UNKNOWN - ServerID \"%s\" not found in the database" % hostname)
+        raise CXDNotFound("UNKNOWN - Server \"%s\" not found in the database" % hostname)
       if deliverygroup is not None:
         raise CXDNotFound("UNKNOWN - Delivery Group \"%s\" not found in the database" % deliverygroup)
     except ValueError:
