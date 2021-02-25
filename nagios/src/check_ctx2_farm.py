@@ -194,6 +194,7 @@ def main():
   warn = None
   crit = None
   deliverygroup = None
+  expected_text = None
   try:
     opts, args = getopt.getopt(sys.argv[1:], "D:H:hm:w:c:g:x:")
 
