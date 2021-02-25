@@ -77,10 +77,17 @@ class CitrixXD:
       )
 
   def getLoadIndex(self):
+    addl_data=""
+    if self.type == TYPE_FARM or self.type == TYPE_DESKTOPGROUP:
+      addl_data = "%s\n%s\n%s" % (
+        "Total Servers: %d" % self.data['TotalServers'],
+        "Maintenance Servers: %d", % self.data['InMaintenanceMode'],
+        "Registered Servers: %d" % self.data['Registered'],
+        )
     return (
       int(self.data['LoadIndex']),
       "Load is %d" % int(self.data['LoadIndex']),
-      "",
+      addl_data,
       0,
       10000,
       "load"
