@@ -11,7 +11,7 @@ import etcd
 class CXDToolOld(Exception):
   pass
 
-class CXDServerNotFound(Exception):
+class CXDNotFound(Exception):
   pass
 
 class CXDInvalidData(Exception):
@@ -39,9 +39,15 @@ class CitrixXD:
         if age_secs > 600:
           raise CXDToolOld("UNKNOWN - Data is too old %d seconds" % age_secs)
     except etcd.EtcdKeyNotFound:
-      raise CXDServerNotFound("UNKNOWN - ServerID \"%s\" not found in the database" % hostid)
+      if hostname is not None:
+        raise CXDNotFound("UNKNOWN - ServerID \"%s\" not found in the database" % hostname)
+      if deliverygroup is not None:
+        raise CXDNotFound("UNKNOWN - Delivery Group \"%s\" not found in the database" % deliverygroup)
     except ValueError:
-      raise CXDInvalidData("UNKNOWN - Data for ServerID \"%s\" is corrupt" % hostid)
+      if hostname is not None:
+        raise CXDInvalidData("UNKNOWN - Data for Server \"%s\" is corrupt" % hostname)
+      if deliverygroup is not None:
+        raise CXDInvalidData("UNKNOWN - Data for Server \"%s\" is corrupt" % deliverygroup)
 
   def getRawData(self):
     print(json.dumps(self.data))
