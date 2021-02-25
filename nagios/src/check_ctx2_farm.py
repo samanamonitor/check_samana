@@ -82,7 +82,8 @@ class CitrixXD:
       "Load is %d" % int(self.data['LoadIndex']),
       "",
       0,
-      10000
+      10000,
+      "load"
       )
 
   def getLoadUser(self):
@@ -91,7 +92,8 @@ class CitrixXD:
       "Users connected %d" % int(self.data['SessionCount']),
       "",
       None,
-      None
+      None,
+      "load"
       )
 
   def getInMaintenance(self):
@@ -101,6 +103,7 @@ class CitrixXD:
       str(self.data['InMaintenanceMode']).ToLower(),
       "Server %s in Maintenance Mode" % "IS" if self.data['InMaintenanceMode'] else "IS NOT"
       "",
+      None,
       None,
       None
       )
@@ -113,6 +116,7 @@ class CitrixXD:
       "Server registration state is %s" % self.data['RegistrationState'],
       "",
       None,
+      None,
       None
       )
 
@@ -123,6 +127,7 @@ class CitrixXD:
       self.data['DesktopGroupName'].ToLower(),
       "Server is in %s Delivery Group" % self.data['DesktopGroupName'],
       "",
+      None,
       None,
       None
       )
@@ -155,7 +160,7 @@ def nagios_output(output, warning=None, critical=None, expected_text=None, perfm
   perfmin = '' if output[3] is None else output[3]
   perfmax = '' if output[4] is None else output[4]
 
-  perfdata = "%d;%s;%s;%s;%s" % (output[0], str_warning, str_critical, perfmin, perfmax)
+  perfdata = "%s=%d;%s;%s;%s;%s" % (output[5], output[0], str_warning, str_critical, perfmin, perfmax)
   if critical is not None and output[0] > critical:
     status = STATUS_CRITICAL
   elif warning is not None and output[0] > warning:
