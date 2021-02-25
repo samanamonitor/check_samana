@@ -1,10 +1,8 @@
 #!/usr/bin/python
 
-from base64 import b64encode
 import json
 import sys, getopt
 import time
-import random
 import unicodedata
 import etcd
 
