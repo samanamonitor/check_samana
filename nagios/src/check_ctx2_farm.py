@@ -434,21 +434,21 @@ def main():
     machines = CitrixXD(ddc=ddc, hostname=hostname, deliverygroup=deliverygroup)
 
     if module == 'rawData':
-      machines.getRawData(hostname, h_domain)
+      machines.getRawData()
     elif module == 'InMaintenance':
-      machines.getInMaintenance(hostname, h_domain, warn, crit)
+      machines.getInMaintenance()
     elif module == 'RegistrationState':
-      machines.getRegistrationState(hostname, h_domain, warn, crit)
+      machines.getRegistrationState()
     elif module == 'LoadIndex':
-      machines.getLoadIndex(hostname, h_domain, warn, crit)
+      machines.getLoadIndex()
     elif module == 'LoadUser':
-      machines.getLoadUser(hostname, h_domain, warn, crit)
+      machines.getLoadUser()
     elif module == 'CatalogName':
-      machines.getCatalogName(hostname, h_domain)
+      machines.getCatalogName()
     elif module == 'DeliveryGroupLoadIndex':
-      machines.getDeliveryGroupLoadIndex(DeliveryGroup, warn, crit)
+      machines.getDeliveryGroupLoadIndex()
     elif module == 'DeliveryGroupLoadUser':
-      machines.getDeliveryGroupLoadUser(DeliveryGroup, warn, crit)
+      machines.getDeliveryGroupLoadUser()
     else:
       raise Exception("Module not implemented")
 
