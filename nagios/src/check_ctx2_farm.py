@@ -26,7 +26,7 @@ class CitrixXD:
     if hostname is not None:
       path += "/hosts/" + hostname
     elif deliverygroup is not None:
-      path += "/deliverygroup/" + deliverygroup
+      path += "/desktopgroup/" + deliverygroup
     else:
       path += "/farm"
 
@@ -54,7 +54,7 @@ class CitrixXD:
     print(json.dumps(self.data))
     exit(0)
 
-  def getInMaintenance(self, hostname, domain, warn, crit):
+  def getInMaintenance(self):
     MachineName = self.getMachineName(hostname, domain)
     s = self.data.get(MachineName)
     if s is None:
