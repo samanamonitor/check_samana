@@ -133,8 +133,8 @@ class CitrixXD:
     if self.type != TYPE_SERVER:
       raise CXDInvalidData("This information can only be obtained from a host")
     return (
-      REGISTRATION_STATE[self.data['RegistrationState']],
-      "Server registration state is %s" % self.data['RegistrationState'],
+      self.data['RegistrationState'],
+      "Server registration state is %s (%d)" % (REGISTRATION_STATE[self.data['RegistrationState']], self.data['RegistrationState']),
       addl_data,
       None,
       None,
