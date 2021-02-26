@@ -79,7 +79,7 @@ class CitrixXD:
       )
 
   def getLoadIndex(self):
-    addl_data=""
+    addl_data="Last check: %d\n" % time.time() - self.data['epoch']
     if self.type == TYPE_FARM or self.type == TYPE_DESKTOPGROUP:
       addl_data = "%s\n%s\n%s" % (
         "Total Servers: %d" % self.data['TotalServers'],
@@ -226,17 +226,23 @@ def main():
 
     for o, a in opts:
       if o == '-D':
-        ddc = a
+        ddc = a.ToLower()
       elif o == '-H':
-        hostname = a
+        hostname = a.ToLower()
       elif o == '-m':
-        module = a
+        module = a.ToLower()
       elif o == '-w':
-        warn = a
+        try:
+          warn = int(a)
+        except:
+          warn = None
       elif o == '-c':
-        crit = a
+        try:
+          crit = int(a)
+        except:
+          crit = None
       elif o == '-g':
-        deliverygroup = a
+        deliverygroup = a.ToLower()
       elif o == '-x':
         expected_text = a
       elif o == '-h':
