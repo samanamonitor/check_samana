@@ -109,7 +109,7 @@ class CitrixXD:
     if self.type != TYPE_SERVER:
       raise CXDInvalidData("This information can only be obtained from a host")
     return (
-      str(self.data['InMaintenanceMode']).ToLower(),
+      str(self.data['InMaintenanceMode']).lower(),
       "Server %s in Maintenance Mode" % "IS" if self.data['InMaintenanceMode'] else "IS NOT"
       "",
       None,
@@ -121,7 +121,7 @@ class CitrixXD:
     if self.type != TYPE_SERVER:
       raise CXDInvalidData("This information can only be obtained from a host")
     return (
-      str(self.data['RegistrationState']).ToLower(),
+      str(self.data['RegistrationState']).lower(),
       "Server registration state is %s" % self.data['RegistrationState'],
       "",
       None,
@@ -133,7 +133,7 @@ class CitrixXD:
     if self.type != TYPE_SERVER:
       raise CXDInvalidData("This information can only be obtained from a host")
     return (
-      self.data['DesktopGroupName'].ToLower(),
+      self.data['DesktopGroupName'].lower(),
       "Server is in %s Delivery Group" % self.data['DesktopGroupName'],
       "",
       None,
@@ -226,11 +226,11 @@ def main():
 
     for o, a in opts:
       if o == '-D':
-        ddc = a.ToLower()
+        ddc = a.lower()
       elif o == '-H':
-        hostname = a.ToLower()
+        hostname = a.lower()
       elif o == '-m':
-        module = a.ToLower()
+        module = a.lower()
       elif o == '-w':
         try:
           warn = int(a)
@@ -242,7 +242,7 @@ def main():
         except:
           crit = None
       elif o == '-g':
-        deliverygroup = a.ToLower()
+        deliverygroup = a.lower()
       elif o == '-x':
         expected_text = a
       elif o == '-h':
