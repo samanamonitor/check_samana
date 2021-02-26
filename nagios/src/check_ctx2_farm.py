@@ -253,21 +253,21 @@ def main():
 
     machines = CitrixXD(ddc=ddc, hostname=hostname, deliverygroup=deliverygroup)
 
-    if module == 'rawData':
+    if module == 'rawdata':
       output = machines.getRawData()
       if expected_text is None: expected_text = ''
-    elif module == 'InMaintenance':
+    elif module == 'inmaintenance':
       output = machines.getInMaintenance()
       if expected_text is None: expected_text = ''
-    elif module == 'RegistrationState':
+    elif module == 'registrationstate':
       output = machines.getRegistrationState()
       if expected_text is None: expected_text = ''
-    elif module == 'DeliveryGroupName':
+    elif module == 'deliverygroupname':
       output = machines.getCatalogName()
       if expected_text is None: expected_text = ''
-    elif module == 'LoadIndex':
+    elif module == 'loadindex':
       output = machines.getLoadIndex()
-    elif module == 'LoadUser':
+    elif module == 'loaduser':
       output = machines.getLoadUser()
     else:
       raise Exception("Module not implemented")
