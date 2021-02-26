@@ -22,6 +22,13 @@ STATUS = [
   'UNKNOWN'
   ]
 
+REGISTRATION_STATE = [
+  'Unregistered', 
+  'Initializing', 
+  'Registered', 
+  'AgentError'
+]
+
 class CXDToolOld(Exception):
   pass
 
@@ -126,7 +133,7 @@ class CitrixXD:
     if self.type != TYPE_SERVER:
       raise CXDInvalidData("This information can only be obtained from a host")
     return (
-      str(self.data['RegistrationState']).lower(),
+      REGISTRATION_STATE[self.data['RegistrationState'])],
       "Server registration state is %s" % self.data['RegistrationState'],
       addl_data,
       None,
