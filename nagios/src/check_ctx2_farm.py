@@ -70,16 +70,18 @@ class CitrixXD:
         raise CXDInvalidData("Data for Server \"%s\" is corrupt" % deliverygroup)
 
   def getRawData(self):
+    addl_data="Last push: %d s\n" % (time.time() - self.data['epoch'])
+    addl_data += json.dumps(self.data)
     return (
       0,
       "Data Follows",
-      json.dumps(self.data),
+      addl_data,
       None, # data min
       None  # data max
       )
 
   def getLoadIndex(self):
-    addl_data="Last check: %d s\n" % (time.time() - self.data['epoch'])
+    addl_data="Last push: %d s\n" % (time.time() - self.data['epoch'])
     if self.type == TYPE_FARM or self.type == TYPE_DESKTOPGROUP:
       addl_data += "%s\n%s\n%s" % (
         "Total Servers: %d" % self.data['TotalServers'],
@@ -96,46 +98,50 @@ class CitrixXD:
       )
 
   def getLoadUser(self):
+    addl_data="Last push: %d s\n" % (time.time() - self.data['epoch'])
     return (
       int(self.data['SessionCount']),
       "Users connected %d" % int(self.data['SessionCount']),
-      "",
+      addl_data,
       None,
       None,
       "load"
       )
 
   def getInMaintenance(self):
+    addl_data="Last push: %d s\n" % (time.time() - self.data['epoch'])
     if self.type != TYPE_SERVER:
       raise CXDInvalidData("This information can only be obtained from a host")
     return (
       str(self.data['InMaintenanceMode']).lower(),
       "Server %s in Maintenance Mode" % "IS" if self.data['InMaintenanceMode'] else "IS NOT"
-      "",
+      addl_data,
       None,
       None,
       None
       )
 
   def getRegistrationState(self):
+    addl_data="Last push: %d s\n" % (time.time() - self.data['epoch'])
     if self.type != TYPE_SERVER:
       raise CXDInvalidData("This information can only be obtained from a host")
     return (
       str(self.data['RegistrationState']).lower(),
       "Server registration state is %s" % self.data['RegistrationState'],
-      "",
+      addl_data,
       None,
       None,
       None
       )
 
   def getDesktopGroupName(self):
+    addl_data="Last push: %d s\n" % (time.time() - self.data['epoch'])
     if self.type != TYPE_SERVER:
       raise CXDInvalidData("This information can only be obtained from a host")
     return (
       self.data['DesktopGroupName'].lower(),
       "Server is in %s Delivery Group" % self.data['DesktopGroupName'],
-      "",
+      addl_data,
       None,
       None,
       None
