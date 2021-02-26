@@ -121,7 +121,9 @@ class CitrixXD:
       raise CXDInvalidData("This information can only be obtained from a host")
     return (
       str(self.data['InMaintenanceMode']).lower(),
-      "Server %s in Maintenance Mode (%s)" % ("IS" if self.data['InMaintenanceMode'] else "IS NOT", str(self.data['InMaintenanceMode']).lower()),
+      "Server %s in Maintenance Mode (%s)" % (
+        "IS" if self.data['InMaintenanceMode'] else "IS NOT", 
+        str(self.data['InMaintenanceMode']).lower()),
       addl_data,
       None,
       None,
@@ -134,7 +136,9 @@ class CitrixXD:
       raise CXDInvalidData("This information can only be obtained from a host")
     return (
       self.data['RegistrationState'],
-      "Server registration state is %s (%d)" % (REGISTRATION_STATE[self.data['RegistrationState']], self.data['RegistrationState']),
+      "Server registration state is %s (%d)" % (
+        REGISTRATION_STATE[self.data['RegistrationState']], 
+        self.data['RegistrationState']),
       addl_data,
       None,
       None,
@@ -217,12 +221,7 @@ Usage:
       <warn> <crit>: minutes that the hostname has been in this state and that will generate an alert
     LoadIndex: will return the load index and the time it has been in this state
     LoadUser: will return the number of users connected
-    DeliveryGroupLoadIndex: will return the average load of a delivery group
-      -g <delivery group name>
-    DeliveryGroupLoadUser: will return the number of users connected to a delivery group
-      -g <delivery group name>
-    CatalogName: will return the catalog name a server is part of.
-      -l loads data from server. By default data is fetched from cache
+    DeliveryGroupName: will return the Delivery Group name a server is part of.
 """
   print(usage)
 
