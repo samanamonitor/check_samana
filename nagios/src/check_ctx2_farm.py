@@ -114,7 +114,7 @@ class CitrixXD:
       raise CXDInvalidData("This information can only be obtained from a host")
     return (
       str(self.data['InMaintenanceMode']).lower(),
-      "Server %s in Maintenance Mode" % "IS" if self.data['InMaintenanceMode'] else "IS NOT"
+      "Server %s in Maintenance Mode" % "IS" if self.data['InMaintenanceMode'] else "IS NOT",
       addl_data,
       None,
       None,
