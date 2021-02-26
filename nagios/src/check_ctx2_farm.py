@@ -269,7 +269,7 @@ def main():
       output = machines.getRegistrationState()
       if expected_text is None: expected_text = ''
     elif module == 'deliverygroupname':
-      output = machines.getCatalogName()
+      output = machines.getDesktopGroupName()
       if expected_text is None: expected_text = ''
     elif module == 'loadindex':
       output = machines.getLoadIndex()
