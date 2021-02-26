@@ -140,7 +140,7 @@ class CitrixXD:
       raise CXDInvalidData("This information can only be obtained from a host")
     return (
       self.data['DesktopGroupName'].lower(),
-      "Server is in %s Delivery Group" % self.data['DesktopGroupName'],
+      "Server is in \"%s\"" Delivery Group" % self.data['DesktopGroupName'],
       addl_data,
       None,
       None,
