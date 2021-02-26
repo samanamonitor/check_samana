@@ -79,7 +79,7 @@ class CitrixXD:
       )
 
   def getLoadIndex(self):
-    addl_data="Last check: %d\n" % time.time() - self.data['epoch']
+    addl_data="Last check: %d\n" % (time.time() - self.data['epoch'])
     if self.type == TYPE_FARM or self.type == TYPE_DESKTOPGROUP:
       addl_data = "%s\n%s\n%s" % (
         "Total Servers: %d" % self.data['TotalServers'],
