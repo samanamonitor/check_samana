@@ -16,7 +16,7 @@ def help():
     print "check_samana2.py -H <hostid> -m <module> [-s <submodule>] [-c <critical>] [-w <warning>]"
     sys.exit(3)
 
-def cpu(data, crit, warn, out_format):
+def cpu(data, crit, warn):
     global debug
     state = "UNKNOWN"
     graphmax = 100
@@ -48,20 +48,14 @@ def cpu(data, crit, warn, out_format):
         crit if crit is not None else '', 
         graphmax)
     # TODO: need to create script to migrate old data to include these values on old systems
-    if out_format == 'new':
-        perfpriv = "priv=%.0f;;;" % data['PercentPrivilegedTime']
-        perfuser = "user=%.0f;;;" % data['PercentUserTime']
-        perfirq  = "interrupt=%.0f;;;" % data['PercentInterruptTime']
-    else:
-        perfpriv = ""
-        perfuser = ""
-        perfirq  = ""
-
-    outmsg = "%s - CPU Usage %0.f %% | %s %s %s %s" % (
+    perfpriv = "" #"priv=%.0f;;;" % data['PercentPrivilegedTime']
+    perfuser = "" #"user=%.0f;;;" % data['PercentUserTime']
+    perfirq  = "" #"interrupt=%.0f;;;" % data['PercentInterruptTime']
+    outmsg = "%s - CPU Usage %0.f %%| %s %s %s %s" % (
         state, val, perfusage, perfpriv, perfuser, perfirq)
     return (outval, outmsg)
 
-def ram(data, crit, warn, out_format):
+def ram(data, crit, warn):
     state = "UNKNOWN"
     
     total = float(data['TotalVisibleMemorySize']) / 1024.0
@@ -87,18 +81,12 @@ def ram(data, crit, warn, out_format):
         state = "OK"
         outval = 0
 
-    if out_format == 'new':
-    perfused = "Physical Memory Utilization'=%d;%s;%s;0;100" % (
+    perfused = "'Physical Memory Used'=%d;;;0;%d 'Physical Memory Utilization'=%d;%s;%s;0;100" % (
+        free,
+        total,
         percused,
         warn if warn is not None else '',
         crit if crit is not None else '')
-    else:
-        perfused = "'Physical Memory Used'=%d;;;0;%d 'Physical Memory Utilization'=%d;%s;%s;0;100" % (
-            free,
-            total,
-            percused,
-            warn if warn is not None else '',
-            crit if crit is not None else '')
     outmsg = "%s - Physical Memory: Total: %.2fGB - Used: %.2fGB (%.1f%%) - Free %.2fGB (%.2f%%) | %s" % (
         state, total, used, percused, free, percfree, perfused)
 
@@ -345,11 +333,11 @@ def main(argv):
     incl = ''
     excl = ''
     test = None
-    out_format = 'old'
+
     global debug
 
     try:
-        opts, args = getopt.getopt(argv, "H:m:c:w:p:s:r:i:e:l:x:dt:f:")
+        opts, args = getopt.getopt(argv, "H:m:c:w:p:s:r:i:e:l:x:dt:")
     except getopt.GetoptError:
         help()
     
@@ -378,8 +366,6 @@ def main(argv):
             debug = 1
         elif opt == "-t":
             test = arg
-        elif opt == "-f":
-            out_format = arg
 
     if module == "":
         help()
@@ -418,9 +404,9 @@ def main(argv):
     outval = 3 
     
     if module == 'cpu':
-        (outval, outmsg) = cpu(data, crit, warn, out_format)
+        (outval, outmsg) = cpu(data, crit, warn)
     elif module == 'ram':
-        (outval, outmsg) = ram(data, crit, warn, out_format)
+        (outval, outmsg) = ram(data, crit, warn)
     elif module == 'swap':
         (outval, outmsg) = swap(data, crit, warn)
     elif module == 'log':
