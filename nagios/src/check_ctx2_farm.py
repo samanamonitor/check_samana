@@ -201,15 +201,15 @@ def nagios_output(output, warning=None, critical=None, expected_text=None, perfm
 
 
 def usage():
-  usage = """Check Citrix DDC v1.0.0
+  usage = """Check Citrix DDC v2.0.0
 This nagios plugin come with ABSOLUTELY NO WARRANTY and is property of
 SAMANA GROUP LLC. If you want to use it, you should contact us before
 to get a license.
 Copyright (c) 2017 Samana Group LLC
 
 Usage:
-  check_ctx_farm.py -D <ddc> -m <module> -w <warning> -c <critical> [ [-H <host name>] | [-g <delivery group name>] ]
-  check_ctx_farm.py -h
+  check_ctx2_farm.py -D <ddc> -m <module> -w <warning> -c <critical> [ [-H <host name>] | [-g <delivery group name>] ]
+  check_ctx2_farm.py -h
 
   <ddc> Citrix Desktop Deliver Controller hostname or IP address
   <host name> Session Host server to be queried
