@@ -94,9 +94,14 @@ def ram(data, crit, warn):
 
 def swap(data, crit, warn):
     state = "UNKNOWN"
+
     
-    total = float(data['TotalSwapSpaceSize']) / 1024 / 1024
-    free = float(data['FreeSpaceInPagingFiles']) / 1024 / 1024
+    total = float(data.get('TotalSwapSpaceSize', 0.0)) / 1024 / 1024
+
+    if total == 0.0:
+        return (0, 'OK - No Page File configured | Swap Memory Used=0;0;0;0;100')
+
+    free = float(data.get('FreeSpaceInPagingFiles', 0.0)) / 1024 / 1024
     used = total - free
     percused = used * 100.0 / total
     percfree = free * 100.0 / total
