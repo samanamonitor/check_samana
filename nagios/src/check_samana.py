@@ -25,8 +25,8 @@ def getConfig(name):
 		file = open(configfile, "r")
 		temp = json.load(file)
 		file.close()
-	except:
-		print "UNKNOWN - Cannot read configuration file " + configfile
+	except Exception as e:
+		print "UNKNOWN - Cannot read configuration file %s: %s" % (configfile, e)
 		print environ
 		exit(3)
 
@@ -424,8 +424,8 @@ def main(argv):
 	url = "https://%s:%d/%s" % (host, port, module)
 	try:
 		data = urllib.urlopen(url, None).read()
-	except:
-		print "UNKNOWN - Server not responding. Maybe agent not installed?"
+	except Exception as e:
+		print "UNKNOWN - Server not responding. Maybe agent not installed?\n%s" % e
 		exit(3)
 
 	outmsg = "UNKNOWN - Data is unavailable"
