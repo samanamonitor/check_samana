@@ -45,14 +45,14 @@ if (-Not (Test-Path %(scriptpath)s)) { mkdir %(scriptpath)s | Out-Null}
 Invoke-WebRequest -Uri %(scripturl)s -OutFile "%(scriptpath)s\\%(scriptname)s"
 if (-Not (Test-Path %(scriptpath)s\\%(scriptname)s)) { 
   "File not downloaded" | Out-Host; 
-  rmdir %(scriptpath)s
+  Remove-Item -Recurse -Force %(scriptpath)s
   exit 1 
 }
 "Downloaded Script." | Out-Host
 %(scriptpath)s\\%(scriptname)s %(scriptarguments)s| Out-Host
 "Done executing script" | Out-Host
 del %(scriptpath)s\\%(scriptname)s
-rmdir %(scriptpath)s
+Remove-Item -Recurse -Force %(scriptpath)s
 "Done cleanup" | Out-Host
 ''' % { 'scripturl': scripturl, 
       'scriptpath': scriptpath, 
