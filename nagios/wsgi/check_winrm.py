@@ -158,7 +158,7 @@ def application ( environ, start_response):
         if data['hostaddress'] is None:
             raise Exception("Invalid Host address")
 
-        if data['nagiosaddress'] is None and url is None:
+        if data['nagiosaddress'] is None and data['url'] is None:
             raise Exception("UNKNOWN - Powershell script location not defined.")
 
         if data['url'] is None:
