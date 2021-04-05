@@ -7,6 +7,7 @@ import random
 import unicodedata
 import re
 from time import time
+from cgi import parse_qs, escape
 
 class WinRMScript:
   def __init__(self, hostaddress, auth):
@@ -101,7 +102,9 @@ def application ( # It accepts two arguments:
 
     # Build the response body possibly
     # using the supplied environ dictionary
-    response_body = 'Request method: %s \n%s' % (environ['REQUEST_METHOD'], environ)
+    d = parse_qs(environ['QUERY_STRING'])
+    response_body = 'Request method: %s \n%s' % (environ['REQUEST_METHOD'], d)
+
 
     # HTTP response code and message
     status = '200 OK'
