@@ -158,6 +158,44 @@ def auth(username, domainname, password, authfile):
         'password': password
         }
 
+def ping_host(ip):
+    import subprocess
+    data={
+        'packets_sent': 0,
+        'packets_received': 0,
+        'min': 0,
+        'avg': 0,
+        'max': 0,
+        'mdev': 0
+        }
+    p = subprocess.Popen(["ping", "-c", "3", ip], stdout = subprocess.PIPE)
+    out = p.communicate()
+    try:
+        pat = re.search("^(\d+) packets transmitted, (\d+) received", out[0], flags=re.M)
+        if pat is None:
+            raise ValueError("Cannot extract packets from ping output.")
+        packets = pat.groups()
+
+        pat = re.search("^rtt min/avg/max/mdev = ([\d.]+)/([\d.]+)/([\d.]+)/([\d.]+)", out[0], flags=re.M)
+        if pat is None:
+            raise ValueError("Cannot extract ping rtt times.")
+        rtt = pat.groups()
+
+        data['packets_sent'] = int(packets[0])
+        data['packets_received'] = int(packets[1])
+        data['min'] = int(float(rtt[0]))
+        data['avg'] = int(float(rtt[1]))
+        data['max'] = int(float(rtt[2]))
+        data['mdev'] = int(float(rtt[3]))
+    except (ValueError, IndexError) as e:
+        raise Exception("UNKNOWN - Ping output invalid. %s\n%s" % (str(e), out[0]))
+
+    except Exception as e:
+        raise Exception("UNKNOWN - unexpected error %s\n%s\n%s\n%s" % (str(e), out[0], packets, rtt))
+
+    return data
+
+
 def application ( environ, start_response):
 
     data = {
