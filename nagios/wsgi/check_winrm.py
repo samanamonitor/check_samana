@@ -113,7 +113,7 @@ def application ( environ, start_response):
 
     try:
         if data['hostaddress'] is None:
-            raise Exception("400 Bad Request", "Invalid Host address")
+            raise Exception("Invalid Host address")
 
         response_body = 'Request method: %s \n%s' % (environ['REQUEST_METHOD'], temp)
 
@@ -125,7 +125,7 @@ def application ( environ, start_response):
         ]
 
     except Exception as e:
-        status = e[0]
+        status = "400 Bad Request"
         msg = "UNKNOWN"
         response_body = "Error: %s" % msg
         response_headers = [
