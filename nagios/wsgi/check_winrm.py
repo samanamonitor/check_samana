@@ -158,20 +158,20 @@ def application ( environ, start_response):
         if data['hostaddress'] is None:
             raise Exception("Invalid Host address")
 
-        if nagiosaddress is None and url is None:
+        if data['nagiosaddress'] is None and url is None:
             raise Exception("UNKNOWN - Powershell script location not defined.")
 
-        if url is None:
-            url = "http://%s/%s" % (nagiosaddress, script)
+        if data['url'] is None:
+            data['url'] = "http://%s/%s" % (data['nagiosaddress'], data['script'])
         #TODO check URL syntax for the case when we receive URL from user
 
-        user_auth = auth(username, u_domain, password, authfile)
+        user_auth = auth(data['username'], data['u_domain'], data['password'], data['authfile'])
         if user_auth is None:
             raise Exception("UNKNOWN - Invalid authentication information")
 
-        if warning is not None:
+        if data['warning'] is not None:
             try:
-                (dns_warn, ping_warn, packet_loss_warn, winrm_warn) = warning.split(',')
+                (dns_warn, ping_warn, packet_loss_warn, winrm_warn) = data['warning'].split(',')
                 dns_warn = int(dns_warn)
                 ping_warn = int(ping_warn)
                 packet_loss_warn = int(packet_loss_warn)
@@ -179,9 +179,9 @@ def application ( environ, start_response):
             except ValueError:
                 raise Exception("UNKNOWN - Invalid Warning values")
 
-        if critical is not None:
+        if data['critical'] is not None:
             try:
-                (dns_crit, ping_crit, packet_loss_crit, winrm_crit) = critical.split(',')
+                (dns_crit, ping_crit, packet_loss_crit, winrm_crit) = data['critical'].split(',')
                 dns_crit = int(dns_crit)
                 ping_crit = int(ping_crit)
                 packet_loss_crit = int(packet_loss_crit)
@@ -189,12 +189,12 @@ def application ( environ, start_response):
             except ValueError:
                 raise Exception("UNKNOWN - Invalid Critical values")
 
-        (hostip, dns_time) = get_dns_ip(hostaddress)
+        (hostip, dns_time) = get_dns_ip(data['hostaddress'])
         ping_data = ping_host(hostip)
 
         winrm_start = time()
-        client = WinRMScript(hostaddress, user_auth)
-        out = client.run(url, scriptarguments)
+        client = WinRMScript(data['hostaddress'], user_auth)
+        out = client.run(data['url'], data['scriptarguments'])
         winrm_time = (time() - winrm_start) * 1000
 
         perc_packet_loss = 100-int(100.0 * ping_data['packets_received'] / ping_data['packets_sent'])
