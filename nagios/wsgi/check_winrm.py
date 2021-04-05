@@ -238,8 +238,8 @@ def application ( environ, start_response):
             (winrm_time, perf_data, out))
 
         response_body = json.dumps({
-            'status' = 0,
-            'message' = "OK - Data Collected | %s\n%s" % (perf_data, out)
+            'status': 0,
+            'message': "OK - Data Collected | %s\n%s" % (perf_data, out)
             })
 
 
