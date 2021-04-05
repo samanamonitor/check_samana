@@ -115,7 +115,7 @@ def application ( environ, start_response):
         if data['hostaddress'] is None:
             raise Exception("Invalid Host address")
 
-        response_body = 'Request method: %s \n%s' % (environ['REQUEST_METHOD'], temp)
+        response_body = 'Request method: %s \n%s' % (environ['REQUEST_METHOD'], data)
 
 
         status = '200 OK'
