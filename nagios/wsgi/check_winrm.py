@@ -107,6 +107,7 @@ def application ( environ, start_response):
     }
 
     d = parse_qs(environ['QUERY_STRING'])
+    temp = ""
     for k in data.keys():
         temp += k
         #data[k] = d.get(k, [ None ])[0]
