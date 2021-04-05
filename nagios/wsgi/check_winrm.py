@@ -126,7 +126,11 @@ def application ( environ, start_response):
 
     except Exception as e:
         status = e[0]
-        response_body = "Error: %s" % e[1]
+        if len(e) > 1:
+            msg = e[1]
+        else:
+            msg = "UNKNOWN"
+        response_body = "Error: %s" % msg
         response_headers = [
             ('Content-Type', 'text/plain'),
             ('Content-Length', str(len(response_body)))
