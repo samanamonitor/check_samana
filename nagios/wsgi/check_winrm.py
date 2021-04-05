@@ -121,6 +121,30 @@ def get_dns_ip(hn):
   except Exception as err:
     raise CheckWinRMExceptionCRIT("Unable to resove hostname to IP address\n%s" % str(err))
 
+def auth_file(authfile):
+    data = {}
+    with open(authfile) as f:
+      linenum = 0
+      for l in f:
+        linenum += 1
+        line = l #.split("#")[0]
+        line = line.strip()
+        d = line.split('=')
+        if len(d) != 2: continue
+        data[d[0]] = d[1]
+
+    if 'username' not in data:
+        raise Exception("Username missing in authentication file")
+    if 'password' not in data:
+        raise Exception("Password missing in authentication file")
+    if 'domain' not in data and data['username'].find('@') == -1:
+        raise Exception("Domain missing in authentication file")
+    if 'domain' not in data or data['username'].find('@') != -1:
+        data['upn'] = True
+    else:
+        data['upn'] = False
+    return data
+
 def auth(username, domainname, password, authfile):
     if authfile is not None:
         return auth_file(authfile)
