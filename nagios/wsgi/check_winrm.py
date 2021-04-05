@@ -276,7 +276,7 @@ def application ( environ, start_response):
     except CheckWinRMExceptionCRIT as e:
         response_body = json.dumps({
             'status': 2,
-            'message': "CRITICAL - " % e
+            'message': "CRITICAL - %s" % e
             })
 
     except Exception as e:
