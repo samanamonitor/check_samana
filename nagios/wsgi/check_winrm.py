@@ -197,6 +197,16 @@ def ping_host(ip):
 
 
 def application ( environ, start_response):
+    warning = None
+    critical = None
+    ping_warn = None
+    ping_crit = None
+    winrm_warn = None
+    winrm_crit = None
+    dns_warn = None
+    dns_crit = None
+    packet_loss_warn = None
+    packet_loss_crit = None
 
     data = {
         'hostaddress': None,
