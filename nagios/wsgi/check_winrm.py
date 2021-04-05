@@ -108,7 +108,8 @@ def application ( environ, start_response):
 
     d = parse_qs(environ['QUERY_STRING'])
     for k in data.keys():
-        data[k] = d.get(k, [ None ])[0]
+        temp += k
+        #data[k] = d.get(k, [ None ])[0]
 
 
 
@@ -116,7 +117,7 @@ def application ( environ, start_response):
         if hostaddress is None:
             raise Exception("400 Bad Request", "Invalid Host address")
 
-        response_body = 'Request method: %s \n%s' % (environ['REQUEST_METHOD'], data)
+        response_body = 'Request method: %s \n%s' % (environ['REQUEST_METHOD'], temp)
 
 
         status = '200 OK'
