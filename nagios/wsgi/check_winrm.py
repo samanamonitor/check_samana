@@ -127,7 +127,7 @@ def application ( environ, start_response):
     except Exception as e:
         status = "400 Bad Request"
         msg = "UNKNOWN"
-        response_body = "Error: %s" % msg
+        response_body = "Error: %s" % e
         response_headers = [
             ('Content-Type', 'text/plain'),
             ('Content-Length', str(len(response_body)))
