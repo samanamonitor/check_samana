@@ -9,6 +9,7 @@ import re
 from time import time
 from cgi import parse_qs, escape
 
+
 class WinRMScript:
   def __init__(self, hostaddress, auth):
     try:
@@ -107,15 +108,11 @@ def application ( environ, start_response):
     }
 
     d = parse_qs(environ['QUERY_STRING'])
-    temp = ""
     for k in data.keys():
-        temp += k
-        #data[k] = d.get(k, [ None ])[0]
-
-
+        data[k] = d.get(k, [ None ])[0]
 
     try:
-        if hostaddress is None:
+        if data['hostaddress'] is None:
             raise Exception("400 Bad Request", "Invalid Host address")
 
         response_body = 'Request method: %s \n%s' % (environ['REQUEST_METHOD'], temp)
