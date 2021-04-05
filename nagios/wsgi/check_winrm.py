@@ -89,20 +89,26 @@ Remove-Item -Recurse -Force %(scriptpath)s
     if error > 0: exit(error)
     return std_out
 
+
+data = {
+    'hostaddress': None,
+    'u_domain': None,
+    'username': None,
+    'password': None,
+    'authfile': None,
+    'nagiosaddress': None,
+    'script': None,
+    'warning': None,
+    'critical': None,
+    'url': None,
+    'scriptarguments': None,
+}
+
 def application ( environ, start_response):
 
     d = parse_qs(environ['QUERY_STRING'])
-    hostaddress = d.get('hostaddress', [ None ])[0]
-    u_domain = d.get('u_domain', [ None ])[0]
-    username = d.get('username', [ None ])[0]
-    password = d.get('password', [ None ])[0]
-    authfile = d.get('authfile', [ None ])[0]
-    nagiosaddress = d.get('nagiosaddress', [ None ])[0]
-    script = d.get('script', [ None ])[0]
-    warning = d.get('warning', [ None ])[0]
-    critical = d.get('critical', [ None ])[0]
-    url = d.get('url', [ None ])[0]
-    scriptarguments = d.get('scriptarguments', [ None ])[0]
+    for k in data.keys():
+        data[k] = d.get(k, [ None ])[0]
 
 
 
@@ -110,7 +116,7 @@ def application ( environ, start_response):
         if hostaddress is None:
             raise Exception("400 Bad Request", "Invalid Host address")
 
-        response_body = 'Request method: %s \n%s' % (environ['REQUEST_METHOD'], d)
+        response_body = 'Request method: %s \n%s' % (environ['REQUEST_METHOD'], data)
 
 
         status = '200 OK'
