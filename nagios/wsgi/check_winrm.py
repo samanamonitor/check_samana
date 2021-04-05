@@ -90,21 +90,21 @@ Remove-Item -Recurse -Force %(scriptpath)s
     return std_out
 
 
-data = {
-    'hostaddress': None,
-    'u_domain': None,
-    'username': None,
-    'password': None,
-    'authfile': None,
-    'nagiosaddress': None,
-    'script': None,
-    'warning': None,
-    'critical': None,
-    'url': None,
-    'scriptarguments': None,
-}
-
 def application ( environ, start_response):
+
+    data = {
+        'hostaddress': None,
+        'u_domain': None,
+        'username': None,
+        'password': None,
+        'authfile': None,
+        'nagiosaddress': None,
+        'script': None,
+        'warning': None,
+        'critical': None,
+        'url': None,
+        'scriptarguments': None,
+    }
 
     d = parse_qs(environ['QUERY_STRING'])
     for k in data.keys():
