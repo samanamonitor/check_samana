@@ -89,37 +89,46 @@ Remove-Item -Recurse -Force %(scriptpath)s
     if error > 0: exit(error)
     return std_out
 
-# The application interface is a callable object
-def application ( # It accepts two arguments:
-    # environ points to a dictionary containing CGI like environment
-    # variables which is populated by the server for each
-    # received request from the client
-    environ,
-    # start_response is a callback function supplied by the server
-    # which takes the HTTP status and headers as arguments
-    start_response
-):
+def application ( environ, start_response):
 
-    # Build the response body possibly
-    # using the supplied environ dictionary
     d = parse_qs(environ['QUERY_STRING'])
-    response_body = 'Request method: %s \n%s' % (environ['REQUEST_METHOD'], d)
+    hostaddress = d.get('hostaddress', [ None ])[0]
+    u_domain = d.get('u_domain', [ None ])[0]
+    username = d.get('username', [ None ])[0]
+    password = d.get('password', [ None ])[0]
+    authfile = d.get('authfile', [ None ])[0]
+    nagiosaddress = d.get('nagiosaddress', [ None ])[0]
+    script = d.get('script', [ None ])[0]
+    warning = d.get('warning', [ None ])[0]
+    critical = d.get('critical', [ None ])[0]
+    url = d.get('url', [ None ])[0]
+    scriptarguments = d.get('scriptarguments', [ None ])[0]
 
 
-    # HTTP response code and message
-    status = '200 OK'
 
-    # HTTP headers expected by the client
-    # They must be wrapped as a list of tupled pairs:
-    # [(Header name, Header value)].
-    response_headers = [
-        ('Content-Type', 'text/plain'),
-        ('Content-Length', str(len(response_body)))
-    ]
+    try:
+        if hostaddress is None:
+            raise Exception("400 Bad Request", "Invalid Host address")
 
-    # Send them to the server using the supplied function
+        response_body = 'Request method: %s \n%s' % (environ['REQUEST_METHOD'], d)
+
+
+        status = '200 OK'
+        response_headers = [
+            ('Content-Type', 'application/json'),
+            ('Content-Length', str(len(response_body)))
+        ]
+
+    except Exception as e:
+        status = e[0]
+        response_body = "Error: %s" % e[1]
+        response_headers = [
+            ('Content-Type', 'text/plain'),
+            ('Content-Length', str(len(response_body)))
+        ]
+
+
+
     start_response(status, response_headers)
 
-    # Return the response body. Notice it is wrapped
-    # in a list although it could be any iterable.
     return [response_body]
