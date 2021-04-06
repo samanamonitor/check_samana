@@ -7,8 +7,9 @@ INSTALL_FILES = $(wildcard check*) slack_nagios.pl samanaetcd.py
 
 .PHONY: $(INSTALL_FILES)
 
-install:
-	$(MAKE) $(INSTALL_FILES)
+install: $(INSTALL_FILES)
 
 $(INSTALL_FILES):
 	install -D -g $(NAGIOS_GROUP) -o $(NAGIOS_USER) -m $(FILE_MODE) $@ $(NAGIOS_LIBEXEC)/$@
+
+clean:

@@ -1,11 +1,13 @@
 INSTALL_BASE ?= /
 
-DIRS = $(wildcard */.)
+DIRS = $(subst /.,,$(wildcard */.))
 
 .PHONY: $(DIRS)
 
+
 $(DIRS):
 	$(MAKE) -C $@
+
 
 clean: $(patsubst %,clean_%,$(DIRS))
 
