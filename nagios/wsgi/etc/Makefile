@@ -18,7 +18,7 @@ all: $(INSTALL_FILES)
 install: $(patsubst %,install_%,$(INSTALL_FILES))
 
 install_$(INSTALL_FILES):
-	install -D -g $(WSGI_GROUP) -o $(WSGI_USER) -m $(FILE_MODE) $@ $(APACHE_ETC)/$@
+	install -D -g $(WSGI_GROUP) -o $(WSGI_USER) -m $(FILE_MODE) $@ $(APACHE_ETC)/$(subst install_,,$@)
 
 clean:
 	rm -f *.conf
