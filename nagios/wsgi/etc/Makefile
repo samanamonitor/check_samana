@@ -15,9 +15,9 @@ all: $(INSTALL_FILES)
 		-e "s|&WSGI_GROUP&|$(WSGI_GROUP)|" \
 		$< > $@
 
-install: $(INSTALL_FILES)
+install: $(patsubst %,install_%,$(INSTALL_FILES))
 
-$(INSTALL_FILES):
+install_$(INSTALL_FILES):
 	install -D -g $(WSGI_GROUP) -o $(WSGI_USER) -m $(FILE_MODE) $@ $(APACHE_ETC)/$@
 
 clean:
