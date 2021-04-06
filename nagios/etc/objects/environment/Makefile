@@ -7,6 +7,8 @@ FILE_MODE ?= 0664
 
 INSTALL_FILES = $(wildcard *.cfg)
 
+.PHONY: $(INSTALL_FILES)
+
 all:
 	
 install: $(INSTALL_FILES)
