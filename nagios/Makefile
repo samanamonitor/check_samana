@@ -4,6 +4,8 @@ DIRS = $(subst /.,,$(wildcard */.))
 
 .PHONY: $(DIRS)
 
+all: $(DIRS)
+
 $(DIRS):
 	$(MAKE) -C $@
 
