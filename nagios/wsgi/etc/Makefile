@@ -16,6 +16,8 @@ all: $(INSTALL_FILES)
 		$< > $@
 
 install: $(INSTALL_FILES)
+
+$(INSTALL_FILES):
 	install -D -g $(WSGI_GROUP) -o $(WSGI_USER) -m $(FILE_MODE) $@ $(APACHE_ETC)/$@
 
 clean:
