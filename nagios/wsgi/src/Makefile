@@ -6,7 +6,7 @@ WSGI_WWW ?= /usr/local/nagios/share/wsgi
 
 INSTALL_FILES = $(wildcard *.py)
 
-.PHONY: $(DIRS)
+.PHONY: $(INSTALL_FILES)
 
 all:
 
