@@ -40,8 +40,8 @@ def main():
 
     resp = json.load(f)
 
-    print resp.message
-    exit(resp.status)
+    print resp['message']
+    exit(resp['status'])
 
 
   except Exception as err:
