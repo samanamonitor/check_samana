@@ -9,8 +9,7 @@ INSTALL_FILES = $(wildcard *.ps1)
 
 all:
 	
-install:
-	$(MAKE) $(INSTALL_FILES)
+install: $(INSTALL_FILES)
 
 $(INSTALL_FILES):
 	install -D -g $(NAGIOS_GROUP) -o $(NAGIOS_USER) -m $(FILE_MODE) $@ $(HTML_PATH)/$@
