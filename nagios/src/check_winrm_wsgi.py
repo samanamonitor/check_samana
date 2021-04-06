@@ -2,6 +2,7 @@
 
 import urllib2
 import json
+import sys
 
 def main():
   query = []
