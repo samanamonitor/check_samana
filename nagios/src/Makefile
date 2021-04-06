@@ -7,6 +7,8 @@ INSTALL_FILES = $(wildcard check*) slack_nagios.pl samanaetcd.py
 
 .PHONY: $(INSTALL_FILES)
 
+all:
+	
 install: $(INSTALL_FILES)
 
 $(INSTALL_FILES):
