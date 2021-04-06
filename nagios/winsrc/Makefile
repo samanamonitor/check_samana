@@ -7,6 +7,8 @@ INSTALL_FILES = $(wildcard *.ps1)
 
 .PHONY: $(INSTALL_FILES)
 
+all:
+	
 install:
 	$(MAKE) $(INSTALL_FILES)
 
