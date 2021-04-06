@@ -4,6 +4,8 @@ DIRS = nagios pnp4nagios
 
 .PHONY: $(DIRS)
 
+all: $(DIRS)
+
 $(DIRS):
 	$(MAKE) -C $@
 
