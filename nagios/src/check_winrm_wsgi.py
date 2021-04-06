@@ -37,7 +37,7 @@ def main():
       elif o == '-h':
         raise Exception("Unknown argument")
 
-    f = urllib2.urlopen("http://localhost/check_winrm?%s" % urllib.encode('&'.join(query)))
+    f = urllib2.urlopen("http://localhost/check_winrm?%s" % urllib.urlencode(query))
 
     resp = json.load(f)
 
