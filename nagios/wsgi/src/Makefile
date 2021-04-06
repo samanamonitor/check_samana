@@ -9,6 +9,8 @@ INSTALL_FILES = $(wildcard *.py)
 all:
 
 install: $(INSTALL_FILES)
+
+$(INSTALL_FILES):
 	install -D -g $(WSGI_GROUP) -o $(WSGI_USER) -m $(FILE_MODE) $@ $(WSGI_WWW)/$@
 
 clean:
