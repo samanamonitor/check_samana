@@ -5,13 +5,17 @@ PAGES_CONFIG := $(patsubst %,$(PAGES_DIR)/%.cfg,$(HOSTS))
 PNP_USER := nagios
 PNP_GROUP := nagcmd
 
-install:
+
+all:
 	: "Not Implemented"
 
-all: $(PAGES_CONFIG)
+install:
+	: "Not Implemented"
 
 $(PAGES_DIR)/%.cfg: %.pre
 	install -o $(PNP_USER) -g $(PNP_GROUP) $^ $@
 
 %.pre: samana-host-summary.cfg-sample
 	sed -e "s/%HOST%/$(patsubst %.pre,%,$@)/" $< > $@
+
+clean:

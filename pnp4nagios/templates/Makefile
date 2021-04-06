@@ -9,8 +9,11 @@ INSTALL_FILES := $(wildcard *.php)
 
 .PHONY: $(INSTALL_FILES)
 
-install:
-	$(MAKE) $(INSTALL_FILES)
+all:
+
+install: $(INSTALL_FILES)
 
 $(INSTALL_FILES):
 	install -D -g $(PNP_GROUP) -o $(PNP_USER) -m $(FILE_MODE) $@ $(TEMPLATE_DIR)/$@
+
+clean:
