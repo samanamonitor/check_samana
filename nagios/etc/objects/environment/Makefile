@@ -13,3 +13,5 @@ install: $(INSTALL_FILES)
 
 $(INSTALL_FILES):
 	install -D -g $(NAGIOS_GROUP) -o $(NAGIOS_USER) -m $(FILE_MODE) $@ $(INSTALL_PATH)/$@
+
+clean:
