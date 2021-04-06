@@ -12,3 +12,5 @@ install:
 
 $(INSTALL_FILES):
 	install -D -g $(NAGIOS_GROUP) -o $(NAGIOS_USER) -m $(FILE_MODE) $@ $(HTML_PATH)/$@
+
+clean:
