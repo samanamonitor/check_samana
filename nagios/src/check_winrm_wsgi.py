@@ -4,39 +4,40 @@ import urllib2
 import json
 import sys
 import getopt
+import urllib
 
 def main():
-  query = []
+  query = {}
   try:
     opts, args = getopt.getopt(sys.argv[1:], "H:d:u:p:ha:n:s:w:c:U:A:")
 
     for o, a in opts:
       if o == '-H':
-        query += [ "hostaddress=%s" % a ]
+        query["hostaddress"] = a
       elif o == '-d':
-        query += [ "u_domain=%s" % a ]
+        query["u_domain"] = a 
       elif o == '-u':
-        query += [ "username=%s" % a ]
+        query["username"] = a
       elif o == '-p':
-        query += [ "password=%s" % a ]
+        query["password"] = a
       elif o == '-a':
-        query += [ "authfile=%s" % a ]
+        query["authfile"] = a
       elif o == '-n':
-        query += [ "nagiosaddress=%s" % a ]
+        query["nagiosaddress"] = a
       elif o == '-s':
-        query += [ "script=%s" % a ]
+        query["script"] = a
       elif o == '-w':
-        query += [ "warning=%s" % a ]
+        query["warning"] = a
       elif o == '-c':
-        query += [ "critical=%s" % a ]
+        query["critical"] = a
       elif o == '-U':
-        query += [ "url=%s" % a ]
+        query["url"] = a
       elif o == '-A':
-        query += [ "scriptarguments=%s" % a ]
+        query["scriptarguments"] = a
       elif o == '-h':
         raise Exception("Unknown argument")
 
-    f = urllib2.urlopen("http://localhost/check_winrm?%s" % '&'.join(query))
+    f = urllib2.urlopen("http://localhost/check_winrm?%s" % urllib.encode('&'.join(query)))
 
     resp = json.load(f)
 
