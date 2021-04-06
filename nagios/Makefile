@@ -1,6 +1,6 @@
 INSTALL_BASE ?= /
 
-DIRS = $(wildcard */.)
+DIRS = $(subst /.,,$(wildcard */.))
 
 .PHONY: $(DIRS)
 

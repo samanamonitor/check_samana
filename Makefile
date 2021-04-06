@@ -1,8 +1,20 @@
-INSTALLERS := nagios pnp4nagios
+INSTALL_BASE ?= /
 
-.PHONY: $(INSTALLERS)
+DIRS = nagios pnp4nagios
 
-install: $(INSTALLERS)
+.PHONY: $(DIRS)
 
-$(INSTALLERS):
-	$(MAKE) -C $@ install
+$(DIRS):
+	$(MAKE) -C $@
+
+clean: $(patsubst %,clean_%,$(DIRS))
+
+
+install: $(patsubst %,install_%,$(DIRS))
+
+
+install_%:
+	$(MAKE) -C $(subst install_,,$@) install
+
+clean_%:
+	$(MAKE) -C $(subst clean_,,$@) clean
