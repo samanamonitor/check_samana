@@ -1,5 +1,5 @@
 WSGIDaemonProcess check-winrm processes=&WSGI_PROCESSES& threads=1 user=&WSGI_USER& group=&WSGI_GROUP& display-name=%{GROUP}
-WSGIScriptAlias /check_winrm &WSGI_WWW&/check_winrm_wsgi.py
+WSGIScriptAlias /check_winrm &WSGI_WWW&/check_winrm.py
 
 <Directory &WSGI_WWW&>
     <IfVersion >= 2.4>
