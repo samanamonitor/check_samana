@@ -19,9 +19,8 @@ install: $(patsubst %,install_%,$(INSTALL_FILES))
 
 install_$(INSTALL_FILES):
 	install -D -g $(WSGI_GROUP) -o $(WSGI_USER) -m $(FILE_MODE) $(subst install_,,$@) $(APACHE_ETC)/$(subst install_,,$@)
-	mkdir -p /etc/apache2/conf-enabled
-	cd /etc/apache2/conf-enabled
-	ln -s ../conf-available/$(subst install_,,$@)
+	a2enconf check_samana
+
 
 clean:
 	rm -f *.conf
