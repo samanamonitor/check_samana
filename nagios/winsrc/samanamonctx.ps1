@@ -81,7 +81,7 @@ $DesktopGroup.Keys | ForEach {
 $Farm["epoch"] = [Math]::Floor([decimal](Get-Date(Get-Date).ToUniversalTime()-uformat "%s"))
 $Farm['LoadIndex'] /= $Farm['TotalServers']
 $value = $Farm | ConvertTo-JSON -Compress
-$res = Invoke-WebRequest -UseBasicParsing -Method "PUT" -Body @{value=$value} `
+$res = Invoke-WebRequest -UseBasicParsing -Method "PUT" -Body @{value=$value, ttl=300} `
     -uri "$($SamanaMonitorURI)/v2/keys/samanamonitor/ctx_data/$($ComputerName)/farm" `
     -ContentType "application/x-www-form-urlencoded"
 
