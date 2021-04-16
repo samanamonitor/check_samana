@@ -97,7 +97,7 @@ foreach($e in $config['EventList']) {
 }
 
 $value = $data | ConvertTo-JSON -Compress
-$res = Invoke-WebRequest -UseBasicParsing -Method "PUT" -Body @{value=$value} `
+$res = Invoke-WebRequest -UseBasicParsing -Method "PUT" -Body @{value=$value, ttl=300} `
     -uri "$($SamanaMonitorURI)/v2/keys/samanamonitor/data/$($ComputerID)" `
     -ContentType "application/x-www-form-urlencoded"
 
