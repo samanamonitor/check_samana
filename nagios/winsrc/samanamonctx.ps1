@@ -63,7 +63,7 @@ Get-BrokerMachine -MaxRecordCount 5000 | ForEach {
     $_ | Add-Member -NotePropertyName epoch -NotePropertyValue 0
     $_.epoch = $epoch
     $value = $_ | ConvertTo-JSON -Compress
-    $res = Invoke-WebRequest -UseBasicParsing -Method "PUT" -Body @{value=$value} `
+    $res = Invoke-WebRequest -UseBasicParsing -Method "PUT" -Body @{value=$value, ttl=300} `
         -uri "$($SamanaMonitorURI)/v2/keys/samanamonitor/ctx_data/$($ComputerName)/hosts/$($_.DnsName.ToLower())" `
         -ContentType "application/x-www-form-urlencoded"
 }
