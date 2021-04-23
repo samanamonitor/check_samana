@@ -66,8 +66,8 @@ use LWP::UserAgent;
 my %opt_fields;
 my %opt_params;
 GetOptions("param=s%" => \%opt_params, "field=s%" => \%opt_fields);
-my $opt_domain = %opt_params{'DOMAIN'}; # Your team's domain
-my $opt_token = %opt_params{'TOKEN'}; # The token from your Nagios services page
+my $opt_domain = $opt_params{'DOMAIN'}; # Your team's domain
+my $opt_token = $opt_params{'TOKEN'}; # The token from your Nagios services page
 
 
 #
