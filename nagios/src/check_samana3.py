@@ -386,7 +386,7 @@ def main(argv):
             exit(3)
 
         if url is not None:
-            url_re = re.search(r'([^:]+)://([^:/]+)(:([^/]+))?/.*', url)
+            url_re = re.search(r'([^:]+)://([^:/]+)(:([^/]+))', url)
             if url_re is None:
                 print "UNKNOWN - Unable to extract etcd server data from %s" % url
                 exit(3)
