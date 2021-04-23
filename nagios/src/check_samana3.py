@@ -333,11 +333,12 @@ def main(argv):
     incl = ''
     excl = ''
     test = None
+    url = None
 
     global debug
 
     try:
-        opts, args = getopt.getopt(argv, "H:m:c:w:p:s:r:i:e:l:x:dt:")
+        opts, args = getopt.getopt(argv, "H:m:c:w:p:s:r:i:e:l:x:dt:U:")
     except getopt.GetoptError:
         help()
     
@@ -366,6 +367,8 @@ def main(argv):
             debug = 1
         elif opt == "-t":
             test = arg
+        elif opt == "-U":
+            url = arg
 
     if module == "":
         help()
@@ -382,7 +385,16 @@ def main(argv):
             print "UNKNOWN - Host ID not specified."
             exit(3)
 
-        c = etcd.Client(port=2379)
+        if url is not None:
+            url_re = re.search(r'([^:]+)://([^:/]+)(:([^/]+))?/.*', url)
+            protocol=url_re.group(1)
+            host=url_re.group(2)
+            port=url_re.group(4)
+            if port is None:
+                port=2379
+            c = etcd.Client(host=host, port=port, protocol=protocol)
+        else:
+            c = etcd.Client(port=2379)
 
         try:
             data =json.loads(c.get("/samanamonitor/data/%s" % hostid).value)
