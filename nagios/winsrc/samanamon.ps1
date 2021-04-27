@@ -1,5 +1,22 @@
-#$SamanaMonitorURI = "http://%NAGIOS_IP%:2379"
-param($SamanaMonitorURI)
+param(
+    $SamanaMonitorURI = "",
+    $MemCachedServer = "",
+    $MemCachedPort = "11211",
+    $idMethod = "md5",
+    $EtcdServer = "",
+    $EtcdPort = "2379",
+    $EtcdProtocol = "http",
+    $ttl = 300
+)
+
+if ( $SamanaMonitorURI -eq "" -and $EtcdServer -ne "") {
+    $SamanaMonitorURI = "{0}://{1}:{2}" -f $EtcdProtocol,$EtcdServer,$EtcdPort
+}
+
+if ( $SamanaMonitorURI -eq "" -and $MemCachedServer -eq "" ) {
+    "Need an ETCD server or Memcached Server defined" | Out-Host
+    return
+}
 
 $config = @{
 EventMinutes = 10
@@ -22,6 +39,37 @@ Function get-config {
     } catch {}
 }
 
+Function Send-Data {
+    param( 
+    $ServerIp, 
+    $ServerPort, 
+    $ttl,
+    $key,
+    $data )
+    $tcpConnection = New-Object System.Net.Sockets.TcpClient($ServerIp, $ServerPort)
+    $tcpStream = $tcpConnection.GetStream()
+    $reader = New-Object System.IO.StreamReader($tcpStream)
+    $writer = New-Object System.IO.StreamWriter($tcpStream)
+    $writer.AutoFlush = $true
+    while ($tcpConnection.Connected) {
+        while ($tcpStream.DataAvailable)
+        {
+            $res = $reader.ReadLine()
+        }
+        if($res -eq "STORED" -or $res -eq "ERROR") {
+            $writer.WriteLine("quit")
+            break
+        }
+        $set = "set {0} 0 {1} {2}" -f $key, $ttl, $data.length
+        $writer.WriteLine($set)
+        $writer.WriteLine($data)
+        while (!$tcpStream.DataAvailable) {}
+    }
+    $reader.Close()
+    $writer.Close()
+    $tcpConnection.Close()
+    return $res
+}
 
 $data = @{}
 
@@ -32,9 +80,19 @@ $data['DNSHostName'] = $computer.DNSHostName
 $data['Domain'] = $computer.Domain
 
 $ComputerFQDN = "$($data['DNSHostName']).$($data['Domain'])"
-$md5 = New-Object -TypeName System.Security.Cryptography.MD5CryptoServiceProvider
 $utf8 = New-Object -TypeName System.Text.UTF8Encoding
-$ComputerID = [System.BitConverter]::ToString($md5.ComputeHash($utf8.GetBytes($ComputerFQDN))) -Replace '-'
+if($idMethod -eq "md5") {
+    $hash = New-Object -TypeName System.Security.Cryptography.MD5CryptoServiceProvider
+    $ComputerID = [System.BitConverter]::ToString($hash.ComputeHash($utf8.GetBytes($ComputerFQDN))) -Replace '-'
+} elseif ($idMethod -eq "sha256") {
+    $hash = New-Object -TypeName System.Security.Cryptography.SHA256CryptoServiceProvider
+    $ComputerID = [System.BitConverter]::ToString($hash.ComputeHash($utf8.GetBytes($ComputerFQDN))) -Replace '-'
+} elseif ($idMethod -eq "fqdn") {
+    $ComputerID = $ComputerFQDN.ToLower()
+} else {
+    "Invalid id method. Use one: md5, sha256 or fqdn" | Out-Host
+    return
+}
 
 get-config -ServerUri $SamanaMonitorURI -Location "samanamonitor/config/global" -Config $config
 get-config -ServerUri $SamanaMonitorURI -Location "samanamonitor/config/$($ComputerID)" -Config $config
@@ -97,8 +155,13 @@ foreach($e in $config['EventList']) {
 }
 
 $value = $data | ConvertTo-JSON -Compress
-$res = Invoke-WebRequest -UseBasicParsing -Method "PUT" -Body @{value=$value; ttl=300} `
-    -uri "$($SamanaMonitorURI)/v2/keys/samanamonitor/data/$($ComputerID)" `
-    -ContentType "application/x-www-form-urlencoded"
-
+if ( $MemCachedServer -ne "") {
+    $res = Send-Data $MemCachedServer 11211 300 $ComputerID $value
+}
+$res
+if ($SamanaMonitorURI -ne "") {
+    $res = Invoke-WebRequest -UseBasicParsing -Method "PUT" -Body @{value=$value; ttl=$ttl} `
+        -uri "$($SamanaMonitorURI)/v2/keys/samanamonitor/data/$($ComputerID)" `
+        -ContentType "application/x-www-form-urlencoded"
+}
 $ComputerID | Out-Host
