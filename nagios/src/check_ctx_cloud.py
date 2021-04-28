@@ -84,7 +84,7 @@ def main(argv):
 
             print("OK - Data Collected")
             for s in sites:
-                print("Site Name: %s, Site Id: %s", (s['Name'], s['Id']))
+                print("Site Name: %s, Site Id: %s" % (s['Name'], s['Id']))
             exit(0)
 
         if site_id is None:
