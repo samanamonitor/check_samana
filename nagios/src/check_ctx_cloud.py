@@ -115,6 +115,7 @@ def main(argv):
             (str(err), tb.tb_lineno))
         exit(3)
 
+    print("OK - Data Collected")
     customer_id='oopvmnxxhaqv'
     client_id='f2d83ca7-eae0-4515-b531-fbeddbe68948'
     client_secret='RCLrOBZo5y8MTpa0qyBPsA=='
