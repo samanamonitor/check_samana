@@ -116,5 +116,7 @@ def main(argv):
     client_id='f2d83ca7-eae0-4515-b531-fbeddbe68948'
     client_secret='RCLrOBZo5y8MTpa0qyBPsA=='
 
+if __name__ == "__main__":
+  main()
 
 
