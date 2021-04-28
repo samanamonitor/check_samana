@@ -95,6 +95,7 @@ def main(argv):
             raise CheckCtxCloudUnknown("Etcd server is mandatory for collecting data.")
 
         etcdclient = etcd.Client(host=etcdserver, port=etcdport, protocol='http')
+        print('hello')
         ctx.get_machines(site_id)
         etcdclient.put('/samanamonitor/ctx_data/%s/farm' % (site_id), json.dumps(ctx.data['farm']), ttl)
         for dg_name in ctx.data['desktopgroup'].keys():
