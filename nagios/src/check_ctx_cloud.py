@@ -99,6 +99,7 @@ def main(argv):
             etcdclient.put('/samanamonitor/ctx_data/%s/desktopgroup/%s' % (site_id, dg_name.lower()), json.dumps(ctx.data['desktopgroup'][dg_name]), ttl)
 
     except Exception as err:
+        exc_type, exc_obj, tb = sys.exc_info()
         print("UNKNOWN - main Error: %s at line %s" % \
             (str(err), tb.tb_lineno))
         exit(3)
