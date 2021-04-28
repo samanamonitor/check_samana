@@ -98,17 +98,17 @@ def main(argv):
         for dg_name in ctx.data['desktopgroup'].keys():
             etcdclient.put('/samanamonitor/ctx_data/%s/desktopgroup/%s' % (site_id, dg_name.lower()), json.dumps(ctx.data['desktopgroup'][dg_name]), ttl)
 
-    except Exception as e:
+    except Exception as err:
         print("UNKNOWN - main Error: %s at line %s" % \
             (str(err), tb.tb_lineno))
         exit(3)
-    except CheckCtxCloudUnknown as e:
+    except CheckCtxCloudUnknown as err:
         print("UNKNOWN - %s" % (str(err)))
         exit(3)
-    except CheckCtxCloudError as e:
+    except CheckCtxCloudError as err:
         print("ERROR - %s" % (str(err)))
         exit(2)
-    except CheckCtxCloudWarning as e:
+    except CheckCtxCloudWarning as err:
         print("WARNING - %s" % (str(err)))
         exit(1)
 
