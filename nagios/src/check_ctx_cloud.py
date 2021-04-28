@@ -22,13 +22,14 @@ to get a license.
 Copyright (c) 2019 Samana Group LLC
 
 Usage:
-  %s -i <customer ID> -u <client id> -p <client secret> [ -s ] | -e <etcd server and port x.x.x.x[:2379]> -d <site id>
+  %s -i <customer ID> -u <client id> -p <client secret> [ -s ] | -e <etcd server and port x.x.x.x[:2379]> -d <site id> -t <ttl>
 
   -i <customer ID>      Customer ID collected from Citrix Cloud information
   -u <client id>        Citrix Cloud API client id
   -p <client secret>    Citrix Cloud API client secret
   -s                    Prints a list of available Sites with Ids available in Citrix Cloud
   -e <etcd>             Etcd server IP/Hostname and port(optional). Default port value is 2379
+  -t <ttl>              Time(seconds) the records will expire in Etcd database. Default ttl is 300 seconds
   -d <site id>          Citrix Cloud Site Id
 """
   print(usage)
@@ -42,6 +43,7 @@ def main(argv):
     etcdserver = None
     etcdport = 2379
     site_id = None
+    ttl = 300
     try:
         opts, args = getopt.getopt(sys.argv[1:], "hsi:u:p:e:d:")
 
@@ -92,8 +94,9 @@ def main(argv):
 
         etcdclient = etcd.Client(host=etcdserver, port=etcdport, protocol='http')
         ctx.get_machines(site_id)
+        etcdclient.put('/samanamonitor/ctx_data/%s/farm' % (site_id), json.dumps(ctx.data['farm']), ttl)
         for dg_name in ctx.data['desktopgroup'].keys():
-            etcdclient.put('/samanamonitor/ctx_data/%s/desktopgroup/%s' % (site_id, dg_name.lower()), json.dumps(ctx.data['desktopgroup'][dg_name]), 60)
+            etcdclient.put('/samanamonitor/ctx_data/%s/desktopgroup/%s' % (site_id, dg_name.lower()), json.dumps(ctx.data['desktopgroup'][dg_name]), ttl)
 
     except Exception as e:
         print("UNKNOWN - main Error: %s at line %s" % \
