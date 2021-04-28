@@ -2,6 +2,7 @@
 import citrixcloud
 import samanaetcd as etcd
 import sys, getopt
+import json
 
 class CheckCtxCloudWarning(Exception):
     pass
@@ -92,7 +93,7 @@ def main(argv):
         etcdclient = etcd.Client(host=etcdserver, port=etcdport, protocol='http')
         ctx.get_machines(site_id)
         for dg_name in ctx.data['desktopgroup'].keys():
-            etcdclient.put('/samanamonitor/ctx_data/%s/desktopgroup/%s' % (site_id, dg))
+            etcdclient.put('/samanamonitor/ctx_data/%s/desktopgroup/%s' % (site_id, dg_name.lower()), json.dumps(ctx.data['desktopgroup'][dg_name]), 60)
 
     except Exception as e:
         print("UNKNOWN - main Error: %s at line %s" % \
