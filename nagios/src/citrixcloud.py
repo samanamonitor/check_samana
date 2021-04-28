@@ -47,7 +47,8 @@ class Client:
     self.me = self.get_data('https://api-us.cloud.com/cvadapis/me')
     for customer in self.me['Customers']:
       if customer.get('Id') == self.customer_id:
-        self.sites = customer.get('Sites')
+        return customer.get('Sites')
+    return None
 
   def get_desktopgroups(self, site_id):
     self.desktopgroups = self.get_data('https://api-us.cloud.com/cvadapis/%s/DeliveryGroups' % site_id).get('Items', None)
