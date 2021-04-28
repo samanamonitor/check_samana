@@ -12,8 +12,14 @@ class Client():
     def get(self, key):
         r = self.http.request('GET', '%s://%s:%s/%s/keys/%s' %(self.protocol, self.host, self.port, self.version_prefix, key))
         if r.status != 200: raise EtcdKeyNotFound(payload={'errorCode': 100, 'index': 0, 'message': 'Key not found', 'cause': key})
-        data = json.loads(r.data)
+        data = json.loads(r.data.decode('UTF-8'))
         return EtcdResult(action=data['action'], node=data['node'])
+
+    def put(self, key, value, ttl):
+        r = self.http.request('PUT', '%s://%s:%s/%s/keys/%s' %(self.protocol, self.host, self.port, self.version_prefix, key), \
+            fields={ 'value': value, 'ttl': ttl }, encode_multipart=False)
+        data = json.loads(r.data.decode('UTF-8'))
+        if r.status != 201: raise EtcdException(payload={'errorCode': 100, 'index': 0, 'message': 'Could not set value', 'cause': r.data})
 
 
 class EtcdResult(object):
