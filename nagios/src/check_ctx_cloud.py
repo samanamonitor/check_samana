@@ -45,7 +45,7 @@ def main(argv):
     site_id = None
     ttl = 300
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hsi:u:p:e:d:")
+        opts, args = getopt.getopt(sys.argv[1:], "hsi:u:p:e:d:t:")
 
         for o, a in opts:
             if o == '-i':
