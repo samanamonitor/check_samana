@@ -90,7 +90,7 @@ $DesktopGroup.Keys | ForEach {
     $dg['LoadIndex'] /= $dg['TotalServers']
     $dg["epoch"] = [Math]::Floor([decimal](Get-Date(Get-Date).ToUniversalTime()-uformat "%s"))
     $value = $dg | ConvertTo-JSON -Compress
-    $res = Invoke-WebRequest -UseBasicParsing -Method "PUT" -Body @{value=$value} `
+    $res = Invoke-WebRequest -UseBasicParsing -Method "PUT" -Body @{value=$value; ttl=300} `
         -uri "$($SamanaMonitorURI)/v2/keys/samanamonitor/ctx_data/$($ComputerName)/desktopgroup/$($_)" `
         -ContentType "application/x-www-form-urlencoded"
 
