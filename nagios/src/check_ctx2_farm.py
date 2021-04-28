@@ -60,7 +60,7 @@ class CitrixXD:
       http = urllib3.PoolManager()
       r = http.request('GET', 'http://localhost:2379' + path)
       if r.status != 200: raise KeyError
-      self.data =json.loads(json.loads(r.data)['node']['value'])
+      self.data =json.loads(json.loads(r.data.decode('UTF-8'))['node']['value'])
       if 'epoch' not in self.data: raise ValueError
       age_secs = time.time() - self.data['epoch']
       if age_secs > 600:
