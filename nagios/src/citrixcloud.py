@@ -44,7 +44,7 @@ class Client:
     res = self.pool.request('GET', url, headers=self.headers)
     if len(res.data) < 10 or res.status != 200:
       raise Exception("Invalid data received from the API server %s %s" % (res.status, res.data))
-    return json.loads(res.data.decode('UTF-8'))
+    return json.loads(res.data.decode('ascii', errors='ignore'))
 
   def get_sites(self):
     self.me = self.get_data('https://api-us.cloud.com/cvadapis/me')
