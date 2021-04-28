@@ -42,6 +42,8 @@ class Client:
     if time() > self.expires:
       self.get_token()
     res = self.pool.request('GET', url, headers=self.headers)
+    if len(res.data) < 10:
+      raise Exception("Invalid data received from the API server %s %s" % (res.status, res.data))
     return json.loads(res.data.decode('UTF-8'))
 
   def get_sites(self):
