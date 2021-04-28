@@ -73,8 +73,10 @@ class Client:
     self.machines = self.get_data('https://api-us.cloud.com/cvadapis/%s/Machines' % site_id).get('Items', None)
     for m in self.machines:
       m['epoch'] = int(time())
+      m['DesktopGroupName'] = 'None' if m['DeliveryGroup'] is None else m['DeliveryGroup']['Name']
+      if m['DeliveryGroup'] is None: 
+        continue
       self.data['hosts'][m['DnsName'].lower()] = m
-      if m['DeliveryGroup'] is None: continue
       dg_name = m['DeliveryGroup']['Name']
       dg = self.data['desktopgroup'][dg_name]
       farm = self.data['farm']
