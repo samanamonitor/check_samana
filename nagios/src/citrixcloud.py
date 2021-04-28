@@ -14,7 +14,8 @@ class Client:
         'LoadIndex': 0,
         'SessionCount': 0,
         'InMaintenanceMode': 0,
-        'Registered': 0
+        'Registered': 0,
+        'epoch': int(time)
       }
     }
     self.pool = urllib3.PoolManager()
@@ -51,6 +52,7 @@ class Client:
     return None
 
   def get_desktopgroups(self, site_id):
+    self.site_id = site_id
     self.desktopgroups = self.get_data('https://api-us.cloud.com/cvadapis/%s/DeliveryGroups' % site_id).get('Items', None)
     self.data['desktopgroup'] = {}
     for dg in self.desktopgroups:
@@ -59,10 +61,12 @@ class Client:
         'LoadIndex': 0,
         'SessionCount': 0,
         'InMaintenanceMode': 0,
-        'Registered': 0
+        'Registered': 0,
+        'epoch': int(time)
       }
 
   def get_machines(self, site_id):
+    self.site_id = site_id
     if 'desktopgroup' not in self.data:
       self.get_desktopgroups(site_id)
     self.machines = self.get_data('https://api-us.cloud.com/cvadapis/%s/Machines' % site_id).get('Items', None)
