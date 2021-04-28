@@ -98,7 +98,11 @@ def main(argv):
         ctx.get_machines(site_id)
         etcdclient.put('/samanamonitor/ctx_data/%s/farm' % (site_id), json.dumps(ctx.data['farm']), ttl)
         for dg_name in ctx.data['desktopgroup'].keys():
-            etcdclient.put('/samanamonitor/ctx_data/%s/desktopgroup/%s' % (site_id, dg_name.lower()), json.dumps(ctx.data['desktopgroup'][dg_name]), ttl)
+            etcdclient.put('/samanamonitor/ctx_data/%s/desktopgroup/%s' % \
+                (site_id, dg_name.lower()), json.dumps(ctx.data['desktopgroup'][dg_name]), ttl)
+        for host_name in ctx.data['hosts'].keys():
+            etcdclient.put('samanamonitor/ctx_data/%s/hosts/%s' % \
+                (site_id, host_name.lower()), json.dumps(ctx.data['hosts'][host_name]), ttl)
 
     except CheckCtxCloudUnknown as err:
         print("UNKNOWN - %s" % (str(err)))
