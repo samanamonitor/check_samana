@@ -1,9 +1,7 @@
 #!/usr/bin/python
 
-import urllib
 import sys, getopt
 import json
-import socket
 import re
 import samanaetcd as etcd
 import time
