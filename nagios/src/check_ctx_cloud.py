@@ -117,6 +117,6 @@ def main(argv):
     client_secret='RCLrOBZo5y8MTpa0qyBPsA=='
 
 if __name__ == "__main__":
-  main()
+  main(sys.argv)
 
 
