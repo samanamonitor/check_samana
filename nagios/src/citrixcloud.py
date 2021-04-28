@@ -33,7 +33,9 @@ class Client:
     }
     res = self.pool.request_encode_body('POST', token_url, fields=fields, headers=self.headers, encode_multipart=False)
     auth = json.loads(res.data.decode('ascii', errors='ignore'))
-    self.token = auth.get('access_token')
+    self.token = auth.get('access_token', None)
+    if self.token is None:
+      raise Exception("Unable to get token from %s" % token_url)
     self.expires = time() + float(auth.get('expires_in', '0'))
     self.headers['Authorization'] = "CwsAuth Bearer=%s" % self.token
     self.headers['Citrix-CustomerId'] = self.customer_id
