@@ -67,8 +67,8 @@ class Client:
 
   def get_machines(self, site_id):
     self.site_id = site_id
-    if 'desktopgroup' not in self.data:
-      self.get_desktopgroups(site_id)
+    self.get_desktopgroups(site_id)
+    self.data['farm']['epoch'] = int(time())
     self.machines = self.get_data('https://api-us.cloud.com/cvadapis/%s/Machines' % site_id).get('Items', None)
     for m in self.machines:
       if m['DeliveryGroup'] is None: continue
