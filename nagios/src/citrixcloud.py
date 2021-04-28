@@ -15,7 +15,7 @@ class Client:
         'SessionCount': 0,
         'InMaintenanceMode': 0,
         'Registered': 0,
-        'epoch': int(time)
+        'epoch': int(time())
       }
     }
     self.pool = urllib3.PoolManager()
@@ -62,7 +62,7 @@ class Client:
         'SessionCount': 0,
         'InMaintenanceMode': 0,
         'Registered': 0,
-        'epoch': int(time)
+        'epoch': int(time())
       }
 
   def get_machines(self, site_id):
