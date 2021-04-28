@@ -42,7 +42,7 @@ class Client:
     if time() > self.expires:
       self.get_token()
     res = self.pool.request('GET', url, headers=self.headers)
-    if len(res.data) < 10:
+    if len(res.data) < 10 or res.status != 200:
       raise Exception("Invalid data received from the API server %s %s" % (res.status, res.data))
     return json.loads(res.data.decode('UTF-8'))
 
@@ -55,7 +55,10 @@ class Client:
 
   def get_desktopgroups(self, site_id):
     self.site_id = site_id
-    self.desktopgroups = self.get_data('https://api-us.cloud.com/cvadapis/%s/DeliveryGroups' % site_id).get('Items', None)
+    data = self.get_data('https://api-us.cloud.com/cvadapis/%s/DeliveryGroups' % site_id)
+    if 'Items' not in data:
+      raise Exception("Invalid data received from Citrix Cloud getting desktopgroups %s" % (data))
+    self.desktopgroups = data['Items']
     self.data['desktopgroup'] = {}
     for dg in self.desktopgroups:
       self.data['desktopgroup'][dg['Name']] = {
@@ -72,7 +75,10 @@ class Client:
     self.get_desktopgroups(site_id)
     self.data['farm']['epoch'] = int(time())
     self.data['hosts'] = {}
-    self.machines = self.get_data('https://api-us.cloud.com/cvadapis/%s/Machines' % site_id).get('Items', None)
+    data = self.get_data('https://api-us.cloud.com/cvadapis/%s/Machines' % site_id)
+    if 'Items' not in data:
+      raise Exception("Invalid data received from Citrix Cloud getting machines %s" % (data))
+    self.machines = data['Items']
     for m in self.machines:
       m['epoch'] = int(time())
       m['DesktopGroupName'] = 'None' if m['DeliveryGroup'] is None else m['DeliveryGroup']['Name']
