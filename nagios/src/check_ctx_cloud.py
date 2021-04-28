@@ -61,6 +61,8 @@ def main(argv):
                 etcdserver = temp[0]
                 if len(temp) > 1:
                     etcdport = temp[1]
+            elif o == '-t':
+                ttl = a
             elif o == '-d':
                 site_id = a
             elif o == '-h':
