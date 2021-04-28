@@ -13,8 +13,8 @@ if ( $SamanaMonitorURI -eq "" -and $EtcdServer -ne "") {
     $SamanaMonitorURI = "{0}://{1}:{2}" -f $EtcdProtocol,$EtcdServer,$EtcdPort
 }
 
-if ( $SamanaMonitorURI -eq "" -and $MemCachedServer -eq "" ) {
-    "Need an ETCD server or Memcached Server defined" | Out-Host
+if ( $SamanaMonitorURI -eq "") {
+    "Need an ETCD server defined" | Out-Host
     return
 }
 
