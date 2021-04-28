@@ -1,5 +1,22 @@
-#$SamanaMonitorURI = "http://%NAGIOS_IP%:2379"
-param($SamanaMonitorURI)
+param(
+    $SamanaMonitorURI = "",
+    $MemCachedServer = "",
+    $MemCachedPort = "11211",
+    $idMethod = "md5",
+    $EtcdServer = "",
+    $EtcdPort = "2379",
+    $EtcdProtocol = "http",
+    $ttl = 300
+)
+
+if ( $SamanaMonitorURI -eq "" -and $EtcdServer -ne "") {
+    $SamanaMonitorURI = "{0}://{1}:{2}" -f $EtcdProtocol,$EtcdServer,$EtcdPort
+}
+
+if ( $SamanaMonitorURI -eq "") {
+    "Need an ETCD server defined" | Out-Host
+    return
+}
 
 $config = @{}
 
