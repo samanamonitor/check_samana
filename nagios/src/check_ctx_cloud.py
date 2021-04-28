@@ -65,7 +65,7 @@ def main(argv):
                 site_id = a
             elif o == '-h':
                 usage(args)
-            else
+            else:
                 raise Exception("Unknown argument")
 
         if customer_id is None:
