@@ -50,9 +50,9 @@ def main(argv):
         for o, a in opts:
             if o == '-i':
                 customer_id = a
-            elif o == '-d':
-                client_id = a
             elif o == '-u':
+                client_id = a
+            elif o == '-p':
                 client_secret = a
             elif o == '-s':
                 print_sites = True
