@@ -137,7 +137,7 @@ class CitrixXD:
     registrationstate_str = REGISTRATION_STATE[self.data['RegistrationState']] \
       if isinstance(self.data['RegistrationState'], int) else self.data['RegistrationState']
     registrationstate_num = REGISTRATION_STATE[self.data['RegistrationState']] \
-      if isinstance(self.data['RegistrationState'], int) else 0
+      if isinstance(self.data['RegistrationState'], int) else -1
     return (
       self.data['RegistrationState'],
       "Server registration state is %s (%d)" % (
