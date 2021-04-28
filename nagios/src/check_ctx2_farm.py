@@ -134,10 +134,12 @@ class CitrixXD:
     addl_data="Last push: %d s\n" % (time.time() - self.data['epoch'])
     if self.type != TYPE_SERVER:
       raise CXDInvalidData("This information can only be obtained from a host")
+    registrationstate_str = REGISTRATION_STATE[self.data['RegistrationState']] \
+      if isinstance(self.data['RegistrationState'], int) else self.data['RegistrationState']
     return (
       self.data['RegistrationState'],
       "Server registration state is %s (%d)" % (
-        REGISTRATION_STATE[self.data['RegistrationState']], 
+        registrationstate_str, 
         self.data['RegistrationState']),
       addl_data,
       None,
