@@ -1,4 +1,5 @@
-INSTALL_BASE ?= /
+INSTALL_BASE ?= /usr/local
+NAGIOS_BASE ?= $(INSTALL_BASE)/nagios
 
 DIRS = $(subst /.,,$(wildcard */.))
 

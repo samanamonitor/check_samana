@@ -1,4 +1,6 @@
-NAGIOS_ETC ?= $(INSTALL_BASE)/etc/nagios
+INSTALL_BASE ?= /usr/local
+NAGIOS_BASE ?= $(INSTALL_BASE)/nagios
+NAGIOS_ETC ?= $(NAGIOS_BASE)/etc
 INSTALL_PATH ?= $(NAGIOS_ETC)/objects/samana
 NAGIOS_USER ?= nagios
 NAGIOS_GROUP ?= nagios

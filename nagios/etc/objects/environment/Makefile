@@ -1,4 +1,4 @@
-NAGIOS_ETC ?= $(INSTALL_BASE)/etc/nagios
+NAGIOS_ETC ?= $(NAGIOS_BASE)/etc
 CUSTOMER ?= environment
 INSTALL_PATH ?= $(NAGIOS_ETC)/objects/$(CUSTOMER)
 NAGIOS_USER ?= nagios

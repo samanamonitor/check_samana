@@ -1,4 +1,4 @@
-INSTALL_BASE ?= /
+INSTALL_BASE ?= /usr/local
 
 DIRS = nagios pnp4nagios
 
