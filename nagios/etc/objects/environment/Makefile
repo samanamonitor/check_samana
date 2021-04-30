@@ -1,3 +1,5 @@
+INSTALL_BASE ?= /usr/local
+NAGIOS_BASE ?= $(INSTALL_BASE)/nagios
 NAGIOS_ETC ?= $(NAGIOS_BASE)/etc
 CUSTOMER ?= environment
 INSTALL_PATH ?= $(NAGIOS_ETC)/objects/$(CUSTOMER)
