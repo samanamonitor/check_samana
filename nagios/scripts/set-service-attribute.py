@@ -20,5 +20,5 @@ if len(srv_list) < 1:
     print("Unable to find service %s at host %s" % (service_description, host_name))
 
 srv = srv_list[0]
-srv.set_attribute(attribute_name=attribute_name, value=value)
+srv.set_attribute(attribute_name=attribute_name, attribute_value=value)
 srv.save()
