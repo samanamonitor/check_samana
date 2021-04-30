@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/python3
 
 from pynag.Model import Service
 from sys import argv
