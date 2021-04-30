@@ -8,7 +8,7 @@ def usage(argv):
     exit(1)
 
 if len(argv) != 4:
-    usage()
+    usage(argv)
 
 service_description=argv[1]
 host_name=argv[2]
