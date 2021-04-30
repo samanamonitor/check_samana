@@ -13,7 +13,7 @@ INSTALL_FILES = $(wildcard *.cfg)
 all:
 	
 install: $(INSTALL_FILES)
-	$(eval ACTIVE_CONFIG := $(shell grep -q -e "^cfg_dir=$(INSTALL_PATH)" $(NAGIOS_ETC)/nagios.cfg))
+	$(eval ACTIVE_CONFIG := $(shell grep -e "^cfg_dir=$(INSTALL_PATH)" $(NAGIOS_ETC)/nagios.cfg))
 ifeq ("$(ACTIVE_CONFIG)", "")
 	echo "cfg_dir=$(INSTALL_PATH)" >> $(NAGIOS_ETC)/nagios.cfg
 endif
