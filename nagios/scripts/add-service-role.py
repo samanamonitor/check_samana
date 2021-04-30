@@ -4,7 +4,7 @@ from pynag.Model import Service
 from sys import argv
 
 def usage(argv):
-    print "Usage: %s <service description> <host name> <role to be added>" % argv[0]
+    print("Usage: %s <service description> <host name> <role to be added>" % argv[0])
     exit(1)
 
 if len(argv) != 4:
