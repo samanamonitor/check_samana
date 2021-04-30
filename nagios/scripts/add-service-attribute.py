@@ -7,7 +7,7 @@ def usage(argv):
     print("Usage: %s <service description> <host name> <attribute name> <value to be added>" % argv[0])
     exit(1)
 
-if len(argv) != 4:
+if len(argv) != 5:
     usage(argv)
 
 service_description=argv[1]
