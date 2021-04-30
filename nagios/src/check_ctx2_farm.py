@@ -140,7 +140,7 @@ class CitrixXD:
       if isinstance(self.data['RegistrationState'], int) else -1
     return (
       self.data['RegistrationState'],
-      "Server registration state is %s (%d)" % (
+      "Server registration state is %s (%s)" % (
         registrationstate_str, 
         registrationstate_num),
       addl_data,
