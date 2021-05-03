@@ -21,13 +21,13 @@ class CheckWinRMExceptionUNKNOWN(Exception):
 
 class WinRMScript:
   def __init__(self, hostaddress, auth):
-      if auth is None:
+    if auth is None:
         raise CheckWinRMExceptionUNKNOWN("Authentication data missing")
-      if 'domain' not in auth or auth['domain'] is None:
+    if 'domain' not in auth or auth['domain'] is None:
         raise CheckWinRMExceptionUNKNOWN("The user domain name is a mandatory argument")
-      if 'username' not in auth or auth['username'] is None:
+    if 'username' not in auth or auth['username'] is None:
         raise CheckWinRMExceptionUNKNOWN("The username is a mandatory argument")
-      if 'password' not in auth or auth['password'] is None:
+    if 'password' not in auth or auth['password'] is None:
         raise CheckWinRMExceptionUNKNOWN("The password is a mandatory argument")
 
     self.data = {}
