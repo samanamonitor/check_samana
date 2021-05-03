@@ -16,22 +16,19 @@ class CheckWinRMExceptionWARN(Exception):
 class CheckWinRMExceptionCRIT(Exception):
     pass
 
+class CheckWinRMExceptionUNKNOWN(Exception):
+    pass
+
 class WinRMScript:
   def __init__(self, hostaddress, auth):
-    try:
       if auth is None:
-        raise Exception("Authentication data missing")
+        raise CheckWinRMExceptionUNKNOWN("Authentication data missing")
       if 'domain' not in auth or auth['domain'] is None:
-        raise Exception("The user domain name is a mandatory argument")
+        raise CheckWinRMExceptionUNKNOWN("The user domain name is a mandatory argument")
       if 'username' not in auth or auth['username'] is None:
-        raise Exception("The username is a mandatory argument")
+        raise CheckWinRMExceptionUNKNOWN("The username is a mandatory argument")
       if 'password' not in auth or auth['password'] is None:
-        raise Exception("The password is a mandatory argument")
-
-    except Exception as e:
-      print "UNKNOWN - Error " + str(e)
-      usage()
-      exit(3)
+        raise CheckWinRMExceptionUNKNOWN("The password is a mandatory argument")
 
     self.data = {}
     self.hostaddress = hostaddress
@@ -84,16 +81,15 @@ Remove-Item -Recurse -Force %(scriptpath)s
       encoded_ps = b64encode(script.encode('utf_16_le')).decode('ascii')
       command_id = p.run_command(shell_id, 'powershell', ['-encodedcommand {0}'.format(encoded_ps), ])
       std_out, std_err, status_code = p.get_command_output(shell_id, command_id)
-      if status_code != 0:
-        print("ERROR - %s" % std_err)
-        error = 1
+
     except Exception as e:
-      print("UNKNOWN - Unable to get data from Server (%s) %s." % (str(e), type(e).__name__))
-      error = 3
+      raise CheckWinRMExceptionUNKNOWN("Unable to get data from Server (%s) %s." % (str(e), type(e).__name__))
     finally:
       p.cleanup_command(shell_id, command_id)
       p.close_shell(shell_id)
-    if error > 0: exit(error)
+
+    if status_code != 0:
+      raise CheckWinRMExceptionUNKNOWN(std_err)
     return std_out
 
 def get_dns_ip(hn):
@@ -188,10 +184,10 @@ def ping_host(ip):
         data['max'] = int(float(rtt[2]))
         data['mdev'] = int(float(rtt[3]))
     except (ValueError, IndexError) as e:
-        raise Exception("UNKNOWN - Ping output invalid. %s\n%s" % (str(e), out[0]))
+        raise Exception("Ping output invalid. %s\n%s" % (str(e), out[0]))
 
     except Exception as e:
-        raise Exception("UNKNOWN - unexpected error %s\n%s\n%s\n%s" % (str(e), out[0], packets, rtt))
+        raise Exception("unexpected error %s\n%s\n%s\n%s" % (str(e), out[0], packets, rtt))
 
     return data
 
@@ -231,7 +227,7 @@ def application ( environ, start_response):
             raise Exception("Invalid Host address")
 
         if data['nagiosaddress'] is None and data['url'] is None:
-            raise Exception("UNKNOWN - Powershell script location not defined.")
+            raise Exception("Powershell script location not defined.")
 
         if data['url'] is None:
             data['url'] = "http://%s/%s" % (data['nagiosaddress'], data['script'])
@@ -239,7 +235,7 @@ def application ( environ, start_response):
 
         user_auth = auth(data['username'], data['u_domain'], data['password'], data['authfile'])
         if user_auth is None:
-            raise Exception("UNKNOWN - Invalid authentication information")
+            raise Exception("Invalid authentication information")
 
         if data['warning'] is not None:
             try:
@@ -249,7 +245,7 @@ def application ( environ, start_response):
                 packet_loss_warn = int(packet_loss_warn)
                 winrm_warn = int(winrm_warn)
             except ValueError:
-                raise Exception("UNKNOWN - Invalid Warning values")
+                raise Exception("Invalid Warning values")
 
         if data['critical'] is not None:
             try:
@@ -259,7 +255,7 @@ def application ( environ, start_response):
                 packet_loss_crit = int(packet_loss_crit)
                 winrm_crit = int(winrm_crit)
             except ValueError:
-                raise Exception("UNKNOWN - Invalid Critical values")
+                raise Exception("Invalid Critical values")
 
         (hostip, dns_time) = get_dns_ip(data['hostaddress'])
         ping_data = ping_host(hostip)
