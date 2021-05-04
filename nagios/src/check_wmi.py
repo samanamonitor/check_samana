@@ -13,8 +13,8 @@ timeout=60
 class CheckNagiosException(Exception):
     def __init__(self, info=None, perf_data=None, addl=None):
         self.info = info if info is not None else "Unknown Exception"
-        self.perf_data = perf_data if perf_data is not None else ""
-        self.addl = addl if addl is not None else ""
+        self.perf_data = " | %s" % perf_data if perf_data is not None else ""
+        self.addl = "\n%s" % addl if addl is not None else ""
 
 class CheckNagiosWarning(CheckNagiosException):
     pass
