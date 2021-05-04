@@ -91,7 +91,7 @@ def main(argv):
 
         a = query_wmi(hostaddress, authfile, wmi_class="win32_logicaldisk", wmi_properties=["*"])
 
-        print("OK - %s | %s\n%s"("", "", ""))
+        print("OK - %s | %s\n%s" % ("", "", ""))
     except CheckNagiosWarning as e:
         print("WARNING - %s%s%s" % (e.info, e.perf_data, e.addl))
         exit(1)
