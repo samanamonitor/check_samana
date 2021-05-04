@@ -108,4 +108,4 @@ def main(argv):
         exit(3)
 
 if __name__ == "__main__":
-  main()
+  main(sys.argv)
