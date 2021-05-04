@@ -93,13 +93,13 @@ def main(argv):
 
         print("OK - %s | %s\n%s"("", "", ""))
     except CheckNagiosWarning as e:
-        print("WARNING - %s | %s\n%s" % (e.info, e.perf_data, e.addl))
+        print("WARNING - %s%s%s" % (e.info, e.perf_data, e.addl))
         exit(1)
     except CheckNagiosError as e:
-        print("ERROR - %s | %s\n%s" % (e.info, e.perf_data, e.addl))
+        print("ERROR - %s%s%s" % (e.info, e.perf_data, e.addl))
         exit(2)
     except CheckNagiosUnknown as e:
-        print("UNKNOWN - %s | %s\n%s" % (e.info, e.perf_data, e.addl))
+        print("UNKNOWN - %s%s%s" % (e.info, e.perf_data, e.addl))
         exit(3)
     except Exception as e:
         exc_type, exc_obj, tb = sys.exc_info()
