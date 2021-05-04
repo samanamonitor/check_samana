@@ -53,7 +53,7 @@ def query_wmi(host, authfile, query="", wmi_class="", wmi_properties=[], wmi_fil
     cmd=[wmi_exec, "-A", authfile, "//%s" % host, query ]
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE,stderr=subprocess.PIPE, encoding="ascii")
     output, err = p.communicate(timeout=timeout)
-    if p.return_code != 0
+    if p.return_code != 0:
         raise CheckNagiosUnknown(info="Error executing wmic", addl="STDOUT=%s\nSTDERR=%s" % (output, err))
     return output.split('\n')
 
