@@ -277,6 +277,9 @@ def main():
       elif o == '-A':
         scriptarguments = a
       elif o == '-h':
+        usage()
+        exit(0)
+      else:
         raise Exception("Unknown argument")
 
     if hostaddress is None:
