@@ -89,7 +89,7 @@ def main(argv):
         if authfile is None:
             raise CheckNagiosUnknown("Auth file not defined")
 
-        a = "" #query_wmi(hostaddress, authfile, wmi_class="win32_logicaldisk", wmi_properties=["*"])
+        a = query_wmi(hostaddress, authfile, wmi_class="win32_logicaldisk", wmi_properties=["*"])
 
         print("OK - %s | %s\n%s" % (a, "", ""))
     except CheckNagiosWarning as e:
