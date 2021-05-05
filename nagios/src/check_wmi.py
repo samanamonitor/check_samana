@@ -58,7 +58,7 @@ def query_wmi(host, authfile, query="", wmi_class="", wmi_properties=[], wmi_fil
     return '\n'.join(output.split('\n')[1:])
 
 def wmiresponse(input_text):
-
+    pass
 
 
 def main(argv):
