@@ -58,7 +58,7 @@ def query_wmi(host, authfile, query="", wmi_class="", wmi_properties=[], wmi_fil
     return '\n'.join(output.split('\n')[1:])
 
 def wmiresponse(input_text):
-    pass
+
 
 
 def main(argv):
@@ -92,7 +92,9 @@ def main(argv):
         if authfile is None:
             raise CheckNagiosUnknown("Auth file not defined")
 
-        a = query_wmi(hostaddress, authfile, wmi_class="win32_logicaldisk", wmi_properties=["*"])
+
+        #select * from Win32_NTLogEvent where TimeGenerated > '20210505120200.000-240'
+        a = query_wmi(hostaddress, authfile, wmi_class="Win32_NTLogEvent", wmi_properties=["*"], wmi_filter=["TimeGenerated > '20210505120200.000-240'"])
 
         print("OK - %s | %s\n%s" % (a, "", ""))
     except CheckNagiosWarning as e:
