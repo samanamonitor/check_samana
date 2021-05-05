@@ -55,6 +55,9 @@ Get-BrokerDesktopGroup -MaxRecordCount 5000 | ForEach {
 }
 
 Get-BrokerMachine -MaxRecordCount 5000 | ForEach {
+    if($_.DesktopGroupName -eq $null) {
+        continue
+    }
     $dg = $DesktopGroup[$_.DesktopGroupName.ToLower()]
     $dg["TotalServers"] += 1
     $Farm["TotalServers"] += 1
