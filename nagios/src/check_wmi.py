@@ -55,7 +55,10 @@ def query_wmi(host, authfile, query="", wmi_class="", wmi_properties=[], wmi_fil
     output, err = p.communicate(timeout=timeout)
     if p.returncode != 0:
         raise CheckNagiosUnknown(info="Error executing wmic", addl="STDOUT=%s\nSTDERR=%s" % (output, err))
-    return output.split('\n')
+    return '\n'.join(output.split('\n')[1:])
+
+def wmiresponse(input_text):
+    pass
 
 
 def main(argv):
