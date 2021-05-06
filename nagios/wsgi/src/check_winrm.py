@@ -39,7 +39,6 @@ class WinRMScript:
     self.password = auth['password']
 
   def run(self, scripturl, scriptarguments):
-    print("run")
     scriptpath = "c:\\samanamon"
     #scripturl="http://%s/%s" % (self.nagiosaddress, scriptname)
     scriptname = scripturl.split('/')[-1]
@@ -91,7 +90,7 @@ Remove-Item -Recurse -Force %(scriptpath)s
 
     if status_code != 0:
       raise CheckWinRMExceptionUNKNOWN(std_err)
-    return std_out
+    return "%s\n%s" % (std_out, std_err)
 
 def get_dns_ip(hn):
   import socket
