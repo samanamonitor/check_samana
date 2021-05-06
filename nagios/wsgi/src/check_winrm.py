@@ -262,7 +262,6 @@ def application ( environ, start_response):
 
         winrm_start = time()
         client = WinRMScript(data['hostaddress'], user_auth)
-        print(data)
         out = client.run(data['url'], data['scriptarguments'])
         winrm_time = (time() - winrm_start) * 1000
 
