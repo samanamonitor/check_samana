@@ -88,7 +88,7 @@ Remove-Item -Recurse -Force %(scriptpath)s
       p.cleanup_command(shell_id, command_id)
       p.close_shell(shell_id)
     if error > 0: exit(error)
-    return std_out
+    return "%s\n%s" % (std_out, std_err)
 
 def auth_file(authfile):
   data = {}
