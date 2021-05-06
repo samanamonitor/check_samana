@@ -324,9 +324,10 @@ def application ( environ, start_response):
             })
 
     except Exception as e:
+        exc_type, exc_obj, tb = sys.exc_info()
         response_body = json.dumps({
             'status': 3,
-            'message': "UNKNOWN - %s" % e
+            'message': "UNKNOWN - %s at %s" % (e, tb.tb_lineno)
             })
 
     status = '200 OK'
