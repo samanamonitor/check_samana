@@ -11,7 +11,7 @@ from os import environ
 debug = 0
 
 def help():
-    print "check_samana2.py -H <hostid> -m <module> [-s <submodule>] [-c <critical>] [-w <warning>]"
+    print "%s\n%s -H <hostid> -m <module> [-s <submodule>] [-c <critical>] [-w <warning>]" % (sys.argv, sys.argv[0])
     sys.exit(3)
 
 def cpu(data, crit, warn):
@@ -332,11 +332,13 @@ def main(argv):
     excl = ''
     test = None
     url = None
+    etcdeserver = ''
+    etcdport = '2379'
 
     global debug
 
     try:
-        opts, args = getopt.getopt(argv, "H:m:c:w:p:s:r:i:e:l:x:dt:U:")
+        opts, args = getopt.getopt(argv, "H:m:c:w:p:s:r:i:e:l:x:dt:U:E:")
     except getopt.GetoptError:
         help()
     
@@ -367,6 +369,13 @@ def main(argv):
             test = arg
         elif opt == "-U":
             url = arg
+        elif opt == "-E":
+            temp = arg.split(':')
+            etcdserver = temp[0]
+            if len(temp) > 1:
+                etcdport = temp[1]
+        else:
+            help()
 
     if module == "":
         help()
@@ -395,7 +404,10 @@ def main(argv):
                 port=2379
             c = etcd.Client(host=host, port=port, protocol=protocol)
         else:
-            c = etcd.Client(port=2379)
+            if etcdserver != '':
+                c = etcd.Client(host=etcdserver, port=etcdport)
+            else:
+                c = etcd.Client(port=2379)
 
         try:
             data =json.loads(c.get("/samanamonitor/data/%s" % hostid).value)
