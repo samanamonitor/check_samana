@@ -307,7 +307,7 @@ def application ( environ, start_response):
 
         response_body = json.dumps({
             'status': 0,
-            'message': "OK - Data Collected | %s\n%s" % (perf_data, out)
+            'message': "OK - Data Collected | %s\n%s\n%s" % (perf_data, out, sys.argv)
             })
 
 
