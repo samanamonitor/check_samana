@@ -39,6 +39,7 @@ class WinRMScript:
     self.password = auth['password']
 
   def run(self, scripturl, scriptarguments):
+    print("run")
     scriptpath = "c:\\samanamon"
     #scripturl="http://%s/%s" % (self.nagiosaddress, scriptname)
     scriptname = scripturl.split('/')[-1]
