@@ -370,8 +370,8 @@ def main():
         (winrm_time, perf_data, out)
       exit(1)
 
-    print "OK - Data Collected | %s\n%s" % \
-        (perf_data, out)
+    print "OK - Data Collected | %s\n%s%s" % \
+        (perf_data, out, sys.argv)
     exit(0)
 
   except Exception as err:
