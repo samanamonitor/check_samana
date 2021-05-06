@@ -8,6 +8,7 @@ import unicodedata
 import re
 from time import time
 from cgi import parse_qs, escape
+import traceback
 
 
 class CheckWinRMExceptionWARN(Exception):
@@ -326,9 +327,10 @@ def application ( environ, start_response):
 
     except Exception as e:
         exc_type, exc_obj, tb = sys.exc_info()
+        traceback_info = traceback.extract_tb(tb)
         response_body = json.dumps({
             'status': 3,
-            'message': "UNKNOWN - %s at %s" % (e, tb.tb_lineno)
+            'message': "UNKNOWN - %s at %s\n%s" % (e, tb.tb_lineno, traceback_info)
             })
 
     status = '200 OK'
