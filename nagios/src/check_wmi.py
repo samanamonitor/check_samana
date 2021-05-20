@@ -127,7 +127,12 @@ def main(argv):
         }
         a = query_server(hostaddress, username, password, namespace=namespace, filter_tuples=filter_tuples)
 
-        print("OK - %s | %s\n%s" % (a, "", ""))
+        data = {
+            'epoch': int(time.time()),
+            'DNSHostName': a
+        }
+
+        print("OK - %s | %s\n%s" % (json.dumps(a), "", ""))
     except CheckNagiosWarning as e:
         print("WARNING - %s%s%s" % (e.info, e.perf_data, e.addl))
         exit(1)
