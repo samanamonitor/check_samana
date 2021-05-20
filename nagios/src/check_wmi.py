@@ -129,14 +129,14 @@ def main(argv):
 
         data = {
             'epoch': int(time.time()),
-            'DNSHostName': a['computer']['DNSHostName'],
-            'Domain': a['computer']['Domain'],
-            'ID': "%s.%s" %  (a['computer']['DNSHostName'], a['computer']['Domain']),
-            'PercentIdleTime': int(a['cpu']['PercentIdleTime'] / a['cpu']['Timestamp_PerfTime'] * 100),
-            'PercentInterruptTime': int(a['cpu']['PercentInterruptTime'] / a['cpu']['Timestamp_PerfTime'] * 100),
-            'PercentPrivilegedTime': int(a['cpu']['PercentPrivilegedTime'] / a['cpu']['Timestamp_PerfTime'] * 100),
-            'PercentProcessorTime': int(a['cpu']['PercentProcessorTime'] / a['cpu']['Timestamp_PerfTime'] * 100),
-            'PercentUserTime': int(a['cpu']['PercentUserTime'] / a['cpu']['Timestamp_PerfTime'] * 100),
+            'DNSHostName': a['computer'][0]['DNSHostName'],
+            'Domain': a['computer'][0]['Domain'],
+            'ID': "%s.%s" %  (a['computer'][0]['DNSHostName'], a['computer'][0]['Domain']),
+            'PercentIdleTime': int(a['cpu'][0]['PercentIdleTime'] / a['cpu']['Timestamp_PerfTime'] * 100),
+            'PercentInterruptTime': int(a['cpu'][0]['PercentInterruptTime'] / a['cpu']['Timestamp_PerfTime'] * 100),
+            'PercentPrivilegedTime': int(a['cpu'][0]['PercentPrivilegedTime'] / a['cpu']['Timestamp_PerfTime'] * 100),
+            'PercentProcessorTime': int(a['cpu'][0]['PercentProcessorTime'] / a['cpu']['Timestamp_PerfTime'] * 100),
+            'PercentUserTime': int(a['cpu'][0]['PercentUserTime'] / a['cpu']['Timestamp_PerfTime'] * 100),
 
         }
 
