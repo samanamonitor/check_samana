@@ -23,7 +23,8 @@ queries = {
         "SELECT * FROM Win32_NTLogEvent WHERE TimeGenerated > '%s' and EventType <= %d and Logfile = 'Application'",
     'evt_sf':
         "SELECT * FROM Win32_NTLogEvent WHERE TimeGenerated > '%s' and EventType <= %d and Logfile = 'Citrix Delivery Services'",
-    'proc': 'SELECT * FROM Win32_Process'
+    'proc': 'SELECT * FROM Win32_Process',
+    'net': "SELECT * FROM Win32_NetworkAdapterConfiguration"
 }
 
 
@@ -129,7 +130,7 @@ def main(argv):
 
         data = {
             'epoch': int(time.time()),
-            'DNSHostName': a
+            'DNSHostName': a['os']['properties']
         }
 
         print("OK - %s | %s\n%s" % (json.dumps(a), "", ""))
