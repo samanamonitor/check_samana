@@ -153,7 +153,7 @@ def main(argv):
     except Exception as e:
         exc_type, exc_obj, tb = sys.exc_info()
         traceback_info = traceback.extract_tb(tb)
-        print("UNKNOWN - Error: %s at line %s\n%s" % (str(e), tb.tb_lineno, traceback_info))
+        print("UNKNOWN - Error: %s at line %s\n%s" % (str(e), tb.tb_lineno, traceback_info.format()))
         exit(3)
 
 if __name__ == "__main__":
