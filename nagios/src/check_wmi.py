@@ -126,7 +126,7 @@ def main(argv):
             'evt_sf': (timefilter, 2)
         }
         a = query_server(hostaddress, username, password, namespace=namespace, filter_tuples=filter_tuples)
-
+        a['computer'][0]['DNSHostName']
         data = {
             'epoch': int(time.time()),
             'DNSHostName': a['computer'][0]['DNSHostName'],
