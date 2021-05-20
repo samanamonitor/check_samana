@@ -6,7 +6,7 @@ param(
     $EtcdServer = "",
     $EtcdPort = "2379",
     $EtcdProtocol = "http",
-    $ttl = 300
+    $ttl = 900
 )
 
 if ( $SamanaMonitorURI -eq "" -and $EtcdServer -ne "") {
