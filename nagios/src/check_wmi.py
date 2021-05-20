@@ -126,7 +126,6 @@ def main(argv):
             'evt_sf': (timefilter, 2)
         }
         a = query_server(hostaddress, username, password, namespace=namespace, filter_tuples=filter_tuples)
-        a['computer'][0]['DNSHostName']
         computer = a['computer'][0]['properties']
         cpu = a['cpu'][0]['properties']
         data = {
