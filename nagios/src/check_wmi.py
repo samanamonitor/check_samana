@@ -1,14 +1,31 @@
 #!/usr/bin/python3
 
+import pywmi
+import time
 import json
 import samanaetcd as etcd
 import csv
 import sys, getopt
 import traceback
-import subprocess
 
-wmi_exec="/usr/local/bin/wmic"
 timeout=60
+event_level = 2
+event_secs = 300
+
+queries = {
+    'os': "SELECT * FROM Win32_OperatingSystem",
+    'disk': "SELECT * FROM Win32_LogicalDisk",
+    'cpu': "SELECT * FROM Win32_PerfRawData_PerfOS_Processor WHERE Name='_Total'" ,
+    'pf': "SELECT * FROM Win32_PageFileUsage",
+    'evt_system':
+        "SELECT * FROM Win32_NTLogEvent WHERE TimeGenerated > '%s' and EventType <= %d and Logfile = 'System'",
+    'evt_application':
+        "SELECT * FROM Win32_NTLogEvent WHERE TimeGenerated > '%s' and EventType <= %d and Logfile = 'Application'",
+    'evt_sf':
+        "SELECT * FROM Win32_NTLogEvent WHERE TimeGenerated > '%s' and EventType <= %d and Logfile = 'Citrix Delivery Services'",
+    'proc': 'SELECT * FROM Win32_Process'
+}
+
 
 class CheckNagiosException(Exception):
     def __init__(self, info=None, perf_data=None, addl=None):
@@ -34,28 +51,29 @@ to get a license.
 Copyright (c) 2021 Samana Group LLC
 
 Usage:
-  %s -H <host name> -a <auth file> > -e <etcd server> -t <ttl>
+  %s -H <host name> -U <username> -p <password> [-n <namespace>] [-e <etcd server>] [-t <ttl>]
 
   <host name>        Windows Server to be queried
-  <auth file>        file name containing user's credentials
-  <etcd server>      Etcd server IP/Hostname and port(optional). Default port value is 2379. Format: x.x.x.x[:2379]
+  <username>         User in Windows Domain (domain\\user or user@domain) or local Windows user
+  <password>         User password
+  <namespace>        WMI namespace, default root\\cimv2
+  <etcd server>      Etcd server IP/Hostname and port(optional). Default value 127.0.0.1:2379
   <ttl>              Time(seconds) the records will expire in Etcd database. Default ttl is 300 seconds
 """ % argv[0] if len(argv) > 0 else "???????"
 
 
-def query_wmi(host, authfile, query="", wmi_class="", wmi_properties=[], wmi_filter=[]):
-    if wmi_class == "" and query == "":
-        raise CheckNagiosUnknown("No WMI Query defined")
-
-    if wmi_class != "":        
-        query = "SELECT %s FROM %s%s%s" % (','.join(wmi_properties), \
-            wmi_class, " WHERE " if len(wmi_filter) > 0 else "", " and ".join(wmi_filter))
-    cmd=[wmi_exec, "-A", authfile, "//%s" % host, query ]
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE,stderr=subprocess.PIPE, encoding="ascii")
-    output, err = p.communicate(timeout=timeout)
-    if p.returncode != 0:
-        raise CheckNagiosUnknown(info="Error executing wmic", addl="STDOUT=%s\nSTDERR=%s" % (output, err))
-    return '\n'.join(output.split('\n')[1:])
+def query_server(host, username, password, namespace="root\\cimv2", filter_tuples={}):
+    ''' param:filter_tuples is a dictionary where keys matches the key in queries global dictionary
+        if the key doesn't exist, then an empty tuple is expected, otherwise the tuple
+        must contain all the arguments needed to complete the string
+    '''
+    server = {}
+    pywmi.open(host, username, password, namespace)
+    for i in queries.keys():
+        server[i] = pywmi.query(queries[i] % filter_tuples.get(i, ()))
+        print(queries[i] % filter_tuples.get(i, ()))
+    pywmi.close()
+    return server
 
 def wmiresponse(input_text):
     pass
@@ -65,16 +83,22 @@ def main(argv):
     try:
         etcdserver = '127.0.0.1'
         etcdport = '2379'
-        opts, args = getopt.getopt(sys.argv[1:], "H:ha:e:t:")
+        opts, args = getopt.getopt(sys.argv[1:], "H:he:t:U:p:n:")
         ttl = 300
         hostaddress = None
-        authfile = None
+        username = None
+        password = None
+        namespace = "root\\cimv2"
 
         for o, a in opts:
             if o == '-H':
                 hostaddress = a
-            elif o == '-a':
-                authfile = a
+            elif o == '-U':
+                username = a
+            elif o == '-p':
+                password = a
+            elif o == 'n':
+                namespace = a
             elif o == '-e':
                 temp = a.split(':')
                 etcdserver =temp[0]
@@ -89,12 +113,19 @@ def main(argv):
 
         if hostaddress is None:
             raise CheckNagiosUnknown("Host Address not defined")
-        if authfile is None:
+        if username is None:
             raise CheckNagiosUnknown("Auth file not defined")
 
+        ct = time.strptime(time.ctime(time.time() - event_secs))
+        timefilter = "%04d%02d%02d%02d%02d%02d.000-000" % (ct.tm_year, ct.tm_mon, ct.tm_mday, ct.tm_hour, ct.tm_min, ct.tm_sec)
 
         #select * from Win32_NTLogEvent where TimeGenerated > '20210505120200.000-240'
-        a = query_wmi(hostaddress, authfile, wmi_class="Win32_NTLogEvent", wmi_properties=["*"], wmi_filter=["TimeGenerated > '20210505120200.000-240'"])
+        filter_tuples = {
+            'evt_application': (timefilter, 2),
+            'evt_system': (timefilter, 2),
+            'evt_sf': (timefilter, 2)
+        }
+        a = query_server(hostaddress, username, password, namespace=namespace, filter_tuples=filter_tuples)
 
         print("OK - %s | %s\n%s" % (a, "", ""))
     except CheckNagiosWarning as e:
