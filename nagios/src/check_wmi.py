@@ -129,8 +129,7 @@ def main(argv):
         a = query_server(hostaddress, username, password, namespace=namespace, filter_tuples=filter_tuples)
 
         data = {
-            'epoch': int(time.time()),
-            'DNSHostName': a['os']['properties']
+            'epoch': int(time.time())
         }
 
         print("OK - %s | %s\n%s" % (json.dumps(a), "", ""))
