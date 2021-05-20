@@ -72,7 +72,6 @@ def query_server(host, username, password, namespace="root\\cimv2", filter_tuple
     pywmi.open(host, username, password, namespace)
     for i in queries.keys():
         server[i] = pywmi.query(queries[i] % filter_tuples.get(i, ()))
-        print(queries[i] % filter_tuples.get(i, ()))
     pywmi.close()
     return server
 
@@ -129,10 +128,19 @@ def main(argv):
         a = query_server(hostaddress, username, password, namespace=namespace, filter_tuples=filter_tuples)
 
         data = {
-            'epoch': int(time.time())
+            'epoch': int(time.time()),
+            'DNSHostName': a['computer']['DNSHostName'],
+            'Domain': a['computer']['Domain'],
+            'ID': "%s.%s" %  (a['computer']['DNSHostName'], a['computer']['Domain']),
+            'PercentIdleTime' = int(a['cpu']['Processor.PercentIdleTime'] / a['cpu']['Timestamp_PerfTime'] * 100)
+            'PercentInterruptTime' = int(a['cpu']['Processor.PercentInterruptTime'] / a['cpu']['Timestamp_PerfTime'] * 100)
+            'PercentPrivilegedTime' = int(a['cpu']['Processor.PercentPrivilegedTime'] / a['cpu']['Timestamp_PerfTime'] * 100)
+            'PercentProcessorTime' = int(a['cpu']['Processor.PercentProcessorTime'] / a['cpu']['Timestamp_PerfTime'] * 100)
+            'PercentUserTime' = int(a['cpu']['Processor.PercentUserTime'] / a['cpu']['Timestamp_PerfTime'] * 100)
+
         }
 
-        print("OK - %s | %s\n%s" % (json.dumps(a), "", ""))
+        print("OK - %s | %s\n%s" % (json.dumps(a), json.dumps(data), ""))
     except CheckNagiosWarning as e:
         print("WARNING - %s%s%s" % (e.info, e.perf_data, e.addl))
         exit(1)
