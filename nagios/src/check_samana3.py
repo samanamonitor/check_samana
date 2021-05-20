@@ -332,7 +332,7 @@ def main(argv):
     excl = ''
     test = None
     url = None
-    etcdeserver = ''
+    etcdserver = ''
     etcdport = '2379'
 
     global debug
