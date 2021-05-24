@@ -7,6 +7,7 @@ import samanaetcd as etcd
 import csv
 import sys, getopt
 import traceback
+import re
 
 timeout=60
 event_level = 2
@@ -38,7 +39,7 @@ class CheckNagiosException(Exception):
 class CheckNagiosWarning(CheckNagiosException):
     pass
 
-class CheckNagiosError(CheckNagiosException):
+class CheckNagiosCritical(CheckNagiosException):
     pass
 
 class CheckNagiosUnknown(CheckNagiosException):
@@ -53,7 +54,7 @@ to get a license.
 Copyright (c) 2021 Samana Group LLC
 
 Usage:
-  %s -H <host name> -U <username> -p <password> [-n <namespace>] [-e <etcd server>] [-t <ttl>]
+  %s -H <host name> -U <username> -p <password> [-n <namespace>] [-e <etcd server>] [-t <ttl>] [ -w dnswarn,pingwarn,packetlosswarn,wmiwarn ] [ -c dnscrit,pingcrit,packetlosscrit,wmicrit ]
 
   <host name>        Windows Server to be queried
   <username>         User in Windows Domain (domain\\user or user@domain) or local Windows user
@@ -70,9 +71,14 @@ def query_server(host, username, password, namespace="root\\cimv2", filter_tuple
         must contain all the arguments needed to complete the string
     '''
     server = {}
-    pywmi.open(host, username, password, namespace)
+    conn_status = pywmi.open(host, username, password, namespace)
+    if conn_status != 0:
+        raise CheckNagiosUnknown("Unable to connecto to server. Error %s" % conn_status)
     for i in queries.keys():
         server[i] = pywmi.query(queries[i] % filter_tuples.get(i, ()))
+        print(server[i])
+        if not isinstance(server[i], dict):
+            raise CheckNagiosUnknown("Error connecting to server %08x" % server[i])
     pywmi.close()
     return server
 
@@ -117,16 +123,89 @@ def legacy(indata):
     }
 
 
+def ping_host(ip):
+    import subprocess
+    data={
+        'packets_sent': 0,
+        'packets_received': 0,
+        'min': 0,
+        'avg': 0,
+        'max': 0,
+        'mdev': 0
+    }
+    p = subprocess.Popen(["ping", "-c", "3", ip], stdout = subprocess.PIPE)
+    out = p.communicate()
+    packets = None
+    rtt = None
+    try:
+        outstr = out[0].decode('utf8')
+        pat = re.search("^(\d+) packets transmitted, (\d+) packets received", outstr, flags=re.M)
+        if pat is None:
+            raise ValueError("Cannot extract packets from ping output.")
+        packets = pat.groups()
+
+        pat = re.search("^round-trip min/avg/max/stddev = ([\d.]+)/([\d.]+)/([\d.]+)/([\d.]+)", outstr, flags=re.M)
+        if pat is None:
+            raise ValueError("Cannot extract ping rtt times.")
+        rtt = pat.groups()
+
+        data['packets_sent'] = int(packets[0])
+        data['packets_received'] = int(packets[1])
+        data['min'] = int(float(rtt[0]))
+        data['avg'] = int(float(rtt[1]))
+        data['max'] = int(float(rtt[2]))
+        data['mdev'] = int(float(rtt[3]))
+    except (ValueError, IndexError) as e:
+        raise CheckNagiosUnknown("Ping output invalid. %s\n%s" % (str(e), outstr))
+    except Exception as e:
+        raise CheckNagiosUnknown("unexpected error %s\n%s\n%s\n%s" % (str(e), outstr, packets, rtt))
+    return data
+
+def get_dns_ip(hn):
+    import socket
+
+    pat = re.compile("^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$")
+    if pat.match(hn):
+        return (hn, 0)
+
+    try:
+        dns_start = time.time()
+        server_data = socket.gethostbyname_ex(hn)
+        ips = server_data[2]
+        if not isinstance(ips, list) and len(ips) != 1:
+            raise ValueError("hostname is linked to more than 1 IP or 0 IPs")
+        dns_time = (time.time() - dns_start) * 1000
+
+    except ValueError as err:
+        raise CheckNagiosUnknown("%s" % str(err))
+    except IndexError as err:
+        raise CheckNagiosUnknown("Invalid data received from gethostbyname_ex %s" % str(err), addl=server_data)
+    except Exception as err:
+        raise CheckNagiosCritical("Unable to resove hostname to IP address", addl=str(err))
+
+    return (ips[0], dns_time)
+
 def main(argv):
     try:
         etcdserver = '127.0.0.1'
         etcdport = '2379'
-        opts, args = getopt.getopt(sys.argv[1:], "H:he:t:U:p:n:")
+        opts, args = getopt.getopt(sys.argv[1:], "H:he:t:U:p:n:w:c:")
         ttl = 300
         hostaddress = None
         username = None
         password = None
         namespace = "root\\cimv2"
+        url = None
+        warning = None
+        critical = None
+        ping_warn = None
+        ping_crit = None
+        winrm_warn = None
+        winrm_crit = None
+        dns_warn = None
+        dns_crit = None
+        packet_loss_warn = None
+        packet_loss_crit = None
 
         for o, a in opts:
             if o == '-H':
@@ -144,6 +223,10 @@ def main(argv):
                     etcdport = temp[1]
             elif o == '-t':
                 ttl = a
+            elif o == '-w':
+                warning = a
+            elif o == '-c':
+                critical = a
             elif o == '-h':
                 raise CheckNagiosUnknown("Help", addl=usage())
             else:
@@ -152,26 +235,52 @@ def main(argv):
         if hostaddress is None:
             raise CheckNagiosUnknown("Host Address not defined")
         if username is None:
-            raise CheckNagiosUnknown("Auth file not defined")
+            raise CheckNagiosUnknown("Auth data not defined")
+
+        if warning is not None:
+            try:
+                (dns_warn, ping_warn, packet_loss_warn, winrm_warn) = warning.split(',')
+                dns_warn = int(dns_warn)
+                ping_warn = int(ping_warn)
+                packet_loss_warn = int(packet_loss_warn)
+                winrm_warn = int(winrm_warn)
+            except ValueError:
+                raise CheckNagiosUnknown("Invalid Warning values")
+
+        if critical is not None:
+            try:
+                (dns_crit, ping_crit, packet_loss_crit, winrm_crit) = critical.split(',')
+                dns_crit = int(dns_crit)
+                ping_crit = int(ping_crit)
+                packet_loss_crit = int(packet_loss_crit)
+                winrm_crit = int(winrm_crit)
+            except ValueError:
+                raise CheckNagiosUnknown("Invalid Critical values")
 
         ct = time.strptime(time.ctime(time.time() - event_secs))
         timefilter = "%04d%02d%02d%02d%02d%02d.000-000" % (ct.tm_year, ct.tm_mon, ct.tm_mday, ct.tm_hour, ct.tm_min, ct.tm_sec)
 
-        #select * from Win32_NTLogEvent where TimeGenerated > '20210505120200.000-240'
         filter_tuples = {
             'evt_application': (timefilter, 2),
             'evt_system': (timefilter, 2),
             'evt_sf': (timefilter, 2)
         }
+
+        (hostip, dns_time) = get_dns_ip(hostaddress)
+        ping_data = ping_host(hostip)
+
+        wmi_start = time.time()
         a = query_server(hostaddress, username, password, namespace=namespace, filter_tuples=filter_tuples)
-        data = {} # legacy(a)
+        wmi_time = (time.time() - winrm_start) * 1000
+
+        data = legacy(a)
 
         print("OK - %s | %s\n%s" % (json.dumps(a), json.dumps(data), ""))
     except CheckNagiosWarning as e:
         print("WARNING - %s%s%s" % (e.info, e.perf_data, e.addl))
         exit(1)
-    except CheckNagiosError as e:
-        print("ERROR - %s%s%s" % (e.info, e.perf_data, e.addl))
+    except CheckNagiosCritical as e:
+        print("CRITICAL - %s%s%s" % (e.info, e.perf_data, e.addl))
         exit(2)
     except CheckNagiosUnknown as e:
         print("UNKNOWN - %s%s%s" % (e.info, e.perf_data, e.addl))
@@ -179,7 +288,7 @@ def main(argv):
     except Exception as e:
         exc_type, exc_obj, tb = sys.exc_info()
         traceback_info = traceback.extract_tb(tb)
-        print("UNKNOWN - Error: %s at line %s\n%s" % (str(e), tb.tb_lineno, traceback_info.format()))
+        print("UNKNOWN - Error: %s at line %s\n%s" % (str(e), tb.tb_lineno, traceback_info.format))
         exit(3)
 
 if __name__ == "__main__":
