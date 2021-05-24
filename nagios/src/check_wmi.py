@@ -317,7 +317,7 @@ def main(argv):
         print("UNKNOWN - Error: %s at line %s\n%s" % (str(e), tb.tb_lineno, traceback_info.format))
         exit(3)
     print("OK - Data Collected | %s\n%s%s" % \
-            (perf_data, out, sys.argv))
+            (perf_data, out, ' '.join(sys.argv)))
     exit(0)
 
 if __name__ == "__main__":
