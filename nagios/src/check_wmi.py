@@ -14,7 +14,7 @@ event_secs = 300
 
 queries = {
     'os': "SELECT * FROM Win32_OperatingSystem",
-    'disk': "SELECT * FROM Win32_LogicalDisk",
+#    'disk': "SELECT * FROM Win32_LogicalDisk",
 #    'cpu': "SELECT * FROM Win32_PerfRawData_PerfOS_Processor WHERE Name='_Total'" ,
 #    'pf': "SELECT * FROM Win32_PageFileUsage",
 #    'evt_system':
