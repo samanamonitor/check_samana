@@ -114,7 +114,7 @@ def legacy(indata):
             'Application': indata['evt_application'],
             'Citrix Delivery Services': indata['evt_sf']
         }
-    }    pass
+    }
 
 
 def main(argv):
