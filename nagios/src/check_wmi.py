@@ -297,9 +297,9 @@ def main(argv):
             raise CheckNagiosCritical("PING rtt is greater than expected %d ms" % ping_data['avg'], perf_data=perf_data, addl=out)
         if ping_warn is not None and ping_warn < ping_data['avg']:
             raise CheckNagiosWarning("PING rtt is greater than expected %d ms" % ping_data['avg'], perf_data=perf_data, addl=out)
-        if winrm_crit is not None and winrm_crit < winrm_time:
+        if wmi_crit is not None and wmi_crit < wmi_time:
             raise CheckNagiosCritical("WMI took longer than expected %d ms" % wmi_time, perf_data=perf_data, addl=out)
-        if winrm_warn is not None and winrm_warn < winrm_time:
+        if wmi_warn is not None and wmi_warn < wmi_time:
             raise CheckNagiosWarning("WMI took longer than expected %d ms" % wmi_time, perf_data=perf_data, addl=out)
 
     except CheckNagiosWarning as e:
