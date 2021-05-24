@@ -27,7 +27,6 @@ class Client():
             data=bytearray(urlencode(data), "utf8"))
         with urlopen(req) as f:
             data = json.load(f)
-            print(f.status)
             if f.status != 200:
                 raise EtcdException(payload={'errorCode': 100, 'index': 0, 'message': 'Could not set value', 'cause': data})
 
