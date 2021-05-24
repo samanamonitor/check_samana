@@ -284,7 +284,7 @@ def main(argv):
 
         c = etcd.Client(host=etcdserver, port=etcdport)
         c.put("samanamonitor/data/%s" % data['ID'].lower(), json.dumps(data), ttl)
-
+        out = ''
         if dns_crit is not None and dns_crit < dns_time:
             raise CheckNagiosCritical("DNS name resolution took longer than expected %d" % dns_time, perf_data=perf_data, addl=out)
         if dns_warn is not None and dns_warn < dns_time:
