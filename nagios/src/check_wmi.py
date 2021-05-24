@@ -90,7 +90,7 @@ def legacy(indata):
     zm = int(z % 60)
     sign = '-' if z < 0 else '+'
     st = time.strptime("%s%s%02d%02d" % (t, sign, zh, zm), "%Y%m%d%H%M%S%z")
-    return = {
+    return {
         'epoch': int(time.time()),
         'DNSHostName': computer['DNSHostName'],
         'Domain': computer['Domain'],
