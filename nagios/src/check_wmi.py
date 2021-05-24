@@ -3,7 +3,7 @@
 import pywmi
 import time
 import json
-import samanaetcd as etcd
+#import samanaetcd as etcd
 import csv
 import sys, getopt
 import traceback
