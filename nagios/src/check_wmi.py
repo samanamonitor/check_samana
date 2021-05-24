@@ -25,7 +25,7 @@ queries = {
     'evt_sf':
         "SELECT * FROM Win32_NTLogEvent WHERE TimeGenerated > '%s' and EventType <= %d and Logfile = 'Citrix Delivery Services'",
     'proc': 'SELECT * FROM Win32_Process',
-    'services': 'SELECT * FROM Win32_Service',
+    'services': 'SELECT Name, DisplayName, ProcessId, Started, StartName, State, Status FROM Win32_Service',
     'computer': "SELECT * FROM Win32_ComputerSystem"
 }
 
@@ -113,7 +113,7 @@ def legacy(indata):
         'TotalVisibleMemorySize': os['TotalVisibleMemorySize'],
         'NumberOfProcesses': os['NumberOfProcesses'],
         'UpTime': time.time() - (time.mktime(st) + st.tm_gmtoff) / 3600,
-#        'Services': indata['services'],
+        'Services': indata['services'],
         'Events': {
             'System': indata['evt_system'],
             'Application': indata['evt_application'],
