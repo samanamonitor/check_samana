@@ -24,7 +24,7 @@ queries = {
     'evt_sf':
         "SELECT * FROM Win32_NTLogEvent WHERE TimeGenerated > '%s' and EventType <= %d and Logfile = 'Citrix Delivery Services'",
     'proc': 'SELECT * FROM Win32_Process',
-    'services': 'SELECT * FROM Win32_Service',
+#    'services': 'SELECT * FROM Win32_Service',
     'computer': "SELECT * FROM Win32_ComputerSystem"
 }
 
@@ -90,7 +90,7 @@ def legacy(indata):
     zm = int(z % 60)
     sign = '-' if z < 0 else '+'
     st = time.strptime("%s%s%02d%02d" % (t, sign, zh, zm), "%Y%m%d%H%M%S%z")
-    data = {
+    return = {
         'epoch': int(time.time()),
         'DNSHostName': computer['DNSHostName'],
         'Domain': computer['Domain'],
@@ -164,7 +164,7 @@ def main(argv):
             'evt_sf': (timefilter, 2)
         }
         a = query_server(hostaddress, username, password, namespace=namespace, filter_tuples=filter_tuples)
-
+        data = {} # legacy(a)
 
         print("OK - %s | %s\n%s" % (json.dumps(a), json.dumps(data), ""))
     except CheckNagiosWarning as e:
