@@ -1,28 +1,39 @@
-import urllib3
+from urllib.request import urlopen, Request
+from urllib.parse import urlencode
 import json
 
 class Client():
-    def __init__(self, host='127.0.0.1', port=4001, version_prefix='/v2', read_timeout=60, allow_redirect=True, protocol='http', cert=None, ca_cert=None, allow_reconnect=False, use_proxies=False, expected_cluster_id=None, per_host_pool_size=10):
-        self.http = urllib3.PoolManager()
+    def __init__(self, host='127.0.0.1', port=4001, version_prefix='v2', read_timeout=60, allow_redirect=True, protocol='http', cert=None, ca_cert=None, allow_reconnect=False, use_proxies=False, expected_cluster_id=None, per_host_pool_size=10):
         self.host = host
         self.port = port
         self.version_prefix = version_prefix
         self.protocol = protocol
 
     def get(self, key):
-        r = self.http.request('GET', '%s://%s:%s/%s/keys/%s' %(self.protocol, self.host, self.port, self.version_prefix, key))
-        if r.status != 200:
-            raise EtcdKeyNotFound(payload={'errorCode': 100, 'index': 0, 'message': 'Key not found', 'cause': key})
-        data = json.loads(r.data.decode('UTF-8'))
+        req = Request(url='%s://%s:%s/%s/keys/%s' %(self.protocol, self.host, self.port, self.version_prefix, key))
+        with urlopen(req) as f:
+            data = json.load(f)
+            if f.status != 200:
+                raise EtcdKeyNotFound(payload={'errorCode': 100, 'index': 0, 'message': 'Key not found', 'cause': key})
         return EtcdResult(action=data['action'], node=data['node'])
 
     def put(self, key, value, ttl):
-        r = self.http.request('PUT', '%s://%s:%s/%s/keys/%s' %(self.protocol, self.host, self.port, self.version_prefix, key), \
-            fields={ 'value': value, 'ttl': ttl }, encode_multipart=False)
-        data = json.loads(r.data.decode('UTF-8'))
-        if r.status != 201:
-            raise EtcdException(payload={'errorCode': 100, 'index': 0, 'message': 'Could not set value', 'cause': r.data})
+        data = {
+            'value': value,
+            'ttl': ttl
+        }
+        req = Request(url='%s://%s:%s/%s/keys/%s' %(self.protocol, self.host, self.port, self.version_prefix, key), \
+            method='PUT', \
+            data=bytearray(urlencode(data), "utf8"))
+        with urlopen(req) as f:
+            data = json.load(f)
+            if f.status != 200:
+                raise EtcdException(payload={'errorCode': 100, 'index': 0, 'message': 'Could not set value', 'cause': data})
 
+#        r = self.http.request('PUT', '%s://%s:%s/%s/keys/%s' %(self.protocol, self.host, self.port, self.version_prefix, key), \
+#            fields={ 'value': value, 'ttl': ttl }, encode_multipart=False)
+#        data = json.loads(r.data.decode('UTF-8'))
+        return EtcdResult(action=data['action'], node=data['node'])
 
 class EtcdResult(object):
     _node_props = {
