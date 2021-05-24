@@ -113,7 +113,7 @@ def legacy(indata):
         'TotalVisibleMemorySize': os['TotalVisibleMemorySize'],
         'NumberOfProcesses': os['NumberOfProcesses'],
         'UpTime': time.time() - (time.mktime(st) + st.tm_gmtoff) / 3600,
-        'Services': indata['services'],
+#        'Services': indata['services'],
         'Events': {
             'System': indata['evt_system'],
             'Application': indata['evt_application'],
