@@ -19,8 +19,8 @@ queries = {
     'pf': "SELECT * FROM Win32_PageFileUsage",
     'evt_system':
         "SELECT * FROM Win32_NTLogEvent WHERE TimeGenerated > '%s' and EventType <= %d and Logfile = 'System'",
-    'evt_application':
-        "SELECT * FROM Win32_NTLogEvent WHERE TimeGenerated > '%s' and EventType <= %d and Logfile = 'Application'",
+#    'evt_application':
+#        "SELECT * FROM Win32_NTLogEvent WHERE TimeGenerated > '%s' and EventType <= %d and Logfile = 'Application'",
 #    'evt_sf':
 #        "SELECT * FROM Win32_NTLogEvent WHERE TimeGenerated > '%s' and EventType <= %d and Logfile = 'Citrix Delivery Services'",
 #    'proc': 'SELECT * FROM Win32_Process',
