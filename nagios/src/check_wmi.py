@@ -76,8 +76,45 @@ def query_server(host, username, password, namespace="root\\cimv2", filter_tuple
     pywmi.close()
     return server
 
-def wmiresponse(input_text):
-    pass
+def legacy(indata):
+    computer = indata['computer'][0]['properties']
+    cpu = indata['cpu'][0]['properties']
+    os = indata['os'][0]['properties']
+    TotalSwapSpaceSize = 0
+    for i in indata['pf']:
+        TotalSwapSpaceSize += i['properties']['AllocatedBaseSize']
+
+    t = os['LastBootUpTime'].split('.')[0]
+    z = int(os['LastBootUpTime'][-4:])
+    zh = abs(int(z / 60))
+    zm = int(z % 60)
+    sign = '-' if z < 0 else '+'
+    st = time.strptime("%s%s%02d%02d" % (t, sign, zh, zm), "%Y%m%d%H%M%S%z")
+    data = {
+        'epoch': int(time.time()),
+        'DNSHostName': computer['DNSHostName'],
+        'Domain': computer['Domain'],
+        'ID': "%s.%s" %  (computer['DNSHostName'], computer['Domain']),
+        'PercentIdleTime': int(cpu['PercentIdleTime'] / cpu['Timestamp_PerfTime'] * 100),
+        'PercentInterruptTime': int(cpu['PercentInterruptTime'] / cpu['Timestamp_PerfTime'] * 100),
+        'PercentPrivilegedTime': int(cpu['PercentPrivilegedTime'] / cpu['Timestamp_PerfTime'] * 100),
+        'PercentProcessorTime': int(cpu['PercentProcessorTime'] / cpu['Timestamp_PerfTime'] * 100),
+        'PercentUserTime': int(cpu['PercentUserTime'] / cpu['Timestamp_PerfTime'] * 100),
+        'FreePhysicalMemory': os['FreePhysicalMemory'],
+        'FreeSpaceInPagingFiles': os['FreeSpaceInPagingFiles'],
+        'FreeVirtualMemory': os['FreeVirtualMemory'],
+        'TotalSwapSpaceSize': TotalSwapSpaceSize,
+        'TotalVirtualMemorySize': os['TotalVirtualMemorySize'],
+        'TotalVisibleMemorySize': os['TotalVisibleMemorySize'],
+        'NumberOfProcesses': os['NumberOfProcesses'],
+        'UpTime': time.time() - (time.mktime(st) + st.tm_gmtoff) / 3600,
+        'Services': indata['services'],
+        'Events': {
+            'System': indata['evt_system'],
+            'Application': indata['evt_application'],
+            'Citrix Delivery Services': indata['evt_sf']
+        }
+    }    pass
 
 
 def main(argv):
@@ -127,44 +164,7 @@ def main(argv):
             'evt_sf': (timefilter, 2)
         }
         a = query_server(hostaddress, username, password, namespace=namespace, filter_tuples=filter_tuples)
-        computer = a['computer'][0]['properties']
-        cpu = a['cpu'][0]['properties']
-        os = a['os'][0]['properties']
-        TotalSwapSpaceSize = 0
-        for i in a['pf']:
-            TotalSwapSpaceSize += i['properties']['AllocatedBaseSize']
 
-        t = os['LastBootUpTime'].split('.')[0]
-        z = int(os['LastBootUpTime'][-4:])
-        zh = abs(int(z / 60))
-        zm = int(z % 60)
-        sign = '-' if z < 0 else '+'
-        st = time.strptime("%s%s%02d%02d" % (t, sign, zh, zm), "%Y%m%d%H%M%S%z")
-        data = {
-            'epoch': int(time.time()),
-            'DNSHostName': computer['DNSHostName'],
-            'Domain': computer['Domain'],
-            'ID': "%s.%s" %  (computer['DNSHostName'], computer['Domain']),
-            'PercentIdleTime': int(cpu['PercentIdleTime'] / cpu['Timestamp_PerfTime'] * 100),
-            'PercentInterruptTime': int(cpu['PercentInterruptTime'] / cpu['Timestamp_PerfTime'] * 100),
-            'PercentPrivilegedTime': int(cpu['PercentPrivilegedTime'] / cpu['Timestamp_PerfTime'] * 100),
-            'PercentProcessorTime': int(cpu['PercentProcessorTime'] / cpu['Timestamp_PerfTime'] * 100),
-            'PercentUserTime': int(cpu['PercentUserTime'] / cpu['Timestamp_PerfTime'] * 100),
-            'FreePhysicalMemory': os['FreePhysicalMemory'],
-            'FreeSpaceInPagingFiles': os['FreeSpaceInPagingFiles'],
-            'FreeVirtualMemory': os['FreeVirtualMemory'],
-            'TotalSwapSpaceSize': TotalSwapSpaceSize,
-            'TotalVirtualMemorySize': os['TotalVirtualMemorySize'],
-            'TotalVisibleMemorySize': os['TotalVisibleMemorySize'],
-            'NumberOfProcesses': os['NumberOfProcesses'],
-            'UpTime': time.time() - (time.mktime(st) + st.tm_gmtoff) / 3600,
-            'Services': a['services'],
-            'Events': {
-                'System': a['evt_system'],
-                'Application': a['evt_application'],
-                'Citrix Delivery Services': a['evt_sf']
-            }
-        }
 
         print("OK - %s | %s\n%s" % (json.dumps(a), json.dumps(data), ""))
     except CheckNagiosWarning as e:
