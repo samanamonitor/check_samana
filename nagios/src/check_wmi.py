@@ -133,6 +133,13 @@ def main(argv):
         TotalSwapSpaceSize = 0
         for i in a['pf']:
             TotalSwapSpaceSize += i['properties']['AllocatedBaseSize']
+
+        t = os['LastBootUpTime'].split('.')[0]
+        z = int(os['LastBootUpTime'][-4:])
+        zh = abs(int(z / 60))
+        zm = int(z % 60)
+        sign = '-' if z < 0 else '+'
+        st = time.strptime("%s%s%02d%02d" % (t, sign, zh, zm), "%Y%m%d%H%M%S%z")
         data = {
             'epoch': int(time.time()),
             'DNSHostName': computer['DNSHostName'],
@@ -143,21 +150,15 @@ def main(argv):
             'PercentPrivilegedTime': int(cpu['PercentPrivilegedTime'] / cpu['Timestamp_PerfTime'] * 100),
             'PercentProcessorTime': int(cpu['PercentProcessorTime'] / cpu['Timestamp_PerfTime'] * 100),
             'PercentUserTime': int(cpu['PercentUserTime'] / cpu['Timestamp_PerfTime'] * 100),
-            'FreePhysicalMemory': os['FreePhysicalMemory']
-            'FreeSpaceInPagingFiles': os['FreeSpaceInPagingFiles']
-            'FreeVirtualMemory': os['FreeVirtualMemory']
-            'TotalSwapSpaceSize': TotalSwapSpaceSize
-            'TotalVirtualMemorySize': os['TotalVirtualMemorySize']
-            'TotalVisibleMemorySize': os['TotalVisibleMemorySize']
-            'NumberOfProcesses': os['NumberOfProcesses']
-            t = os['LastBootUpTime'].split('.')[0]
-            z = int(os['LastBootUpTime'][-4:])
-            zh = abs(int(z / 60))
-            zm = int(z % 60)
-            sign = '-' if z < 0 else '+'
-            st = time.strptime("%s%s%02d%02d" % (t, sign, zh, zm), "%Y%m%d%H%M%S%z")
-            'UpTime': time.time() - (time.mktime(st) + st.tm_gmtoff) / 3600
-            'Services': a['services']
+            'FreePhysicalMemory': os['FreePhysicalMemory'],
+            'FreeSpaceInPagingFiles': os['FreeSpaceInPagingFiles'],
+            'FreeVirtualMemory': os['FreeVirtualMemory'],
+            'TotalSwapSpaceSize': TotalSwapSpaceSize,
+            'TotalVirtualMemorySize': os['TotalVirtualMemorySize'],
+            'TotalVisibleMemorySize': os['TotalVisibleMemorySize'],
+            'NumberOfProcesses': os['NumberOfProcesses'],
+            'UpTime': time.time() - (time.mktime(st) + st.tm_gmtoff) / 3600,
+            'Services': a['services'],
             'Events': {
                 'System': a['evt_system'],
                 'Application': a['evt_application'],
