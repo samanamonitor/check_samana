@@ -274,7 +274,34 @@ def main(argv):
 
         data = legacy(a)
 
-        print("OK - %s | %s\n%s" % (json.dumps(a), json.dumps(data), ""))
+        perc_packet_loss = 100-int(100.0 * ping_data['packets_received'] / ping_data['packets_sent'])
+
+        perf_data = "dns_resolution=%d;%s;%s;; ping_perc_packet_loss=%d;%s;%s;; ping_rtt=%d;%s;%s;; wmi_time=%d;%s;%s;;" % \
+            (dns_time, dns_warn if dns_warn is not None else '', dns_crit if dns_crit is not None else '',
+                perc_packet_loss, packet_loss_warn if packet_loss_warn is not None else '', packet_loss_crit if packet_loss_crit is not None else '',
+                ping_data['avg'], ping_warn if ping_warn is not None else '', ping_crit if ping_crit is not None else '', 
+                wmi_time, wmi_warn if wmi_warn is not None else '', wmi_crit if wmi_crit is not None else '')
+
+        c = etcd.Client(host=etcdserver, port=etcdport)
+        c.put("/samanamonitor/data/%s" % data['ID'].lower(), data)
+
+        if dns_crit is not None and dns_crit < dns_time:
+            raise CheckNagiosCritical("DNS name resolution took longer than expected %d" % dns_time, perf_data=perf_data, addl=out)
+        if dns_warn is not None and dns_warn < dns_time:
+            raise CheckNagiosWarning("DNS name resolution took longer than expected %d" % dns_time, perf_data=perf_data, addl=out)
+        if packet_loss_crit is not None and packet_loss_crit < perc_packet_loss:
+            raise CheckNagiosCritical("PING lost %d%% packets" % perc_packet_loss, perf_data=perf_data, addl=out)
+        if packet_loss_warn is not None and packet_loss_warn < perc_packet_loss:
+            raise CheckNagiosWarning("PING lost %d%% packets" % perc_packet_loss, perf_data=perf_data, addl=out)
+        if ping_crit is not None and ping_crit < ping_data['avg']:
+            raise CheckNagiosCritical("PING rtt is greater than expected %d ms" % ping_data['avg'], perf_data=perf_data, addl=out)
+        if ping_warn is not None and ping_warn < ping_data['avg']:
+            raise CheckNagiosWarning("PING rtt is greater than expected %d ms" % ping_data['avg'], perf_data=perf_data, addl=out)
+        if winrm_crit is not None and winrm_crit < winrm_time:
+            raise CheckNagiosCritical("WMI took longer than expected %d ms" % wmi_time, perf_data=perf_data, addl=out)
+        if winrm_warn is not None and winrm_warn < winrm_time:
+            raise CheckNagiosWarning("WMI took longer than expected %d ms" % wmi_time, perf_data=perf_data, addl=out)
+
     except CheckNagiosWarning as e:
         print("WARNING - %s%s%s" % (e.info, e.perf_data, e.addl))
         exit(1)
@@ -289,6 +316,9 @@ def main(argv):
         traceback_info = traceback.extract_tb(tb)
         print("UNKNOWN - Error: %s at line %s\n%s" % (str(e), tb.tb_lineno, traceback_info.format))
         exit(3)
+    print "OK - Data Collected | %s\n%s%s" % \
+        (perf_data, out, sys.argv)
+    exit(0)
 
 if __name__ == "__main__":
   main(sys.argv)
