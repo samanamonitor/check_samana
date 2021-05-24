@@ -283,7 +283,7 @@ def main(argv):
                 wmi_time, wmi_warn if wmi_warn is not None else '', wmi_crit if wmi_crit is not None else '')
 
         c = etcd.Client(host=etcdserver, port=etcdport)
-        c.put("/samanamonitor/data/%s" % data['ID'].lower(), data)
+        c.put("/samanamonitor/data/%s" % data['ID'].lower(), data, ttl)
 
         if dns_crit is not None and dns_crit < dns_time:
             raise CheckNagiosCritical("DNS name resolution took longer than expected %d" % dns_time, perf_data=perf_data, addl=out)
