@@ -199,8 +199,8 @@ def main(argv):
         critical = None
         ping_warn = None
         ping_crit = None
-        winrm_warn = None
-        winrm_crit = None
+        wmi_warn = None
+        wmi_crit = None
         dns_warn = None
         dns_crit = None
         packet_loss_warn = None
@@ -238,21 +238,21 @@ def main(argv):
 
         if warning is not None:
             try:
-                (dns_warn, ping_warn, packet_loss_warn, winrm_warn) = warning.split(',')
+                (dns_warn, ping_warn, packet_loss_warn, wmi_warn) = warning.split(',')
                 dns_warn = int(dns_warn)
                 ping_warn = int(ping_warn)
                 packet_loss_warn = int(packet_loss_warn)
-                winrm_warn = int(winrm_warn)
+                wmi_warn = int(wmi_warn)
             except ValueError:
                 raise CheckNagiosUnknown("Invalid Warning values")
 
         if critical is not None:
             try:
-                (dns_crit, ping_crit, packet_loss_crit, winrm_crit) = critical.split(',')
+                (dns_crit, ping_crit, packet_loss_crit, wmi_crit) = critical.split(',')
                 dns_crit = int(dns_crit)
                 ping_crit = int(ping_crit)
                 packet_loss_crit = int(packet_loss_crit)
-                winrm_crit = int(winrm_crit)
+                wmi_crit = int(wmi_crit)
             except ValueError:
                 raise CheckNagiosUnknown("Invalid Critical values")
 
@@ -270,7 +270,7 @@ def main(argv):
 
         wmi_start = time.time()
         a = query_server(hostaddress, username, password, namespace=namespace, filter_tuples=filter_tuples)
-        wmi_time = (time.time() - winrm_start) * 1000
+        wmi_time = (time.time() - wmi_start) * 1000
 
         data = legacy(a)
 
