@@ -16,7 +16,7 @@ queries = {
     'os': "SELECT * FROM Win32_OperatingSystem",
     'disk': "SELECT * FROM Win32_LogicalDisk",
     'cpu': "SELECT * FROM Win32_PerfRawData_PerfOS_Processor WHERE Name='_Total'" ,
-    'pf': "SELECT * FROM Win32_PageFileUsage",
+#    'pf': "SELECT * FROM Win32_PageFileUsage",
 #    'evt_system':
 #        "SELECT * FROM Win32_NTLogEvent WHERE TimeGenerated > '%s' and EventType <= %d and Logfile = 'System'",
 #    'evt_application':
