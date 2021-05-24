@@ -77,7 +77,7 @@ def query_server(host, username, password, namespace="root\\cimv2", filter_tuple
     for i in queries.keys():
         server[i] = pywmi.query(queries[i] % filter_tuples.get(i, ()))
         print(server[i])
-        if not isinstance(server[i], dict):
+        if not isinstance(server[i], list):
             raise CheckNagiosUnknown("Error connecting to server %08x" % server[i])
     pywmi.close()
     return server
