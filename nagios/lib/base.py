@@ -1,5 +1,6 @@
 from .nagios import CheckUnknown, CheckWarning, CheckCritical, CheckResult
 import re
+import time
 
 def perf(name, value, warn=None, crit=None, min_val=None, max_val=None):
     convstr = lambda x: str(x) if x is not None else ''
