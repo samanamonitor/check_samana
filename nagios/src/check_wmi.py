@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 
-import pywmi
 import time
 import json
 import csv
@@ -54,6 +53,7 @@ def query_server(host, username, password, namespace="root\\cimv2", filter_tuple
         if the key doesn't exist, then an empty tuple is expected, otherwise the tuple
         must contain all the arguments needed to complete the string
     '''
+    import pywmi
     server = {}
     conn_status = pywmi.open(host, username, password, namespace)
     if conn_status != 0:
