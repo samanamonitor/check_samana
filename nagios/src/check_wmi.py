@@ -123,7 +123,7 @@ def main(argv):
         memcacheserver = '127.0.0.1'
         memcacheport = '11211'
         cachetype = 'etcd'
-        opts, args = getopt.getopt(sys.argv[1:], "H:he:t:U:p:n:w:c:m:a:")
+        opts, args = getopt.getopt(sys.argv[1:], "H:he:t:U:p:n:w:c:m:a:i:")
         ttl = 300
         hostaddress = None
         username = None
