@@ -199,7 +199,7 @@ def main(argv):
             'evt_system': (timefilter, 2),
             'evt_sf': (timefilter, 2)
         }
-
+        return
         a = query_server(hostaddress, username, password, namespace=namespace, filter_tuples=filter_tuples)
         data = legacy(a)
         wmi_time = int((time.time() - wmi_start) * 1000)
