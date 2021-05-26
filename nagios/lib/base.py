@@ -35,10 +35,10 @@ def ping_host(ip, count=3):
 
         data['packets_sent'] = int(packets[0])
         data['packets_received'] = int(packets[1])
-        data['min'] = int(float(rtt[0]))
-        data['avg'] = int(float(rtt[1]))
-        data['max'] = int(float(rtt[2]))
-        data['mdev'] = int(float(rtt[3]))
+        data['min'] = int(float(rtt[2]))
+        data['avg'] = int(float(rtt[3]))
+        data['max'] = int(float(rtt[4]))
+        data['mdev'] = int(float(rtt[5]))
     except (ValueError, IndexError) as e:
         raise CheckUnknown("Ping output invalid", addl="%s\n%s" % (str(e), outstr))
     except Exception as e:
