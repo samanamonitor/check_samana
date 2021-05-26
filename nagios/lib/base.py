@@ -67,3 +67,19 @@ def get_dns_ip(hn):
         raise CheckCritical("Unable to resove hostname to IP address", addl=str(err))
 
     return (ips[0], dns_time)
+
+
+def auth_file(authfile):
+    data = {}
+    with open(authfile) as f:
+        for line in f:
+            line = line.strip()
+            d = line.split('=')
+            if len(d) != 2:
+                data[d[0]] = None
+            else:
+                data[d[0]] = d[1]
+    if 'domain' in data and ('@' in username or '\\' in username):
+        raise CheckUnknown("Invalid auth file format")
+
+    return (data.get('username'), data.get('password'), data.get('domain'))
