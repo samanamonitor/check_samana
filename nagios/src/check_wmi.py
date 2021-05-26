@@ -35,11 +35,12 @@ to get a license.
 Copyright (c) 2021 Samana Group LLC
 
 Usage:
-  %s -H <host name> ( -U <username> -p <password> ) [-n <namespace>] [-e <etcd server>] [-m <memcache server>] [-t <ttl>] [ -w dnswarn,pingwarn,packetlosswarn,wmiwarn ] [ -c dnscrit,pingcrit,packetlosscrit,wmicrit ]
+  %s -H <host name> ( -U <username> -p <password> ) [-i <id type>] [-n <namespace>] [-e <etcd server>] [-m <memcache server>] [-t <ttl>] [ -w dnswarn,pingwarn,packetlosswarn,wmiwarn ] [ -c dnscrit,pingcrit,packetlosscrit,wmicrit ]
 
   <host name>        Windows Server to be queried
   <username>         User in Windows Domain (domain\\user) or local Windows user
   <password>         User password
+  <id type>          Id encoding, can be one of "md5", "sha256" or "fqdn". Default is "md5"
   <namespace>        WMI namespace, default root\\cimv2
   <etcd server>      Etcd server IP/Hostname and port(optional). Default value 127.0.0.1:2379
   <memcache server>  Memcached server IP/Hostname and port(optional). Format <server ip/hostname>:11211. If set, etcd will not be used.
@@ -65,7 +66,7 @@ def query_server(host, username, password, namespace="root\\cimv2", filter_tuple
     pywmi.close()
     return server
 
-def legacy(indata):
+def legacy(indata, idtype='md5'):
     computer = indata['computer'][0]['properties']
     cpu = indata['cpu'][0]['properties']
     os = indata['os'][0]['properties']
@@ -79,11 +80,21 @@ def legacy(indata):
     zm = int(z % 60)
     sign = '-' if z < 0 else '+'
     st = time.strptime("%s%s%02d%02d" % (t, sign, zh, zm), "%Y%m%d%H%M%S%z")
+    fqdn = computer['DNSHostName'], computer['Domain']
+    if idtype == 'md5':
+        serverid = md5(fqdn).hexdigest().upper()
+    elif idtype == 'sha256':
+        serverid = sha256(fqdn).hexdigest().upper()
+    elif idtype == 'fqdn':
+        serverid = fqdn
+    else:
+        raise CheckUnknown("Invalid id type %s" % idtype)
+
     return {
         'epoch': int(time.time()),
         'DNSHostName': computer['DNSHostName'],
         'Domain': computer['Domain'],
-        'ID': "%s.%s" %  (computer['DNSHostName'], computer['Domain']),
+        'ID': serverid,
         'PercentIdleTime': int(cpu['PercentIdleTime'] / cpu['Timestamp_PerfTime'] * 100),
         'PercentInterruptTime': int(cpu['PercentInterruptTime'] / cpu['Timestamp_PerfTime'] * 100),
         'PercentPrivilegedTime': int(cpu['PercentPrivilegedTime'] / cpu['Timestamp_PerfTime'] * 100),
@@ -129,6 +140,7 @@ def main(argv):
         dns_crit = None
         packet_loss_warn = None
         packet_loss_crit = None
+        idtype = None
 
         for o, a in opts:
             if o == '-H':
@@ -160,6 +172,8 @@ def main(argv):
                 (username, password, domain) = auth_file(a)
                 if domain is not None:
                     username = "%s\\%s" % (domain, username)
+            elif o == "-i":
+                idtype = a
             elif o == '-h':
                 raise CheckUnknown("Help", addl=usage())
             else:
@@ -203,7 +217,7 @@ def main(argv):
             'evt_sf': (timefilter, 2)
         }
         a = query_server(hostaddress, username, password, namespace=namespace, filter_tuples=filter_tuples)
-        data = legacy(a)
+        data = legacy(a, idtype)
         wmi_time = int((time.time() - wmi_start) * 1000)
 
         if cachetype == 'etcd':
