@@ -23,12 +23,12 @@ def ping_host(ip, count=3):
     rtt = None
     try:
         outstr = out[0].decode('utf8')
-        pat = re.search("^(\d+) packets transmitted, (\d+) packets received", outstr, flags=re.M)
+        pat = re.search("^(\d+) packets transmitted, (\d+) (packets )?received", outstr, flags=re.M)
         if pat is None:
             raise ValueError("Cannot extract packets from ping output.")
         packets = pat.groups()
 
-        pat = re.search("^round-trip min/avg/max/stddev = ([\d.]+)/([\d.]+)/([\d.]+)/([\d.]+)", outstr, flags=re.M)
+        pat = re.search("^(round-trip|rtt) min/avg/max/(stddev|mdev) = ([\d.]+)/([\d.]+)/([\d.]+)/([\d.]+)", outstr, flags=re.M)
         if pat is None:
             raise ValueError("Cannot extract ping rtt times.")
         rtt = pat.groups()
