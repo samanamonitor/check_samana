@@ -213,8 +213,8 @@ def main(argv):
             mc = memcache.Client(['%s:%s' % (memcacheserver, memcacheport)], debug=0)
             mckey = "samanamonitor/data/%s" % data['ID'].lower()
             val = json.dumps(data)
-            #mc.set(mckey, json.dumps(data), time=ttl)
-            mc.set(mckey, "test", time=ttl)
+            mc.set(mckey, json.dumps(data), time=ttl)
+            #mc.set(mckey, "test", time=ttl)
             print(mckey, len(val), ttl)
         else:
             raise CheckUnknown("Invalid cache type")
