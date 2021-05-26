@@ -12,7 +12,8 @@ class Client():
     def get(self, key):
         req = Request(url='%s://%s:%s/%s/keys/%s' %(self.protocol, self.host, self.port, self.version_prefix, key))
         with urlopen(req) as f:
-            data = json.load(f)
+            res_str = f.read()
+            data = json.loads(res_str.decode("utf8"))
             if f.status != 200:
                 raise EtcdKeyNotFound(payload={'errorCode': 100, 'index': 0, 'message': 'Key not found', 'cause': key})
         return EtcdResult(action=data['action'], node=data['node'])
@@ -26,7 +27,8 @@ class Client():
             method='PUT', \
             data=bytearray(urlencode(data), "utf8"))
         with urlopen(req) as f:
-            data = json.load(f)
+            res_str = f.read()
+            data = json.loads(res_str.decode("utf8"))
             if not (f.status == 200 or f.status == 201):
                 raise EtcdException(payload={'errorCode': 100, 'status': f.status, 'index': 0, 'message': 'Could not set value', 'cause': data})
 
