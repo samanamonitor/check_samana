@@ -215,7 +215,7 @@ def main(argv):
             val = json.dumps(data)
             #mc.set(mckey, json.dumps(data), time=ttl)
             mc.set(mckey, "test", time=ttl)
-            print(mckey, len(val))
+            print(mckey, len(val), ttl)
         else:
             raise CheckUnknown("Invalid cache type")
             
