@@ -35,12 +35,11 @@ to get a license.
 Copyright (c) 2021 Samana Group LLC
 
 Usage:
-  %s -H <host name> ( -U <username> -p <password> | -a <auth file> ) [-n <namespace>] [-e <etcd server>] [-m <memcache server>] [-t <ttl>] [ -w dnswarn,pingwarn,packetlosswarn,wmiwarn ] [ -c dnscrit,pingcrit,packetlosscrit,wmicrit ]
+  %s -H <host name> ( -U <username> -p <password> ) [-n <namespace>] [-e <etcd server>] [-m <memcache server>] [-t <ttl>] [ -w dnswarn,pingwarn,packetlosswarn,wmiwarn ] [ -c dnscrit,pingcrit,packetlosscrit,wmicrit ]
 
   <host name>        Windows Server to be queried
-  <username>         User in Windows Domain (domain\\user or user@domain) or local Windows user
+  <username>         User in Windows Domain (domain\\user) or local Windows user
   <password>         User password
-  <auth file>        Text file path containing credentials
   <namespace>        WMI namespace, default root\\cimv2
   <etcd server>      Etcd server IP/Hostname and port(optional). Default value 127.0.0.1:2379
   <memcache server>  Memcached server IP/Hostname and port(optional). Format <server ip/hostname>:11211. If set, etcd will not be used.
