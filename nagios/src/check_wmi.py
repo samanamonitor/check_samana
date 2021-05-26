@@ -67,6 +67,8 @@ def query_server(host, username, password, namespace="root\\cimv2", filter_tuple
     return server
 
 def legacy(indata, idtype='md5'):
+    from hashlib import md5, sha256
+
     computer = indata['computer'][0]['properties']
     cpu = indata['cpu'][0]['properties']
     os = indata['os'][0]['properties']
@@ -80,7 +82,7 @@ def legacy(indata, idtype='md5'):
     zm = int(z % 60)
     sign = '-' if z < 0 else '+'
     st = time.strptime("%s%s%02d%02d" % (t, sign, zh, zm), "%Y%m%d%H%M%S%z")
-    fqdn = computer['DNSHostName'], computer['Domain']
+    fqdn = (computer['DNSHostName'], computer['Domain']).lower()
     if idtype == 'md5':
         serverid = md5(fqdn.encode("utf8")).hexdigest().upper()
     elif idtype == 'sha256':
@@ -223,11 +225,11 @@ def main(argv):
         if cachetype == 'etcd':
             from samana import etcd
             c = etcd.Client(host=etcdserver, port=etcdport)
-            c.put("samanamonitor/data/%s" % data['ID'].lower(), json.dumps(data), ttl)
+            c.put("samanamonitor/data/%s" % data['ID'], json.dumps(data), ttl)
         elif cachetype == 'memcache':
             import memcache
             mc = memcache.Client(['%s:%s' % (memcacheserver, memcacheport)], debug=0)
-            mckey = "samanamonitor/data/%s" % data['ID'].lower()
+            mckey = "samanamonitor/data/%s" % data['ID']
             val = json.dumps(data)
             mc.set(mckey, val, time=ttl)
             print(mckey, len(val), ttl)
