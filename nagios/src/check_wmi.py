@@ -7,9 +7,8 @@ import csv
 import sys, getopt
 import traceback
 from samana.nagios import CheckUnknown, CheckWarning, CheckCritical, CheckResult
-from samana.base import get_dns_ip, ping_host, perf
+from samana.base import get_dns_ip, ping_host, perf, auth_file
 
-timeout=60
 event_level = 2
 event_secs = 300
 
@@ -37,11 +36,12 @@ to get a license.
 Copyright (c) 2021 Samana Group LLC
 
 Usage:
-  %s -H <host name> -U <username> -p <password> [-n <namespace>] [-e <etcd server>] [-m <memcache server>] [-t <ttl>] [ -w dnswarn,pingwarn,packetlosswarn,wmiwarn ] [ -c dnscrit,pingcrit,packetlosscrit,wmicrit ]
+  %s -H <host name> ( -U <username> -p <password> | -a <auth file> ) [-n <namespace>] [-e <etcd server>] [-m <memcache server>] [-t <ttl>] [ -w dnswarn,pingwarn,packetlosswarn,wmiwarn ] [ -c dnscrit,pingcrit,packetlosscrit,wmicrit ]
 
   <host name>        Windows Server to be queried
   <username>         User in Windows Domain (domain\\user or user@domain) or local Windows user
   <password>         User password
+  <auth file>        Text file path containing credentials
   <namespace>        WMI namespace, default root\\cimv2
   <etcd server>      Etcd server IP/Hostname and port(optional). Default value 127.0.0.1:2379
   <memcache server>  Memcached server IP/Hostname and port(optional). Format <server ip/hostname>:11211. If set, etcd will not be used.
@@ -113,7 +113,7 @@ def main(argv):
         memcacheserver = '127.0.0.1'
         memcacheport = '11211'
         cachetype = 'etcd'
-        opts, args = getopt.getopt(sys.argv[1:], "H:he:t:U:p:n:w:c:m:")
+        opts, args = getopt.getopt(sys.argv[1:], "H:he:t:U:p:n:w:c:m:a:")
         ttl = 300
         hostaddress = None
         username = None
@@ -157,6 +157,10 @@ def main(argv):
                 warning = a
             elif o == '-c':
                 critical = a
+            elif o == '-a':
+                (username, password, domain) = auth_file(a)
+                if domain is not None:
+                    username = "%s\\%s" % (domain, username)
             elif o == '-h':
                 raise CheckUnknown("Help", addl=usage())
             else:
