@@ -200,7 +200,6 @@ def main(argv):
             'evt_sf': (timefilter, 2)
         }
         a = query_server(hostaddress, username, password, namespace=namespace, filter_tuples=filter_tuples)
-        return
         data = legacy(a)
         wmi_time = int((time.time() - wmi_start) * 1000)
 
@@ -214,7 +213,6 @@ def main(argv):
             mckey = "samanamonitor/data/%s" % data['ID'].lower()
             val = json.dumps(data)
             mc.set(mckey, val, time=ttl)
-            #mc.set(mckey, "test", time=ttl)
             print(mckey, len(val), ttl)
         else:
             raise CheckUnknown("Invalid cache type")
