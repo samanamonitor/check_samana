@@ -82,7 +82,8 @@ def legacy(indata, idtype='md5'):
     zm = int(z % 60)
     sign = '-' if z < 0 else '+'
     st = time.strptime("%s%s%02d%02d" % (t, sign, zh, zm), "%Y%m%d%H%M%S%z")
-    fqdn = (computer['DNSHostName'], computer['Domain']).lower()
+    fqdn = "%s.%s" % (computer['DNSHostName'], computer['Domain'])
+    fqdn = fqdn.lower()
     if idtype == 'md5':
         serverid = md5(fqdn.encode("utf8")).hexdigest().upper()
     elif idtype == 'sha256':
