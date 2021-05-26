@@ -82,7 +82,7 @@ def auth_file(authfile):
     username = data.get('username')
     if username is None:
         raise CheckUnknown("Invalid auth file format. Username not defined.")
-    if 'domain' in data and ('@' in username or '\\' in username):
+    if 'domain' in data and len(data['domain']) > 0 and ('@' in username or '\\' in username):
         raise CheckUnknown("Invalid auth file format. Domain defined multiple times '%s'" % data['domain'])
 
     return (data.get('username'), data.get('password'), data.get('domain'))
