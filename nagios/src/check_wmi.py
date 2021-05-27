@@ -114,13 +114,19 @@ def legacy(indata, idtype='md5'):
         'UpTime': time.time() - (time.mktime(st) + st.tm_gmtoff) / 3600,
         'Services': [],
         'Events': {
-            'System': indata['evt_system'],
-            'Application': indata['evt_application'],
-            'Citrix Delivery Services': indata['evt_sf']
+            'System': [],
+            'Application': [],
+            'Citrix Delivery Services': []
         }
     }
     for s in indata['services']:
         ret['Services'].append(s['properties'])
+    for e in indata['evt_system']:
+        ret['Events']['System'].append(e['properties'])
+    for e in indata['evt_application']:
+        ret['Events']['Application'].append(e['properties'])
+    for e in indata['evt_sf']:
+        ret['Events']['Citrix Delivery Services'].append(e['properties'])
 
     return ret
 
