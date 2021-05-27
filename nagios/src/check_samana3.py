@@ -203,7 +203,7 @@ def services(data, crit, warn, incl, excl):
                 r += 1
             else:
                 s += 1
-                stopped_services += " * %s(%s)\n" % (service['DisplayName'], name))
+                stopped_services += " * %s(%s)\n" % (service['DisplayName'], name)
 
     critval = 101
     warnval = 101
