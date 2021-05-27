@@ -41,7 +41,7 @@ def main():
 
     resp = json.load(f)
 
-    print resp['message']
+    print "%s\n%s" % (resp['message'], ' '.join(sys.argv))
     exit(resp['status'])
 
 
