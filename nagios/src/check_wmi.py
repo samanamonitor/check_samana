@@ -73,7 +73,6 @@ def legacy(indata, idtype='md5'):
     computer = indata['computer'][0]['properties']
     cpu = indata['cpu'][0]['properties']
     os = indata['os'][0]['properties']
-    disks = indata['disk']
     TotalSwapSpaceSize = 0
     for i in indata['pf']:
         TotalSwapSpaceSize += i['properties']['AllocatedBaseSize']
@@ -113,7 +112,7 @@ def legacy(indata, idtype='md5'):
         'TotalVisibleMemorySize': os['TotalVisibleMemorySize'],
         'NumberOfProcesses': os['NumberOfProcesses'],
         'UpTime': time.time() - (time.mktime(st) + st.tm_gmtoff) / 3600,
-        'Disks': disks,
+        'Disks': [],
         'Services': [],
         'Events': {
             'System': [],
@@ -129,6 +128,8 @@ def legacy(indata, idtype='md5'):
         ret['Events']['Application'].append(e['properties'])
     for e in indata['evt_sf']:
         ret['Events']['Citrix Delivery Services'].append(e['properties'])
+    for d in indata['disk']:
+        ret['Disks'].append(e['properties'])
 
     return ret
 
