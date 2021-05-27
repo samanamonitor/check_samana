@@ -199,7 +199,7 @@ def services(data, crit, warn, incl, excl):
             continue
         if re.search(incl, displayname) is not None or re.search(incl, name) is not None:
             if (isinstance(service['Status'], int) and int(service['Status']) == 4) or \
-                    (isinstance(service['State'], str) and service['State'] == 'Running'):
+                    (isinstance(service['State'], unicode) and service['State'] == 'Running'):
                 r += 1
             else:
                 s += 1
