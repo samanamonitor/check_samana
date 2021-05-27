@@ -203,7 +203,7 @@ def services(data, crit, warn, incl, excl):
                 r += 1
             else:
                 s += 1
-                stopped_services += " * %s(%s - %s)\n" % (service['DisplayName'], name, isinstance(service['State'], str))
+                stopped_services += " * %s(%s - %s)\n" % (service['DisplayName'], name, service.get('State', '-'))
 
     critval = 101
     warnval = 101
