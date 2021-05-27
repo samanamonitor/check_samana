@@ -35,11 +35,12 @@ to get a license.
 Copyright (c) 2021 Samana Group LLC
 
 Usage:
-  %s -H <host name> ( -U <username> -p <password> ) [-i <id type>] [-n <namespace>] [-e <etcd server>] [-m <memcache server>] [-t <ttl>] [ -w dnswarn,pingwarn,packetlosswarn,wmiwarn ] [ -c dnscrit,pingcrit,packetlosscrit,wmicrit ]
+  %s -H <host name> ( -U <username> -p <password> | -a <auth file>) [-i <id type>] [-n <namespace>] [-e <etcd server>] [-m <memcache server>] [-t <ttl>] [ -w dnswarn,pingwarn,packetlosswarn,wmiwarn ] [ -c dnscrit,pingcrit,packetlosscrit,wmicrit ]
 
   <host name>        Windows Server to be queried
   <username>         User in Windows Domain (domain\\user) or local Windows user
   <password>         User password
+  <auth file>        File containing credentials. In the file, username cannot be UPN.
   <id type>          Id encoding, can be one of "md5", "sha256" or "fqdn". Default is "md5"
   <namespace>        WMI namespace, default root\\cimv2
   <etcd server>      Etcd server IP/Hostname and port(optional). Default value 127.0.0.1:2379
