@@ -94,7 +94,7 @@ def legacy(indata, idtype='md5'):
     else:
         raise CheckUnknown("Invalid id type %s" % idtype)
 
-    return {
+    ret = {
         'epoch': int(time.time()),
         'DNSHostName': computer['DNSHostName'],
         'Domain': computer['Domain'],
@@ -112,13 +112,17 @@ def legacy(indata, idtype='md5'):
         'TotalVisibleMemorySize': os['TotalVisibleMemorySize'],
         'NumberOfProcesses': os['NumberOfProcesses'],
         'UpTime': time.time() - (time.mktime(st) + st.tm_gmtoff) / 3600,
-        'Services': indata['services'],
+        'Services': [],
         'Events': {
             'System': indata['evt_system'],
             'Application': indata['evt_application'],
             'Citrix Delivery Services': indata['evt_sf']
         }
     }
+    for s in indata['services']:
+        ret['Services'].append(s['properties'])
+
+    return ret
 
 def main(argv):
     try:
