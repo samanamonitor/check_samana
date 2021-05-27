@@ -198,7 +198,8 @@ def services(data, crit, warn, incl, excl):
                     re.search(excl, name) is not None):
             continue
         if re.search(incl, displayname) is not None or re.search(incl, name) is not None:
-            if int(service['Status']) == 4:
+            if (isinstance(service['Status'], int) and int(service['Status']) == 4) or \
+                    (isinstance(service['Status'], str) and service['Status'] == 'Running'):
                 r += 1
             else:
                 s += 1
