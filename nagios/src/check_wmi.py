@@ -23,7 +23,7 @@ queries = {
     'evt_sf':
         "SELECT * FROM Win32_NTLogEvent WHERE TimeGenerated > '%s' and EventType <= %d and Logfile = 'Citrix Delivery Services'",
     'proc': 'SELECT * FROM Win32_Process',
-    'services': 'SELECT Name, DisplayName, ProcessId, Started, StartName, State, Status FROM Win32_Service',
+    'services': 'SELECT Name, ServiceName, DisplayName, ProcessId, Started, StartName, State, Status FROM Win32_Service',
     'computer': "SELECT * FROM Win32_ComputerSystem"
 }
 
