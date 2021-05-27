@@ -264,7 +264,7 @@ def main(argv):
         if notnone_and_lt(wmi_warn, wmi_time):
             raise CheckNagiosWarning("WMI took longer than expected %d ms" % wmi_time, perf_data=perf_data)
 
-        out = CheckResult("Data Collected", perf_data=perf_data, addl=' '.join(sys.argv))
+        out = CheckResult("Data Collected %s", data['ID'], perf_data=perf_data, addl=' '.join(sys.argv))
     except CheckWarning as e:
         out = e.result
     except CheckCritical as e:
