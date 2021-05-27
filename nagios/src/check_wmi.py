@@ -129,7 +129,7 @@ def legacy(indata, idtype='md5'):
     for e in indata['evt_sf']:
         ret['Events']['Citrix Delivery Services'].append(e['properties'])
     for d in indata['disk']:
-        ret['Disks'].append(e['properties'])
+        ret['Disks'].append(d['properties'])
 
     return ret
 
