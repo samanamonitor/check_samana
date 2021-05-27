@@ -80,10 +80,21 @@ def auth_file(authfile):
                 data[d[0]] = None
             else:
                 data[d[0]] = d[1]
-    username = data.get('username')
-    if username is None:
+    if '@' in data['username']:
+        raise CheckUnknown("Invalid username. Cannot use UPN.")
+    if data['username'] is None:
         raise CheckUnknown("Invalid auth file format. Username not defined.")
-    if 'domain' in data and len(data['domain']) > 0 and ('@' in username or '\\' in username):
-        raise CheckUnknown("Invalid auth file format. Domain defined multiple times '%s'" % data['domain'])
+    if '\\' in data['username'] or '/' in data['username']:
+        if 'domain' in data and len(data['domain']) > 0:
+            raise CheckUnknown("Invalid auth file format. Domain defined multiple times domain='%s' username='%s'" % (data['domain'], data['username']))
+        if '\\' in data['username']:
+            temp = data['username'].split('\\')
+        elif '/' in data['username']:
+            temp = data['username'].split('/')
+        else:
+            temp = [data['username']]
+        data['domain'] = temp[0]
+        if len(temp) > 1:
+            data['username'] = temp[1]
 
     return (data.get('username'), data.get('password'), data.get('domain'))
