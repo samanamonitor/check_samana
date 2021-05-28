@@ -319,7 +319,7 @@ def uptime(data, crit, warn):
     except:
         pass
 
-    return (0, "OK - Uptime of server is %.0f Hours | uptime=%.0f;;;" % (val, val))
+    return (0, "OK - Uptime of server is %.0f Hours | uptime=%.0f;%s;%s;" % (val, val, str(warn), str(crit)))
 
 def main(argv):
     hostid = ''
