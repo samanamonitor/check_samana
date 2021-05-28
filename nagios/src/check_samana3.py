@@ -302,24 +302,26 @@ def uptime(data, crit, warn):
 
     if debug:
         print data
+
+    intstr = lambda x: str(x) if x is not None else ''
     
     val = data['UpTime']
 
     try:
-        crit = float(crit)
+        crit = int(crit)
         if val > crit:
-            return (2, "CRITICAL - Uptime of server is %.0f Hours | uptime=%.0f;%s;%s;" % (val, val, str(warn), str(crit)))
+            return (2, "CRITICAL - Uptime of server is %.0f Hours | uptime=%.0f;%s;%s;" % (val, val, intstr(warn), intstr(crit)))
     except:
         pass
 
     try:
-        warn = float(warn)
+        warn = int(warn)
         if val > warn:
-            return (1, "WARNING - Uptime of server is %.0f Hours | uptime=%.0f;%s;%s;" % (val, val, str(warn), str(crit)))
+            return (1, "WARNING - Uptime of server is %.0f Hours | uptime=%.0f;%s;%s;" % (val, val, intstr(warn), intstr(crit)))
     except:
         pass
 
-    return (0, "OK - Uptime of server is %.0f Hours | uptime=%.0f;%s;%s;" % (val, val, str(warn), str(crit)))
+    return (0, "OK - Uptime of server is %.0f Hours | uptime=%.0f;%s;%s;" % (val, val, intstr(warn), intstr(crit)))
 
 def main(argv):
     hostid = ''
