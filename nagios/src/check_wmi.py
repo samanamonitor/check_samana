@@ -111,6 +111,7 @@ def legacy(indata, idtype='md5'):
         'TotalVirtualMemorySize': os['TotalVirtualMemorySize'],
         'TotalVisibleMemorySize': os['TotalVisibleMemorySize'],
         'NumberOfProcesses': os['NumberOfProcesses'],
+        'LastBootUpTime': os['LastBootUpTime'],
         'UpTime': time.time() - (time.mktime(st) + st.tm_gmtoff) / 3600,
         'Disks': [],
         'Services': [],
