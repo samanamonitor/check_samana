@@ -308,14 +308,14 @@ def uptime(data, crit, warn):
     try:
         crit = float(crit)
         if val > crit:
-            return (2, "CRITICAL - Uptime of server is %.0f Hours | uptime=%.0f;;;" % (val, val))
+            return (2, "CRITICAL - Uptime of server is %.0f Hours | uptime=%.0f;%s;%s;" % (val, val, str(warn), str(crit)))
     except:
         pass
 
     try:
         warn = float(warn)
         if val > warn:
-            return (1, "WARNING - Uptime of server is %.0f Hours | uptime=%.0f;;;" % (val, val))
+            return (1, "WARNING - Uptime of server is %.0f Hours | uptime=%.0f;%s;%s;" % (val, val, str(warn), str(crit)))
     except:
         pass
 
