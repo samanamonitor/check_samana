@@ -1,18 +1,11 @@
 #!/usr/bin/python3
-import citrixcloud
-import samanaetcd as etcd
+from samana import citrixcloud
+from samana import etcd
+from samana.nagios import CheckUnknown, CheckWarning, CheckCritical, CheckResult
+from urllib import parse
 import sys, getopt
+import traceback
 import json
-
-class CheckCtxCloudWarning(Exception):
-    pass
-
-class CheckCtxCloudError(Exception):
-    pass
-
-class CheckCtxCloudUnknown(Exception):
-    pass
-
 
 def usage(argv):
   usage = """Check WinRM v1.0.0
@@ -31,11 +24,31 @@ Usage:
   -e <etcd>             Etcd server IP/Hostname and port(optional). Default port value is 2379
   -t <ttl>              Time(seconds) the records will expire in Etcd database. Default ttl is 300 seconds
   -d <site id>          Citrix Cloud Site Id
-"""
-  print(usage)
+""" % argv[0]
+  return usage
 
+def get_sites(ctx):
+    sites = ctx.get_sites()
+    if len(sites) < 1:
+        raise CheckUnknown("No sites configured for API client")
+    addl = ''
+    for s in sites:
+        addl += "Site Name: %s, Site Id: %s\n" % (s['Name'], s['Id'])
+    return CheckResult("Data Collected", addl=addl)
 
-def main(argv):
+def get_site_data(ctx, site_id, ttl, etcdserver, etcdport):
+    ctx.get_machines(site_id)
+    etcdclient = etcd.Client(host=etcdserver, port=etcdport, protocol='http')
+    etcdclient.put('samanamonitor/ctx_data/%s/farm' % (site_id), json.dumps(ctx.data['farm']), ttl)
+    for dg_name in ctx.data['desktopgroup'].keys():
+        etcdclient.put('samanamonitor/ctx_data/%s/desktopgroup/%s' % \
+            (site_id, parse.quote(dg_name.lower())), json.dumps(ctx.data['desktopgroup'][dg_name]), ttl)
+    for host_name in ctx.data['hosts'].keys():
+        etcdclient.put('samanamonitor/ctx_data/%s/hosts/%s' % \
+            (site_id, parse.quote(host_name.lower())), json.dumps(ctx.data['hosts'][host_name]), ttl)
+    return CheckResult("Data Collected %s" % site_id)
+
+def main():
     customer_id = None
     client_id = None
     client_secret = None
@@ -68,60 +81,40 @@ def main(argv):
             elif o == '-h':
                 usage(args)
             else:
-                raise Exception("Unknown argument")
+                raise CheckUnknown("Unknown argument %s" % o, addl=usage())
 
         if customer_id is None:
-            raise CheckCtxCloudUnknown("Customer Id is Mandatory")
+            raise CheckUnknown("Customer Id is Mandatory")
         if client_id is None:
-            raise CheckCtxCloudUnknown("Client Id is Mandatory")
+            raise CheckUnknown("Client Id is Mandatory")
         if client_secret is None:
-            raise CheckCtxCloudUnknown("Client Secret is Mandatory")
+            raise CheckUnknown("Client Secret is Mandatory")
+        if print_sites is False and site_id is None:
+            raise CheckUnknown("Site Id is mandatory for collecting data.")
+        if print_sites is False and etcdserver is None:
+            raise CheckUnknown("Etcd server is mandatory for collecting data.")
 
         ctx = citrixcloud.Client(customer_id, client_id, client_secret)
 
         if print_sites:
-            sites = ctx.get_sites()
-            if len(sites) < 1:
-                raise CheckCtxCloudUnknown("No sites configured for API client")
+            out = get_sites(ctx)
+        else:
+            out = get_site_data(ctx, site_id, ttl, etcdserver, etcdport)
 
-            print("OK - Data Collected")
-            for s in sites:
-                print("Site Name: %s, Site Id: %s" % (s['Name'], s['Id']))
-            exit(0)
-
-        if site_id is None:
-            raise CheckCtxCloudUnknown("Site Id is mandatory for collecting data.")
-        if etcdserver is None:
-            raise CheckCtxCloudUnknown("Etcd server is mandatory for collecting data.")
-
-        etcdclient = etcd.Client(host=etcdserver, port=etcdport, protocol='http')
-        ctx.get_machines(site_id)
-        etcdclient.put('/samanamonitor/ctx_data/%s/farm' % (site_id), json.dumps(ctx.data['farm']), ttl)
-        for dg_name in ctx.data['desktopgroup'].keys():
-            etcdclient.put('/samanamonitor/ctx_data/%s/desktopgroup/%s' % \
-                (site_id, dg_name.lower()), json.dumps(ctx.data['desktopgroup'][dg_name]), ttl)
-        for host_name in ctx.data['hosts'].keys():
-            etcdclient.put('samanamonitor/ctx_data/%s/hosts/%s' % \
-                (site_id, host_name.lower()), json.dumps(ctx.data['hosts'][host_name]), ttl)
-
-    except CheckCtxCloudUnknown as err:
-        print("UNKNOWN - %s" % (str(err)))
-        exit(3)
-    except CheckCtxCloudError as err:
-        print("ERROR - %s" % (str(err)))
-        exit(2)
-    except CheckCtxCloudWarning as err:
-        print("WARNING - %s" % (str(err)))
-        exit(1)
-    except Exception as err:
+    except CheckUnknown as e:
+        out = e.result
+    except CheckCritical as e:
+        out = e.result
+    except CheckWarning as e:
+        out = e.result
+    except Exception as e:
         exc_type, exc_obj, tb = sys.exc_info()
-        print("UNKNOWN - main Error: %s at line %s" % \
-            (str(err), tb.tb_lineno))
-        exit(3)
+        traceback_info = traceback.extract_tb(tb)
+        out = CheckResult("Error: %s at line %s" % (str(e), tb.tb_lineno), addl=traceback_info.format, status=3, status_str="UNKNOWN")
 
-    print("OK - Data Collected")
+    print(out)
+    exit(out.status)
 
 if __name__ == "__main__":
-  main(sys.argv)
-
+  main()
 
