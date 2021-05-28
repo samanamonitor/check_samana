@@ -3,7 +3,7 @@
 import sys, getopt
 import json
 import re
-from samana import etcd
+import samanaetcd as etcd
 import time
 
 from os import environ
