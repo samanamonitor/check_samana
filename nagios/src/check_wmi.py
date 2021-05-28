@@ -99,7 +99,7 @@ def legacy(indata, idtype='md5'):
         'DNSHostName': computer['DNSHostName'],
         'Domain': computer['Domain'],
         'ID': serverid,
-        'PercentIdleTime': int(cpu['PercentIdleTime'],
+        'PercentIdleTime': int(cpu['PercentIdleTime']),
         'PercentInterruptTime': int(cpu['PercentInterruptTime']),
         'PercentPrivilegedTime': int(cpu['PercentPrivilegedTime']),
         'PercentProcessorTime': int(cpu['PercentProcessorTime']),
