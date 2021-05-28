@@ -310,18 +310,18 @@ def uptime(data, crit, warn):
     try:
         crit = int(crit)
         if val > crit:
-            return (2, "CRITICAL - Uptime of server is %.0f Hours | uptime=%.0f;%s;%s;" % (val, val, intstr(warn), intstr(crit)))
+            return (2, "CRITICAL - Uptime of server is %.0f Hours | uptime=%.0f;%s;%s;\n%s" % (val, val, intstr(warn), intstr(crit), ' '.join(sys.argv)))
     except:
         pass
 
     try:
         warn = int(warn)
         if val > warn:
-            return (1, "WARNING - Uptime of server is %.0f Hours | uptime=%.0f;%s;%s;" % (val, val, intstr(warn), intstr(crit)))
+            return (1, "WARNING - Uptime of server is %.0f Hours | uptime=%.0f;%s;%s;\n%s" % (val, val, intstr(warn), intstr(crit), ' '.join(sys.argv)))
     except:
         pass
 
-    return (0, "OK - Uptime of server is %.0f Hours | uptime=%.0f;%s;%s;" % (val, val, intstr(warn), intstr(crit)))
+    return (0, "OK - Uptime of server is %.0f Hours | uptime=%.0f;%s;%s;\n%s" % (val, val, intstr(warn), intstr(crit), ' '.join(sys.argv)))
 
 def main(argv):
     hostid = ''
