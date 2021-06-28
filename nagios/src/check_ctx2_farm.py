@@ -39,7 +39,7 @@ class CXDInvalidData(Exception):
   pass
 
 class CitrixXD:
-  def __init__(self, ddc=None, hostname=None, deliverygroup=None):
+  def __init__(self, ddc=None, hostname=None, deliverygroup=None, etcdserver="127.0.0.1", etcdport="2379"):
     if ddc is None:
       raise Exception("The DDC is a mandatory argument")
 
@@ -58,7 +58,7 @@ class CitrixXD:
 
     try:
       http = urllib3.PoolManager()
-      r = http.request('GET', 'http://localhost:2379' + path)
+      r = http.request('GET', 'http://%s:%s' % (etcdserver, etcdport, path))
       if r.status != 200: raise KeyError
       self.data =json.loads(json.loads(r.data.decode('UTF-8'))['node']['value'])
       if 'epoch' not in self.data: raise ValueError
@@ -212,7 +212,7 @@ to get a license.
 Copyright (c) 2017 Samana Group LLC
 
 Usage:
-  check_ctx2_farm.py -D <ddc> -m <module> -w <warning> -c <critical> [ [-H <host name>] | [-g <delivery group name>] ]
+  check_ctx2_farm.py -D <ddc> -m <module> -w <warning> -c <critical> [ [-H <host name>] | [-g <delivery group name>] -E <etcdserver[:port]> ]
   check_ctx2_farm.py -h
 
   <ddc> Citrix Desktop Deliver Controller hostname or IP address
@@ -237,8 +237,10 @@ def main():
   crit = None
   deliverygroup = None
   expected_text = None
+  etcdserver = "127.0.0.1"
+  etcdport = "2379"
   try:
-    opts, args = getopt.getopt(sys.argv[1:], "D:H:hm:w:c:g:x:")
+    opts, args = getopt.getopt(sys.argv[1:], "D:H:hm:w:c:g:x:E:")
 
     for o, a in opts:
       if o == '-D':
@@ -261,13 +263,18 @@ def main():
         deliverygroup = a.lower()
       elif o == '-x':
         expected_text = a
+      elif o == '-E':
+        temp = a.split(':')
+        etcdserver = temp[0]
+        if len(temp) > 1:
+          etcdport = temp[1]
       elif o == '-h':
         raise Exception("Unknown argument")
 
     if module is None: 
       raise Exception("Module is a mandatory argument")
 
-    machines = CitrixXD(ddc=ddc, hostname=hostname, deliverygroup=deliverygroup)
+    machines = CitrixXD(ddc=ddc, hostname=hostname, deliverygroup=deliverygroup, etcdserver=etcdserver, etcdport=etcdport)
 
     if module == 'rawdata':
       output = machines.getRawData()
