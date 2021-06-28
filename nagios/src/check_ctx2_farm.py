@@ -58,7 +58,7 @@ class CitrixXD:
 
     try:
       http = urllib3.PoolManager()
-      r = http.request('GET', 'http://%s:%s' % (etcdserver, etcdport, path))
+      r = http.request('GET', 'http://%s:%s/%s' % (etcdserver, etcdport, path))
       if r.status != 200: raise KeyError
       self.data =json.loads(json.loads(r.data.decode('UTF-8'))['node']['value'])
       if 'epoch' not in self.data: raise ValueError
@@ -212,7 +212,7 @@ to get a license.
 Copyright (c) 2017 Samana Group LLC
 
 Usage:
-  check_ctx2_farm.py -D <ddc> -m <module> -w <warning> -c <critical> [ [-H <host name>] | [-g <delivery group name>] -E <etcdserver[:port]> ]
+  check_ctx2_farm.py -D <ddc> [ -E <etcdserver[:port]> ] -m <module> -w <warning> -c <critical> [ [-H <host name>] | [-g <delivery group name>] ]
   check_ctx2_farm.py -h
 
   <ddc> Citrix Desktop Deliver Controller hostname or IP address
