@@ -212,7 +212,7 @@ to get a license.
 Copyright (c) 2017 Samana Group LLC
 
 Usage:
-  check_ctx2_farm.py -D <ddc> [ -E <etcdserver[:port]> ] -m <module> -w <warning> -c <critical> [ [-H <host name>] | [-g <delivery group name>] ]
+  check_ctx2_farm.py -D <ddc> [ -e <etcdserver[:port]> ] -m <module> -w <warning> -c <critical> [ [-H <host name>] | [-g <delivery group name>] ]
   check_ctx2_farm.py -h
 
   <ddc> Citrix Desktop Deliver Controller hostname or IP address
@@ -240,7 +240,7 @@ def main():
   etcdserver = "127.0.0.1"
   etcdport = "2379"
   try:
-    opts, args = getopt.getopt(sys.argv[1:], "D:H:hm:w:c:g:x:E:")
+    opts, args = getopt.getopt(sys.argv[1:], "D:H:hm:w:c:g:x:e:")
 
     for o, a in opts:
       if o == '-D':
@@ -263,7 +263,7 @@ def main():
         deliverygroup = a.lower()
       elif o == '-x':
         expected_text = a
-      elif o == '-E':
+      elif o == '-e':
         temp = a.split(':')
         etcdserver = temp[0]
         if len(temp) > 1:
