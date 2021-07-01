@@ -29,6 +29,13 @@ REGISTRATION_STATE = [
   'AgentError'
 ]
 
+REGISTRATION_STATENUM = {
+  'Unregistered': 0, 
+  'Initializing': 1, 
+  'Registered': 2, 
+  'AgentError': 3
+}
+
 class CXDToolOld(Exception):
   pass
 
@@ -134,10 +141,14 @@ class CitrixXD:
     addl_data="Last push: %d s\n" % (time.time() - self.data['epoch'])
     if self.type != TYPE_SERVER:
       raise CXDInvalidData("This information can only be obtained from a host")
-    registrationstate_str = REGISTRATION_STATE[self.data['RegistrationState']] \
-      if isinstance(self.data['RegistrationState'], int) else self.data['RegistrationState']
-    registrationstate_num = REGISTRATION_STATE[self.data['RegistrationState']] \
-      if isinstance(self.data['RegistrationState'], int) else -1
+
+    if isinstance(self.data['RegistrationState'], int):
+      registrationstate_str = REGISTRATION_STATE[self.data['RegistrationState']]
+      registrationstate_num = self.data['RegistrationState']
+    else:
+      registrationstate_str = self.data['RegistrationState']
+      registrationstate_num = REGISTRATION_STATENUM[self.data['RegistrationState']]
+
     return (
       self.data['RegistrationState'],
       "Server registration state is %s (%s)" % (
