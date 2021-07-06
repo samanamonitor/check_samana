@@ -53,12 +53,21 @@ Get-BrokerDesktopGroup -MaxRecordCount 5000 | ForEach {
         "Registered" = 0;
     }
 }
+$DesktopGroup["none"] = @{
+    "TotalServers"=0; 
+    "LoadIndex"=0; 
+    "SessionCount"=0; 
+    "InMaintenanceMode" = 0; 
+    "Registered" = 0;
+}
+
 
 Get-BrokerMachine -MaxRecordCount 5000 | ForEach {
     if($_.DesktopGroupName -eq $null) {
-        continue
+        $dg = $DesktopGroup["none"]
+    } else {
+        $dg = $DesktopGroup[$_.DesktopGroupName.ToLower()]
     }
-    $dg = $DesktopGroup[$_.DesktopGroupName.ToLower()]
     $dg["TotalServers"] += 1
     $Farm["TotalServers"] += 1
     $dg["SessionCount"] += $_.SessionCount
