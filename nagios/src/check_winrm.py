@@ -11,7 +11,7 @@ import re
 from time import time
 
 class WinRMScript:
-  def __init__(self, hostaddress, auth):
+  def __init__(self, hostaddress, auth, cleanup=True):
     try:
       if auth is None:
         raise Exception("Authentication data missing")
@@ -22,6 +22,7 @@ class WinRMScript:
       if 'password' not in auth or auth['password'] is None:
         raise Exception("The password is a mandatory argument")
 
+      self.cleanup = cleanup
     except Exception as e:
       print "UNKNOWN - Error " + str(e)
       usage()
@@ -39,7 +40,8 @@ class WinRMScript:
     scriptpath = "c:\\samanamon"
     #scripturl="http://%s/%s" % (self.nagiosaddress, scriptname)
     scriptname = scripturl.split('/')[-1]
-    script = '''
+    if cleanup:
+      script = '''
 if (-Not (Test-Path %(scriptpath)s)) { mkdir %(scriptpath)s | Out-Null}
 "Environment prepared." | Out-Host
 Invoke-WebRequest -Uri %(scripturl)s -OutFile "%(scriptpath)s\\%(scriptname)s"
@@ -60,6 +62,15 @@ Remove-Item -Recurse -Force %(scriptpath)s
       'scriptarguments': scriptarguments,
       'hostaddress': self.hostaddress
       }
+    else:
+      script = '''
+%(scriptpath)s\\%(scriptname)s %(scriptarguments)s| Out-Host
+"Done executing script" | Out-Host
+''' % {
+      'scriptpath': scriptpath, 
+      'scriptname': scriptname,
+      'scriptarguments': scriptarguments,
+}
 
     shell_id = None
     command_id = None
@@ -249,9 +260,10 @@ def main():
   script = 'samanamon.ps1'
   url = None
   scriptarguments = ''
+  cleanup = True
 
   try:
-    opts, args = getopt.getopt(sys.argv[1:], "H:d:u:p:ha:n:s:w:c:U:A:")
+    opts, args = getopt.getopt(sys.argv[1:], "H:d:u:p:ha:n:s:w:c:U:A:C")
 
     for o, a in opts:
       if o == '-H':
@@ -276,6 +288,8 @@ def main():
         url = a
       elif o == '-A':
         scriptarguments = a
+      elif o == '-C':
+        cleanup = False
       elif o == '-h':
         usage()
         exit(0)
@@ -325,7 +339,7 @@ def main():
     ping_data = ping_host(hostip)
 
     winrm_start = time()
-    client = WinRMScript(hostaddress, user_auth)
+    client = WinRMScript(hostaddress, user_auth, cleanup=cleanup)
     out = client.run(url, scriptarguments)
     winrm_time = (time() - winrm_start) * 1000
 
