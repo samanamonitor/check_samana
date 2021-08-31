@@ -120,14 +120,14 @@ def ping_host(ip):
   packets = None
   rtt = None
   p = subprocess.Popen(["ping", "-c", "3", ip], stdout = subprocess.PIPE)
-  out = p.communicate().decode('utf-8')
+  out = p.communicate()[0].decode('utf-8')
   try:
-    pat = re.search("^(\d+) packets transmitted, (\d+) received", out[0], flags=re.M)
+    pat = re.search("^(\d+) packets transmitted, (\d+) received", out, flags=re.M)
     if pat is None:
       raise ValueError("Cannot extract packets from ping output.")
     packets = pat.groups()
 
-    pat = re.search("^rtt min/avg/max/mdev = ([\d.]+)/([\d.]+)/([\d.]+)/([\d.]+)", out[0], flags=re.M)
+    pat = re.search("^rtt min/avg/max/mdev = ([\d.]+)/([\d.]+)/([\d.]+)/([\d.]+)", out, flags=re.M)
     if pat is None:
       raise ValueError("Cannot extract ping rtt times.")
     rtt = pat.groups()
@@ -139,10 +139,10 @@ def ping_host(ip):
     data['max'] = int(float(rtt[2]))
     data['mdev'] = int(float(rtt[3]))
   except (ValueError, IndexError) as e:
-    print("UNKNOWN - Ping output invalid. %s\n%s" % (str(e), out[0]))
+    print("UNKNOWN - Ping output invalid. %s\n%s" % (str(e), out))
     exit(3)
   except Exception as e:
-    print("UNKNOWN - unexpected error %s\n%s\n%s\n%s" % (str(e), out[0], packets, rtt))
+    print("UNKNOWN - unexpected error %s\n%s\n%s\n%s" % (str(e), out, packets, rtt))
     exit(3)
   return data
 
