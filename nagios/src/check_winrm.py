@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 from winrm.protocol import Protocol
 from base64 import b64encode
