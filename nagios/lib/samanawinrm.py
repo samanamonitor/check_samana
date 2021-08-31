@@ -16,7 +16,7 @@ class WinRMScript:
 
       self.cleanup = cleanup
     except Exception as e:
-      print "UNKNOWN - Error " + str(e)
+      print("UNKNOWN - Error %s" % str(e))
       usage()
       exit(3)
 
