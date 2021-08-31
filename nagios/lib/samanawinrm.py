@@ -75,8 +75,7 @@ Remove-Item -Recurse -Force %(scriptpath)s
         endpoint='http://%s:5985/wsman' % self.hostaddress,
         transport='ntlm',
         username=self.username,
-        password=self.password,
-        server_cert_validation='ignore')
+        password=self.password)
       shell_id = p.open_shell()
       encoded_ps = b64encode(script.encode('utf_16_le')).decode('ascii')
       command_id = p.run_command(shell_id, 'powershell', ['-encodedcommand {0}'.format(encoded_ps), ])
