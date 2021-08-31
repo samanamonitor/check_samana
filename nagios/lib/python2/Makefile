@@ -2,9 +2,9 @@ PYTHON_LIB ?= /usr/lib/python2.7/dist-packages/samana
 FILE_MODE := 0755
 
 SRC_FILES = $(wildcard *.py)
-DST_FILES = $(addprefix $(PYTHON3_LIB)/,$(SRC_FILES))
+DST_FILES = $(addprefix $(PYTHON_LIB)/,$(SRC_FILES))
 
-.PHONY: $(DST_FILES) $(PYTHON3_LIB)/%.py
+.PHONY: $(DST_FILES) $(PYTHON_LIB)/%.py
 
 all:
 	
@@ -15,4 +15,4 @@ $(DST_FILES): $(SRC_FILES)
 
 clean:
 	rm -f $(DST_FILES)
-	rm -Rf $(PYTHON3_LIB)
+	rm -Rf $(PYTHON_LIB)
