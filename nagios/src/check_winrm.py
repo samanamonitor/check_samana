@@ -118,6 +118,7 @@ def ping_host(ip):
     'mdev': 0
   }
   packets = None
+  rtt = None
   p = subprocess.Popen(["ping", "-c", "3", ip], stdout = subprocess.PIPE)
   out = p.communicate()
   try:
