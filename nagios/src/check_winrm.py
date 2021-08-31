@@ -120,7 +120,7 @@ def ping_host(ip):
   packets = None
   rtt = None
   p = subprocess.Popen(["ping", "-c", "3", ip], stdout = subprocess.PIPE)
-  out = p.communicate()
+  out = p.communicate().decode('utf-8')
   try:
     pat = re.search("^(\d+) packets transmitted, (\d+) received", out[0], flags=re.M)
     if pat is None:
