@@ -94,7 +94,7 @@ Remove-Item -Recurse -Force %(scriptpath)s
         print("ERROR - %s" % std_err)
         error = 1
     except Exception as e:
-      print("UNKNOWN - Unable to get data from Server (%s)\n %s." % (str(e), type(e).__name__))
+      print("UNKNOWN - Unable to get data from Server (%s)\n %s." % (type(e).__name__, str(e)))
       error = 3
     finally:
       p.cleanup_command(shell_id, command_id)
