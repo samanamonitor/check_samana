@@ -35,7 +35,7 @@ def auth_file(authfile):
     else:
       data['upn'] = False
   except Exception as e:
-    print "UNKNOWN - auth_file Error " + str(e)
+    print("UNKNOWN - auth_file Error %s" % str(e))
     exit(3)
 
   return data
@@ -97,13 +97,13 @@ def get_dns_ip(hn):
     return (ips[0], dns_time)
 
   except ValueError as err:
-    print "CRITICAL - %s" % str(err)
+    print("CRITICAL - %s" % str(err))
     exit(2)
   except IndexError as err:
-    print "CRITICAL - invalid data received from gethostbyname_ex %s\n%s" % (str(err), server_data)
+    print("CRITICAL - invalid data received from gethostbyname_ex %s\n%s" % (str(err), server_data))
     exit(2)    
   except Exception as err:
-    print "CRITICAL - Unable to resove hostname to IP address\n%s" % str(err)
+    print("CRITICAL - Unable to resove hostname to IP address\n%s" % str(err))
     exit(2)
 
 
@@ -137,10 +137,10 @@ def ping_host(ip):
     data['max'] = int(float(rtt[2]))
     data['mdev'] = int(float(rtt[3]))
   except (ValueError, IndexError) as e:
-    print "UNKNOWN - Ping output invalid. %s\n%s" % (str(e), out[0])
+    print("UNKNOWN - Ping output invalid. %s\n%s" % (str(e), out[0]))
     exit(3)
   except Exception as e:
-    print "UNKNOWN - unexpected error %s\n%s\n%s\n%s" % (str(e), out[0], packets, rtt)
+    print("UNKNOWN - unexpected error %s\n%s\n%s\n%s" % (str(e), out[0], packets, rtt))
     exit(3)
   return data
 
@@ -207,11 +207,11 @@ def main():
         raise Exception("Unknown argument")
 
     if hostaddress is None:
-      print "UNKNOWN - Hostaddress not defined."
+      print("UNKNOWN - Hostaddress not defined.")
       exit(3)
 
     if nagiosaddress is None and url is None:
-      print "UNKNOWN - Powershell script location not defined."
+      print("UNKNOWN - Powershell script location not defined.")
       exit(3)
     if url is None:
       url = "http://%s/%s" % (nagiosaddress, script)
@@ -219,7 +219,7 @@ def main():
 
     user_auth = auth(username, u_domain, password, authfile)
     if user_auth is None:
-      print "UNKNOWN - Invalid authentication information"
+      print("UNKNOWN - Invalid authentication information")
       exit(3)
 
     if warning is not None:
@@ -230,7 +230,7 @@ def main():
         packet_loss_warn = int(packet_loss_warn)
         winrm_warn = int(winrm_warn)
       except ValueError:
-        print "UNKNOWN - Invalid Warning values"
+        print("UNKNOWN - Invalid Warning values")
         usage()
         exit(3)
     if critical is not None:
@@ -241,7 +241,7 @@ def main():
         packet_loss_crit = int(packet_loss_crit)
         winrm_crit = int(winrm_crit)
       except ValueError:
-        print "UNKNOWN - Invalid Critical values"
+        print("UNKNOWN - Invalid Critical values")
         usage()
         exit(3)
 
@@ -262,46 +262,46 @@ def main():
         winrm_time, winrm_warn if winrm_warn is not None else '', winrm_crit if winrm_crit is not None else '')
 
     if dns_crit is not None and dns_crit < dns_time:
-      print "CRITICAL - DNS name resolution took longer than expected %d | %s\n%s." % \
-        (dns_time, perf_data, out)
+      print("CRITICAL - DNS name resolution took longer than expected %d | %s\n%s." %
+              (dns_time, perf_data, out))
       exit(2)
     if dns_warn is not None and dns_warn < dns_time:
-      print "WARNING - DNS name resolution took longer than expected %d | %s\n%s." % \
-        (dns_time, perf_data, out)
+      print("WARNING - DNS name resolution took longer than expected %d | %s\n%s." %
+              (dns_time, perf_data, out))
       exit(1)
     if packet_loss_crit is not None and packet_loss_crit < perc_packet_loss:
-      print "CRITICAL - PING lost %d\% packets | %s\n%s" % \
-        (perc_packet_loss, perf_data, out)
+      print("CRITICAL - PING lost %d\% packets | %s\n%s" %
+              (perc_packet_loss, perf_data, out))
       exit(2)
     if packet_loss_warn is not None and packet_loss_warn < perc_packet_loss:
-      print "WARNING - PING lost %d\% packets | %s\n%s" % \
-        (perc_packet_loss, perf_data, out)
+      print("WARNING - PING lost %d\% packets | %s\n%s" %
+              (perc_packet_loss, perf_data, out))
       exit(1)
     if ping_crit is not None and ping_crit < ping_data['avg']:
-      print "CRITICAL - PING rtt is greater than expected %d ms | %s\n%s" % \
-        (ping_data['avg'], perf_data, out)
+      print("CRITICAL - PING rtt is greater than expected %d ms | %s\n%s" %
+              (ping_data['avg'], perf_data, out))
       exit(2)
     if ping_warn is not None and ping_warn < ping_data['avg']:
-      print "WARNING - PING rtt is greater than expected %d ms | %s\n%s" % \
-        (ping_data['avg'], perf_data, out)
+      print("WARNING - PING rtt is greater than expected %d ms | %s\n%s" %
+              (ping_data['avg'], perf_data, out))
       exit(1)
     if winrm_crit is not None and winrm_crit < winrm_time:
-      print "CRITICAL - WinRM took longer than expected %d ms | %s\n%s" % \
-        (winrm_time, perf_data, out)
+      print("CRITICAL - WinRM took longer than expected %d ms | %s\n%s" %
+              (winrm_time, perf_data, out))
       exit(2)
     if winrm_warn is not None and winrm_warn < winrm_time:
-      print "WARNING - WinRM took longer than expected %d ms | %s\n%s" % \
-        (winrm_time, perf_data, out)
+      print("WARNING - WinRM took longer than expected %d ms | %s\n%s" %
+              (winrm_time, perf_data, out))
       exit(1)
 
-    print "OK - Data Collected | %s\n%s%s" % \
-        (perf_data, out, ' '.join(sys.argv))
+    print("OK - Data Collected | %s\n%s%s" %
+            (perf_data, out, ' '.join(sys.argv)))
     exit(0)
 
   except Exception as err:
     exc_type, exc_obj, tb = sys.exc_info()
-    print "UNKNOWN - main Error: %s at line %s" % \
-      (str(err), tb.tb_lineno)
+    print("UNKNOWN - main Error: %s at line %s" %
+          (str(err), tb.tb_lineno))
     usage()
     exit(3)
 
