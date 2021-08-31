@@ -89,17 +89,39 @@ Remove-Item -Recurse -Force %(scriptpath)s
       encoded_ps = b64encode(script.encode('utf_16_le')).decode('ascii')
       command_id = p.run_command(shell_id, 'powershell', ['-encodedcommand {0}'.format(encoded_ps), ])
       std_out, std_err, status_code = p.get_command_output(shell_id, command_id)
+      self.check_error(std_err)
       if status_code != 0:
         print("ERROR - %s" % std_err)
         error = 1
     except Exception as e:
-      print("UNKNOWN - Unable to get data from Server (%s) %s." % (str(e), type(e).__name__))
+      print("UNKNOWN - Unable to get data from Server (%s)\n %s." % (str(e), type(e).__name__))
       error = 3
     finally:
       p.cleanup_command(shell_id, command_id)
       p.close_shell(shell_id)
     if error > 0: exit(error)
     return "%s\n%s" % (std_out, std_err)
+
+  def check_error(self, std_err):
+    if len(std_err) == 0:
+      return
+    import xml.etree.ElementTree as ET
+    if std_err[0] == '#':
+      temp = std_err.split('\n', 1)
+      if len(temp) > 0:
+        std_err = temp[1]
+    root = ET.fromstring(std_err)
+    ns={ 'ps':root.tag.split('}')[0].split('{')[1] }
+    msg = ""
+    error = False
+    for tag in root.findall('./ps:S', ns):
+      t = tag.get('S')
+      if t == 'Error':
+        error = True
+      msg += "%s : %s\n" % (t, tag.text)
+    if error:
+      raise Exception(msg)
+
 
 def auth_file(authfile):
   data = {}
