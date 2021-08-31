@@ -99,7 +99,11 @@ Get-BrokerMachine -MaxRecordCount 5000 | ForEach {
 
 $DesktopGroup.Keys | ForEach {
     $dg = $DesktopGroup[$_.ToLower()]
-    $dg['LoadIndex'] /= $dg['TotalServers']
+    if ($dg['TotalServers'] -gt 0) {
+       $dg['LoadIndex'] /= $dg['TotalServers']
+    } else {
+        $dg['LoadIndex'] = 10000
+    }
     $dg["epoch"] = [Math]::Floor([decimal](Get-Date(Get-Date).ToUniversalTime()-uformat "%s"))
     $value = $dg | ConvertTo-JSON -Compress
     $res = Invoke-WebRequest -UseBasicParsing -Method "PUT" -Body @{value=$value; ttl=$ttl} `
