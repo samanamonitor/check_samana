@@ -9,7 +9,7 @@ import random
 import unicodedata
 import re
 from time import time
-from samanawinrm import WinRMScript
+from samana.samanawinrm import WinRMScript
 
 def auth_file(authfile):
   data = {}
