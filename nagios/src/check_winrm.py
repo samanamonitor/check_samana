@@ -221,7 +221,7 @@ def ping_host(ip):
 
     return data
 
-def process_data(data)
+def process_data(data):
     warning = None
     critical = None
     ping_warn = None
