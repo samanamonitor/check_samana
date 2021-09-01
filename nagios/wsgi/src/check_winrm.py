@@ -1,11 +1,5 @@
 #!/usr/bin/python
 
-from winrm.protocol import Protocol
-from base64 import b64encode
-import json
-import time
-import random
-import unicodedata
 import re
 from time import time
 import traceback
@@ -40,6 +34,8 @@ class WinRMScript:
         self.password = auth['password']
 
     def run(self, scripturl, scriptarguments):
+        from winrm.protocol import Protocol
+        from base64 import b64encode
         scriptpath = "c:\\samanamon"
         #scripturl="http://%s/%s" % (self.nagiosaddress, scriptname)
         scriptname = scripturl.split('/')[-1]
@@ -102,6 +98,7 @@ class WinRMScript:
         return "%s\n%s" % (std_out, "")
 
     def check_error(self, std_err):
+        import xml.etree.ElementTree as ET
         if len(std_err) == 0:
             return
         if std_err[0] == '#':
@@ -315,10 +312,10 @@ def process_data(data):
             raise CheckWinRMExceptionWARN("WinRM took longer than expected %d ms | %s\n%s" % \
             (winrm_time, perf_data, out))
 
-        response_data = json.dumps({
+        response_data = {
             'status': 0,
             'message': "OK - Data Collected | %s\n%s\n%s" % (perf_data, out, data)
-            })
+            }
 
 
     except CheckWinRMExceptionWARN as e:
@@ -377,6 +374,7 @@ def usage():
 
 def application (environ, start_response):
     from cgi import parse_qs, escape
+    import json
     data = {
         'hostaddress': None,
         'u_domain': None,
