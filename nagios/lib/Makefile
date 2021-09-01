@@ -12,7 +12,6 @@ install: $(DST_FILES)
 
 $(DST_FILES): $(SRC_FILES)
 	install -D -g root -o root -m $(FILE_MODE) $(notdir $@) $@
-	$(MAKE) -C python2 install
 
 clean:
 	rm -f $(DST_FILES)
