@@ -1,5 +1,6 @@
 INSTALL_BASE ?= /
-
+NAGIOS_LIBEXEC ?= /usr/local/nagios/libexec
+WSGI_WWW ?= /usr/local/nagios/share/wsgi
 DIRS = $(subst /.,,$(wildcard */.))
 
 .PHONY: $(DIRS)
