@@ -1,4 +1,4 @@
-PYTHON_LIB ?= /usr/lib/python2.7/dist-packages/samana
+PYTHON_LIB ?= /usr/lib/python2.7/samana
 FILE_MODE := 0755
 
 SRC_FILES = $(wildcard *.py)
