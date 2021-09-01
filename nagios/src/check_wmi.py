@@ -193,6 +193,8 @@ def main(argv):
                     username = "%s\\%s" % (domain, username)
             elif o == "-i":
                 idtype = a
+            elif o == "-N":
+                pass
             elif o == '-h':
                 raise CheckUnknown("Help", addl=usage())
             else:
