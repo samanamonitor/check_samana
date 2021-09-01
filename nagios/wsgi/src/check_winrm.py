@@ -422,38 +422,36 @@ def main():
         'scriptarguments': None,
         'cleanup': True
     }
-    try:
-        opts, args = getopt.getopt(sys.argv[1:], "H:d:u:p:ha:n:s:w:c:U:A:C")
+    opts, args = getopt.getopt(sys.argv[1:], "H:d:u:p:ha:n:s:w:c:U:A:C")
 
-        for o, a in opts:
-            if o == '-H':
-                data['hostaddress'] = a
-            elif o == '-d':
-                data['u_domain'] = a
-            elif o == '-u':
-                data['username'] = a
-            elif o == '-p':
-                data['password'] = a
-            elif o == '-a':
-                data['authfile'] = a
-            elif o == '-n':
-                data['nagiosaddress'] = a
-            elif o == '-s':
-                data['script'] = a
-            elif o == '-w':
-                data['warning'] = a
-            elif o == '-c':
-                data['critical'] = a
-            elif o == '-U':
-                data['url'] = a
-            elif o == '-A':
-                data['scriptarguments'] = a
-            elif o == '-C':
-                data['cleanup'] = False
-            else:
-                usage()
-                exit(3)
-
+    for o, a in opts:
+        if o == '-H':
+            data['hostaddress'] = a
+        elif o == '-d':
+            data['u_domain'] = a
+        elif o == '-u':
+            data['username'] = a
+        elif o == '-p':
+            data['password'] = a
+        elif o == '-a':
+            data['authfile'] = a
+        elif o == '-n':
+            data['nagiosaddress'] = a
+        elif o == '-s':
+            data['script'] = a
+        elif o == '-w':
+            data['warning'] = a
+        elif o == '-c':
+            data['critical'] = a
+        elif o == '-U':
+            data['url'] = a
+        elif o == '-A':
+            data['scriptarguments'] = a
+        elif o == '-C':
+            data['cleanup'] = False
+        else:
+            usage()
+            exit(3)
 
     response_data = process_data(data)
 
