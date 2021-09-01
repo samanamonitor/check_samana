@@ -11,33 +11,33 @@ from time import time
 import traceback
 
 class CheckWinRMExceptionWARN(Exception):
-        pass
+    pass
 
 class CheckWinRMExceptionCRIT(Exception):
-        pass
+    pass
 
 class CheckWinRMExceptionUNKNOWN(Exception):
-        pass
+    pass
 
 class WinRMScript:
     def __init__(self, hostaddress, auth, cleanup=True):
         if auth is None:
-            raise Exception("Authentication data missing")
+            raise CheckWinRMExceptionUNKNOWN("Authentication data missing")
         if 'domain' not in auth or auth['domain'] is None:
-            raise Exception("The user domain name is a mandatory argument")
+            raise CheckWinRMExceptionUNKNOWN("The user domain name is a mandatory argument")
         if 'username' not in auth or auth['username'] is None:
-            raise Exception("The username is a mandatory argument")
+            raise CheckWinRMExceptionUNKNOWN("The username is a mandatory argument")
         if 'password' not in auth or auth['password'] is None:
-            raise Exception("The password is a mandatory argument")
+            raise CheckWinRMExceptionUNKNOWN("The password is a mandatory argument")
 
-        self.cleanup = cleanup
-        self.data = {}
-        self.hostaddress = hostaddress
-        if 'upn' in auth:
-            self.username = auth['username']
-        else:
-            self.username = auth['domain'] + '\\' + auth['username']
-        self.password = auth['password']
+    self.cleanup = cleanup
+    self.data = {}
+    self.hostaddress = hostaddress
+    if 'upn' in auth:
+        self.username = auth['username']
+    else:
+        self.username = auth['domain'] + '\\' + auth['username']
+    self.password = auth['password']
 
     def run(self, scripturl, scriptarguments):
         scriptpath = "c:\\samanamon"
@@ -49,9 +49,9 @@ class WinRMScript:
  "Environment prepared." | Out-Host
  Invoke-WebRequest -Uri %(scripturl)s -OutFile "%(scriptpath)s\\%(scriptname)s"
  if (-Not (Test-Path %(scriptpath)s\\%(scriptname)s)) { 
-     "File not downloaded" | Out-Host; 
-     Remove-Item -Recurse -Force %(scriptpath)s
-     exit 1 
+   "File not downloaded" | Out-Host; 
+   Remove-Item -Recurse -Force %(scriptpath)s
+   exit 1 
  }
  "Downloaded Script." | Out-Host
  %(scriptpath)s\\%(scriptname)s %(scriptarguments)s| Out-Host
@@ -59,11 +59,11 @@ class WinRMScript:
  del %(scriptpath)s\\%(scriptname)s
  Remove-Item -Recurse -Force %(scriptpath)s
  "Done cleanup" | Out-Host''' % { 'scripturl': scripturl, 
-            'scriptpath': scriptpath, 
-            'scriptname': scriptname,
-            'scriptarguments': scriptarguments,
-            'hostaddress': self.hostaddress
-            }
+      'scriptpath': scriptpath, 
+      'scriptname': scriptname,
+      'scriptarguments': scriptarguments,
+      'hostaddress': self.hostaddress
+      }
         else:
             script = '''
  %(scriptpath)s\\%(scriptname)s %(scriptarguments)s| Out-Host
@@ -123,14 +123,14 @@ class WinRMScript:
 def auth_file(authfile):
     data = {}
     with open(authfile) as f:
-        linenum = 0
-        for l in f:
-            linenum += 1
-            line = l #.split("#")[0]
-            line = line.strip()
-            d = line.split('=')
-            if len(d) != 2: continue
-            data[d[0]] = d[1]
+      linenum = 0
+      for l in f:
+        linenum += 1
+        line = l #.split("#")[0]
+        line = line.strip()
+        d = line.split('=')
+        if len(d) != 2: continue
+        data[d[0]] = d[1]
 
     if 'username' not in data:
         raise CheckWinRMExceptionUNKNOWN("Username missing in authentication file")
@@ -155,23 +155,23 @@ def auth(username, domainname, password, authfile):
         'username': username,
         'domain': domainname,
         'password': password
-    }
+        }
 
 def get_dns_ip(hn):
-    import socket
+  import socket
 
-    pat = re.compile("^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$")
-    if pat.match(hn):
-        return (hn, 0)
+  pat = re.compile("^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$")
+  if pat.match(hn):
+    return (hn, 0)
 
-    try:
-        dns_start = time()
-        server_data = socket.gethostbyname_ex(hn)
-        ips = server_data[2]
-        if not isinstance(ips, list) and len(ips) != 1:
-            raise ValueError("hostname is linked to more than 1 IP or 0 IPs")
-        dns_time = (time() - dns_start) * 1000
-        return (ips[0], dns_time)
+  try:
+    dns_start = time()
+    server_data = socket.gethostbyname_ex(hn)
+    ips = server_data[2]
+    if not isinstance(ips, list) and len(ips) != 1:
+      raise ValueError("hostname is linked to more than 1 IP or 0 IPs")
+    dns_time = (time() - dns_start) * 1000
+    return (ips[0], dns_time)
 
   except ValueError as err:
     raise CheckWinRMExceptionCRIT(str(err))
@@ -191,13 +191,13 @@ def ping_host(ip):
         'avg': 0,
         'max': 0,
         'mdev': 0
-    }
+        }
     packets = None
     rtt = None
     p = subprocess.Popen(["ping", "-c", "3", ip], stdout = subprocess.PIPE)
-    out = p.communicate()[0].decode('utf-8')
+    out = p.communicate()
     try:
-        pat = re.search("^(\d+) packets transmitted, (\d+) received", out, flags=re.M)
+        pat = re.search("^(\d+) packets transmitted, (\d+) received", out[0], flags=re.M)
         if pat is None:
             raise ValueError("Cannot extract packets from ping output.")
         packets = pat.groups()
@@ -221,46 +221,7 @@ def ping_host(ip):
 
     return data
 
-def usage():
-    usage = """Check WinRM v1.0.0
- This nagios plugin come with ABSOLUTELY NO WARRANTY and is property of
- SAMANA GROUP LLC. If you want to use it, you should contact us before
- to get a license.
- Copyright (c) 2019 Samana Group LLC
-
- Usage:
-     check_winrm.py -H <host name> < -d <user domain name> -u <username> -p <password> | -a <auth file> > (-n <nagios> -s <script name> | -U <script URL>) [ -A "<script arguments in quotes>"] [-w <name resolution time warn (ms)>,<ping rtt warn (ms)>,<ping packet loss %>,<winrm time warn (ms)>] [-c <name resolution crit (ms)><ping rtt crit (ms)>,<ping packet loss %>,<warn time crit (ms)>]
-     check_winrm -h
-
-     <host domain name> Session Host server domain name
-     <host name>        Session Host server to be queried
-     <domain name>      domain name the Session Host is a member of
-     <username>         UPN of the user in the domain with privileges in the Citrix Farm to collect data
-     <password>         password of the user with privileges in the Citrix Farm
-     <auth file>        file name containing user's credentials
-     <nagios>           Nagios server IP
-     <script>           Powershell script to run on server
-     <script URL>       URL where Powershell script is located
-     <name resolution>  Time to resolve the host name in miliseconds. Only integer values accepted.
-     <ping rtt>         Ping round trip time in miliseconds. Only integer values accepted.
-        <ping packet loss> \% of packets that can be lost. Don't use \% sign in value
-     <winrm time>       WinRM execution time in miliseconds. Only integer values accepted."""
-    print(usage)
-
-def main():
-    import sys, getopt
-    u_domain = None
-    hostaddress = None
-    h_domain = None
-    username = None
-    password = None
-    module = None
-    warn = None
-    crit = None
-    DeliveryGroup = None
-    authfile = None
-    load_from_server = False
-    nagiosaddress = None
+def process_data(data)
     warning = None
     critical = None
     ping_warn = None
@@ -271,90 +232,47 @@ def main():
     dns_crit = None
     packet_loss_warn = None
     packet_loss_crit = None
-    script = 'samanamon.ps1'
-    url = None
-    scriptarguments = ''
-    cleanup = True
-
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "H:d:u:p:ha:n:s:w:c:U:A:C")
+        if data['hostaddress'] is None:
+            raise CheckWinRMExceptionUNKNOWN("Invalid Host address")
 
-        for o, a in opts:
-            if o == '-H':
-                hostaddress = a
-            elif o == '-d':
-                u_domain = a
-            elif o == '-u':
-                username = a
-            elif o == '-p':
-                password = a
-            elif o == '-a':
-                authfile = a
-            elif o == '-n':
-                nagiosaddress = a
-            elif o == '-s':
-                script = a
-            elif o == '-w':
-                warning = a
-            elif o == '-c':
-                critical = a
-            elif o == '-U':
-                url = a
-            elif o == '-A':
-                scriptarguments = a
-            elif o == '-C':
-                cleanup = False
-            elif o == '-h':
-                usage()
-                exit(0)
-            else:
-                raise Exception("Unknown argument")
+        if data['nagiosaddress'] is None and data['url'] is None:
+            raise CheckWinRMExceptionUNKNOWN("Powershell script location not defined.")
 
-        if hostaddress is None:
-            print("UNKNOWN - Hostaddress not defined.")
-            exit(3)
-
-        if nagiosaddress is None and url is None:
-            print("UNKNOWN - Powershell script location not defined.")
-            exit(3)
-        if url is None:
-            url = "http://%s/%s" % (nagiosaddress, script)
+        if data['url'] is None:
+            data['url'] = "http://%s/%s" % (data['nagiosaddress'], data['script'])
         #TODO check URL syntax for the case when we receive URL from user
 
-        user_auth = auth(username, u_domain, password, authfile)
+        user_auth = auth(data['username'], data['u_domain'], data['password'], data['authfile'])
         if user_auth is None:
-            print("UNKNOWN - Invalid authentication information")
-            exit(3)
+            raise CheckWinRMExceptionUNKNOWN("Invalid authentication information")
 
-        if warning is not None:
+        if data['warning'] is not None:
             try:
-                (dns_warn, ping_warn, packet_loss_warn, winrm_warn) = warning.split(',')
+                (dns_warn, ping_warn, packet_loss_warn, winrm_warn) = data['warning'].split(',')
                 dns_warn = int(dns_warn)
                 ping_warn = int(ping_warn)
                 packet_loss_warn = int(packet_loss_warn)
                 winrm_warn = int(winrm_warn)
             except ValueError:
-                print("UNKNOWN - Invalid Warning values")
-                usage()
-                exit(3)
-        if critical is not None:
+                raise CheckWinRMExceptionUNKNOWN("Invalid Warning values")
+
+        if data['critical'] is not None:
             try:
-                (dns_crit, ping_crit, packet_loss_crit, winrm_crit) = critical.split(',')
+                (dns_crit, ping_crit, packet_loss_crit, winrm_crit) = data['critical'].split(',')
                 dns_crit = int(dns_crit)
                 ping_crit = int(ping_crit)
                 packet_loss_crit = int(packet_loss_crit)
                 winrm_crit = int(winrm_crit)
             except ValueError:
-                print("UNKNOWN - Invalid Critical values")
-                usage()
-                exit(3)
+                raise CheckWinRMExceptionUNKNOWN("Invalid Critical values")
 
-        (hostip, dns_time) = get_dns_ip(hostaddress)
+        (hostip, dns_time) = get_dns_ip(data['hostaddress'])
         ping_data = ping_host(hostip)
 
         winrm_start = time()
-        client = WinRMScript(hostaddress, user_auth, cleanup=cleanup)
-        out = client.run(url, scriptarguments)
+        client = WinRMScript(data['hostaddress'], user_auth)
+        out = client.run(data['url'], data['scriptarguments'])
         winrm_time = (time() - winrm_start) * 1000
 
         perc_packet_loss = 100-int(100.0 * ping_data['packets_received'] / ping_data['packets_sent'])
@@ -366,48 +284,181 @@ def main():
                 winrm_time, winrm_warn if winrm_warn is not None else '', winrm_crit if winrm_crit is not None else '')
 
         if dns_crit is not None and dns_crit < dns_time:
-            print("CRITICAL - DNS name resolution took longer than expected %d | %s\n%s." %
-                            (dns_time, perf_data, out))
-            exit(2)
+            raise CheckWinRMExceptionCRIT("DNS name resolution took longer than expected %d | %s\n%s." % \
+                (dns_time, perf_data, out))
+
         if dns_warn is not None and dns_warn < dns_time:
-            print("WARNING - DNS name resolution took longer than expected %d | %s\n%s." %
-                            (dns_time, perf_data, out))
-            exit(1)
+            raise CheckWinRMExceptionWARN("DNS name resolution took longer than expected %d | %s\n%s." % \
+            (dns_time, perf_data, out))
+
         if packet_loss_crit is not None and packet_loss_crit < perc_packet_loss:
-            print("CRITICAL - PING lost %d\% packets | %s\n%s" %
-                            (perc_packet_loss, perf_data, out))
-            exit(2)
+            raise CheckWinRMExceptionCRIT("PING lost %d\% packets | %s\n%s" % \
+            (perc_packet_loss, perf_data, out))
+
         if packet_loss_warn is not None and packet_loss_warn < perc_packet_loss:
-            print("WARNING - PING lost %d\% packets | %s\n%s" %
-                            (perc_packet_loss, perf_data, out))
-            exit(1)
+            raise CheckWinRMExceptionWARN("PING lost %d\% packets | %s\n%s" % \
+            (perc_packet_loss, perf_data, out))
+
         if ping_crit is not None and ping_crit < ping_data['avg']:
-            print("CRITICAL - PING rtt is greater than expected %d ms | %s\n%s" %
-                            (ping_data['avg'], perf_data, out))
-            exit(2)
+            raise CheckWinRMExceptionCRIT("PING rtt is greater than expected %d ms | %s\n%s" % \
+            (ping_data['avg'], perf_data, out))
+
         if ping_warn is not None and ping_warn < ping_data['avg']:
-            print("WARNING - PING rtt is greater than expected %d ms | %s\n%s" %
-                            (ping_data['avg'], perf_data, out))
-            exit(1)
+            raise CheckWinRMExceptionWARN("PING rtt is greater than expected %d ms | %s\n%s" % \
+            (ping_data['avg'], perf_data, out))
+
         if winrm_crit is not None and winrm_crit < winrm_time:
-            print("CRITICAL - WinRM took longer than expected %d ms | %s\n%s" %
-                            (winrm_time, perf_data, out))
-            exit(2)
+            raise CheckWinRMExceptionCRIT("WinRM took longer than expected %d ms | %s\n%s" % \
+            (winrm_time, perf_data, out))
+
         if winrm_warn is not None and winrm_warn < winrm_time:
-            print("WARNING - WinRM took longer than expected %d ms | %s\n%s" %
-                            (winrm_time, perf_data, out))
-            exit(1)
+            raise CheckWinRMExceptionWARN("WinRM took longer than expected %d ms | %s\n%s" % \
+            (winrm_time, perf_data, out))
 
-        print("OK - Data Collected | %s\n%s%s" %
-                        (perf_data, out, ' '.join(sys.argv)))
-        exit(0)
+        response_data = json.dumps({
+            'status': 0,
+            'message': "OK - Data Collected | %s\n%s\n%s" % (perf_data, out, data)
+            })
 
-    except Exception as err:
+
+    except CheckWinRMExceptionWARN as e:
+        response_data = {
+            'status': 1,
+            'message': "WARNING - %s" % e
+            }
+
+    except CheckWinRMExceptionCRIT as e:
+        response_data = {
+            'status': 2,
+            'message': "CRITICAL - %s" % e
+            }
+
+    except CheckWinRMExceptionUNKNOWN as e:
+        response_data = {
+            'status': 3,
+            'message': "UNKNOWN - %s" % e
+            }
+
+    except Exception as e:
         exc_type, exc_obj, tb = sys.exc_info()
-        print("UNKNOWN - main Error: %s at line %s" %
-                    (str(err), tb.tb_lineno))
-        usage()
-        exit(3)
+        traceback_info = traceback.extract_tb(tb)
+        response_data = {
+            'status': 3,
+            'message': "UNKNOWN - %s at %s\n%s" % (e, tb.tb_lineno, traceback_info)
+            }
+
+    return response_data
+
+def usage():
+  usage = """Check WinRM v2.0.0
+ This nagios plugin come with ABSOLUTELY NO WARRANTY and is property of
+ SAMANA GROUP LLC. If you want to use it, you should contact us before
+ to get a license.
+ Copyright (c) 2019 Samana Group LLC
+
+ Usage:
+  check_winrm.py -H <host name> < -d <user domain name> -u <username> -p <password> | -a <auth file> > (-n <nagios> -s <script name> | -U <script URL>) [ -A "<script arguments in quotes>"] [-w <name resolution time warn (ms)>,<ping rtt warn (ms)>,<ping packet loss %>,<winrm time warn (ms)>] [-c <name resolution crit (ms)><ping rtt crit (ms)>,<ping packet loss %>,<warn time crit (ms)>]
+  check_winrm -h
+
+  <host domain name> Session Host server domain name
+  <host name>        Session Host server to be queried
+  <domain name>      domain name the Session Host is a member of
+  <username>         UPN of the user in the domain with privileges in the Citrix Farm to collect data
+  <password>         password of the user with privileges in the Citrix Farm
+  <auth file>        file name containing user's credentials
+  <nagios>           Nagios server IP
+  <script>           Powershell script to run on server
+  <script URL>       URL where Powershell script is located
+  <name resolution>  Time to resolve the host name in miliseconds. Only integer values accepted.
+  <ping rtt>         Ping round trip time in miliseconds. Only integer values accepted.
+  <ping packet loss> \% of packets that can be lost. Don't use \% sign in value
+  <winrm time>       WinRM execution time in miliseconds. Only integer values accepted."""
+  print(usage)
+
+def application (environ, start_response):
+    from cgi import parse_qs, escape
+    data = {
+        'hostaddress': None,
+        'u_domain': None,
+        'username': None,
+        'password': None,
+        'authfile': None,
+        'nagiosaddress': None,
+        'script': None,
+        'warning': None,
+        'critical': None,
+        'url': None,
+        'scriptarguments': None,
+        'cleanup': True
+    }
+
+    d = parse_qs(environ['QUERY_STRING'])
+    for k in data.keys():
+        data[k] = d.get(k, [ None ])[0]
+    response_body = json.dumps(process_data(data))
+
+    status = '200 OK'
+    response_headers = [
+        ('Content-Type', 'application/json'),
+        ('Content-Length', str(len(response_body)))
+    ]
+    start_response(status, response_headers)
+
+    return [response_body]
+
+def main():
+    import sys, getopt
+    data = {
+        'hostaddress': None,
+        'u_domain': None,
+        'username': None,
+        'password': None,
+        'authfile': None,
+        'nagiosaddress': None,
+        'script': None,
+        'warning': None,
+        'critical': None,
+        'url': None,
+        'scriptarguments': None,
+        'cleanup': True
+    }
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "H:d:u:p:ha:n:s:w:c:U:A:C")
+
+        for o, a in opts:
+            if o == '-H':
+                data['hostaddress'] = a
+            elif o == '-d':
+                data['u_domain'] = a
+            elif o == '-u':
+                data['username'] = a
+            elif o == '-p':
+                data['password'] = a
+            elif o == '-a':
+                data['authfile'] = a
+            elif o == '-n':
+                data['nagiosaddress'] = a
+            elif o == '-s':
+                data['script'] = a
+            elif o == '-w':
+                data['warning'] = a
+            elif o == '-c':
+                data['critical'] = a
+            elif o == '-U':
+                data['url'] = a
+            elif o == '-A':
+                data['scriptarguments'] = a
+            elif o == '-C':
+                data['cleanup'] = False
+            else:
+                usage()
+                exit(3)
+
+
+    response_data = process_data(data)
+
+    print(response_data['message'])
+    exit(response_data['status'])
 
 if __name__ == "__main__":
-    main()
+  main()
