@@ -2,7 +2,7 @@ APACHE_ETC ?= $(INSTALL_BASE)/etc/apache2/conf-available
 WSGI_USER ?= nagios
 WSGI_GROUP ?= nagios
 WSGI_PROCESSES := 10
-WSGI_WWW ?= /usr/local/nagios/share/wsgi
+WSGI_WWW ?= /usr/local/nagios/libexec
 FILE_MODE := 0644
 INSTALL_FILES = $(subst .orig,,$(wildcard *.orig))
 
