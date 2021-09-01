@@ -30,14 +30,14 @@ class WinRMScript:
         if 'password' not in auth or auth['password'] is None:
             raise CheckWinRMExceptionUNKNOWN("The password is a mandatory argument")
 
-    self.cleanup = cleanup
-    self.data = {}
-    self.hostaddress = hostaddress
-    if 'upn' in auth:
-        self.username = auth['username']
-    else:
-        self.username = auth['domain'] + '\\' + auth['username']
-    self.password = auth['password']
+        self.cleanup = cleanup
+        self.data = {}
+        self.hostaddress = hostaddress
+        if 'upn' in auth:
+            self.username = auth['username']
+        else:
+            self.username = auth['domain'] + '\\' + auth['username']
+        self.password = auth['password']
 
     def run(self, scripturl, scriptarguments):
         scriptpath = "c:\\samanamon"
