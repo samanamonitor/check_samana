@@ -3,6 +3,14 @@
 import re
 from time import time
 import traceback
+from winrm.protocol import Protocol
+from base64 import b64encode
+import xml.etree.ElementTree as ET
+import socket
+import subprocess
+from cgi import parse_qs, escape
+import json
+import sys, getopt
 
 class CheckWinRMExceptionWARN(Exception):
     pass
@@ -34,8 +42,6 @@ class WinRMScript:
         self.password = auth['password']
 
     def run(self, scripturl, scriptarguments):
-        from winrm.protocol import Protocol
-        from base64 import b64encode
         scriptpath = "c:\\samanamon"
         #scripturl="http://%s/%s" % (self.nagiosaddress, scriptname)
         scriptname = scripturl.split('/')[-1]
@@ -98,7 +104,6 @@ class WinRMScript:
         return "%s\n%s" % (std_out, "")
 
     def check_error(self, std_err):
-        import xml.etree.ElementTree as ET
         if len(std_err) == 0:
             return
         if std_err[0] == '#':
@@ -155,32 +160,29 @@ def auth(username, domainname, password, authfile):
         }
 
 def get_dns_ip(hn):
-  import socket
+    pat = re.compile("^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$")
+    if pat.match(hn):
+        return (hn, 0)
 
-  pat = re.compile("^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$")
-  if pat.match(hn):
-    return (hn, 0)
+    try:
+        dns_start = time()
+        server_data = socket.gethostbyname_ex(hn)
+        ips = server_data[2]
+        if not isinstance(ips, list) and len(ips) != 1:
+          raise ValueError("hostname is linked to more than 1 IP or 0 IPs")
+        dns_time = (time() - dns_start) * 1000
+        return (ips[0], dns_time)
 
-  try:
-    dns_start = time()
-    server_data = socket.gethostbyname_ex(hn)
-    ips = server_data[2]
-    if not isinstance(ips, list) and len(ips) != 1:
-      raise ValueError("hostname is linked to more than 1 IP or 0 IPs")
-    dns_time = (time() - dns_start) * 1000
-    return (ips[0], dns_time)
+    except ValueError as err:
+        raise CheckWinRMExceptionCRIT(str(err))
 
-  except ValueError as err:
-    raise CheckWinRMExceptionCRIT(str(err))
+    except IndexError as err:
+        raise CheckWinRMExceptionCRIT("Invalid data received from gethostbyname_ex %s\n%s" % (str(err), server_data))
 
-  except IndexError as err:
-    raise CheckWinRMExceptionCRIT("Invalid data received from gethostbyname_ex %s\n%s" % (str(err), server_data))
-
-  except Exception as err:
-    raise CheckWinRMExceptionCRIT("Unable to resove hostname to IP address\n%s" % str(err))
+    except Exception as err:
+        raise CheckWinRMExceptionCRIT("Unable to resove hostname to IP address\n%s" % str(err))
 
 def ping_host(ip):
-    import subprocess
     data={
         'packets_sent': 0,
         'packets_received': 0,
@@ -193,6 +195,8 @@ def ping_host(ip):
     rtt = None
     p = subprocess.Popen(["ping", "-c", "3", ip], stdout = subprocess.PIPE)
     out = p.communicate()
+    if p.returncode != 0:
+        raise CheckWinRMExceptionUNKNOWN("Unable to ping host %s\n%s" % (ip, out[0]))
     try:
         pat = re.search("^(\d+) packets transmitted, (\d+) received", out[0], flags=re.M)
         if pat is None:
@@ -211,7 +215,7 @@ def ping_host(ip):
         data['max'] = int(float(rtt[2]))
         data['mdev'] = int(float(rtt[3]))
     except (ValueError, IndexError) as e:
-        raise Exception("Ping output invalid. %s\n%s" % (str(e), out[0]))
+        raise CheckWinRMExceptionUNKNOWN("Ping output invalid. %s\n%s" % (str(e), out[0]))
 
     except Exception as e:
         raise Exception("unexpected error %s\n%s\n%s\n%s" % (str(e), out[0], packets, rtt))
@@ -373,8 +377,6 @@ def usage():
   print(usage)
 
 def application (environ, start_response):
-    from cgi import parse_qs, escape
-    import json
     data = {
         'hostaddress': None,
         'u_domain': None,
@@ -405,7 +407,6 @@ def application (environ, start_response):
     return [response_body]
 
 def main():
-    import sys, getopt
     data = {
         'hostaddress': None,
         'u_domain': None,
