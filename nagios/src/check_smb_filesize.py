@@ -51,7 +51,6 @@ def getbytes(val):
 def getfiles(context, uri, warnsize=None, critsize=None, filters=None):
     size = 0
     filedata = { "size": 0, "warning": [], "critical": []}
-    print(context, uri)
     dirs = context.opendir(uri)
     dents = dirs.getdents()
     for d in dents:
@@ -125,7 +124,7 @@ def main(argv):
 
         context = smbc.Context(auth_fn=auth)
 
-        filedata = getfiles(context, "smb://%s%s" % (hostaddress, path), 
+        filedata = getfiles(context, "smb://%s/%s" % (hostaddress, path), 
             warning, critical, filters)
 
         critical_files = len(filterdata['critical'])
