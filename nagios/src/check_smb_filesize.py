@@ -51,6 +51,7 @@ def getbytes(val):
 def getfiles(context, uri, warnsize=None, critsize=None, filters=None):
     size = 0
     filedata = { "size": 0, "warning": [], "critical": []}
+    print(context, uri)
     dirs = context.opendir(uri)
     dents = dirs.getdents()
     for d in dents:
