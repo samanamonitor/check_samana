@@ -86,6 +86,7 @@ def main(argv):
     domain = None
     filters = None
     path = None
+    maxlen = 256
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], "hH:P:U:p:a:w:c:f:")
@@ -133,13 +134,17 @@ def main(argv):
         addl = ""
         for l in map(addl_str,filedata['critical']):
             addl += l
+            if len(addl) > maxlen:
+                break
         for l in map(addl_str, filedata['warning']):
             addl += l
+            if len(addl) > maxlen:
+                break
         if critical_files > 0:
-            raise CheckCritical("%d Files larger than %s found" % 
+            raise CheckCritical("%d Files larger than %s bytes found" % 
                 (critical_files, critical), addl=addl)
         elif warning_files > 0:
-            raise CheckWarning("%d Files larger than %s found" % 
+            raise CheckWarning("%d Files larger than %s bytes found" % 
                 (warning_files, warning), addl=addl)
 
         out = CheckResult("Files Checked")
