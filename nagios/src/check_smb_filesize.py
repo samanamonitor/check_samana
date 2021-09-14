@@ -133,13 +133,15 @@ def main(argv):
         warning_files = len(filedata['warning'])
         addl = ""
         for l in map(addl_str,filedata['critical']):
-            addl += l
             if len(addl) > maxlen:
+                addl += "(more critical files ... truncating)\n"
                 break
+            addl += l
         for l in map(addl_str, filedata['warning']):
-            addl += l
             if len(addl) > maxlen:
+                addl += "(more warning files... truncating)\n"
                 break
+            addl += l
         if critical_files > 0:
             raise CheckCritical("%d Files larger than %s bytes found" % 
                 (critical_files, critical), addl=addl)
