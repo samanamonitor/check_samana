@@ -3,6 +3,7 @@
 from samana.nagios import CheckUnknown, CheckWarning, CheckCritical, CheckResult
 from samana.base import auth_file
 import smbc
+import sys
 
 Byte = lambda x: int(x)
 Kilo = lambda x: x*1024
