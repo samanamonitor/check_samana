@@ -59,7 +59,7 @@ def getfiles(context, uri, warnsize=None, critsize=None, filters=None):
 
         path = "%s/%s" % (uri, d.name)
         if d.smbc_type == 7:
-            fd = rec(context, path, warnsize, critsize, filters)
+            fd = getfiles(context, path, warnsize, critsize, filters)
             filedata['size'] += fd['size']
             filedata['warning'] += fd['warning']
             filedata['critical'] += fd['critical']
