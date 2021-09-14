@@ -2,6 +2,7 @@ WSGIDaemonProcess check-winrm processes=&WSGI_PROCESSES& threads=1 user=&WSGI_US
 WSGIScriptAlias /check_winrm &WSGI_WWW&/check_winrm.py
 
 <Directory &WSGI_WWW&>
+    Options +ExecCGI +FollowSymlinks -SymLinksIfOwnerMatch
     <IfVersion >= 2.4>
         Require all granted
     </IfVersion>
