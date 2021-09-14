@@ -3,6 +3,7 @@
 from samana.nagios import CheckUnknown, CheckWarning, CheckCritical, CheckResult
 from samana.base import auth_file
 import smbc
+import fnmatch
 import sys, getopt
 import traceback
 
