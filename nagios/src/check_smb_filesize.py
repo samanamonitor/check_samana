@@ -56,16 +56,18 @@ def getfiles(context, uri, warnsize=None, critsize=None, filters=None):
     for d in dents:
         if d.name in (".", ".."):
             continue
+
+        path = "%s/%s" % (uri, d.name)
         if d.smbc_type == 7:
-            fd = rec(context, "%s/%s" % (uri, d.name), warnsize, critsize, filters)
+            fd = rec(context, path, warnsize, critsize, filters)
             filedata['size'] += fd['size']
             filedata['warning'] += fd['warning']
             filedata['critical'] += fd['critical']
             continue
         if filters is not None and len(fnmatch.filter([d.name], filters)) == 0:
             continue
-        filepath = "%s/%s" % (uri, d.name)
-        s = context.stat(filepath)
+
+        s = context.stat(path)
         if critsize is not None and s[6] > critsize:
             filedata['critical']+= [(filepath, s[6])]
         elif warnsize is not None and s[6] > warnsize:
