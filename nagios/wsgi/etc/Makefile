@@ -1,4 +1,5 @@
-APACHE_ETC ?= $(INSTALL_BASE)/etc/apache2/conf-available
+APACHE_ETC_UBUNTU ?= $(INSTALL_BASE)/etc/apache2/conf-available
+APACHE_ETC_CENTOS ?= $(INSTALL_BASE)/etc/httpd/conf.d
 WSGI_USER ?= nagios
 WSGI_GROUP ?= nagios
 WSGI_PROCESSES := 10
@@ -18,8 +19,12 @@ all: $(INSTALL_FILES)
 install: $(patsubst %,install_%,$(INSTALL_FILES))
 
 install_$(INSTALL_FILES):
-	install -D -g $(WSGI_GROUP) -o $(WSGI_USER) -m $(FILE_MODE) $(subst install_,,$@) $(APACHE_ETC)/$(subst install_,,$@)
+ifneq ("$(wildcard $(APACHE_ETC_UBUNTU))","")
+	install -D -g $(WSGI_GROUP) -o $(WSGI_USER) -m $(FILE_MODE) $(subst install_,,$@) $(APACHE_ETC_UBUNTU)/$(subst install_,,$@)
 	a2enconf check_winrm
+else
+	install -D -g $(WSGI_GROUP) -o $(WSGI_USER) -m $(FILE_MODE) $(subst install_,,$@) $(APACHE_ETC_CENTOS)/$(subst install_,,$@)
+endif
 
 
 clean:
