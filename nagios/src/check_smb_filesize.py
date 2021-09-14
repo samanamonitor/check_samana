@@ -128,8 +128,8 @@ def main(argv):
         filedata = getfiles(context, "smb://%s/%s" % (hostaddress, path), 
             warning, critical, filters)
 
-        critical_files = len(filterdata['critical'])
-        warning_files = len(filterdata['warning'])
+        critical_files = len(filedata['critical'])
+        warning_files = len(filedata['warning'])
         addl = ""
         for l in map(addl_str,filedata['critical']):
             addl += l
