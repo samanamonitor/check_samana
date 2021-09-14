@@ -6,8 +6,6 @@ import re
 import samanaetcd as etcd
 import time
 
-from os import environ
-
 debug = 0
 
 def help():
