@@ -70,9 +70,9 @@ def getfiles(context, uri, warnsize=None, critsize=None, filters=None):
 
         s = context.stat(path)
         if critsize is not None and s[6] > critsize:
-            filedata['critical']+= [(filepath, s[6])]
+            filedata['critical']+= [(path, s[6])]
         elif warnsize is not None and s[6] > warnsize:
-            filedata['warning'] += [(filepath, s[6])]
+            filedata['warning'] += [(path, s[6])]
         filedata['size'] += s[6]
     return filedata
 
