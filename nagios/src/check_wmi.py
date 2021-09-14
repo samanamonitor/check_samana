@@ -265,21 +265,21 @@ def main(argv):
         notnone_and_lt = lambda x, y: True if x is not None and int(x) < y else False
 
         if notnone_and_lt(dns_crit, dns_time):
-            raise CheckNagiosCritical("DNS name resolution took longer than expected %d" % dns_time, perf_data=perf_data)
+            raise CheckCritical("DNS name resolution took longer than expected %d" % dns_time, perf_data=perf_data)
         if notnone_and_lt(dns_warn, dns_time):
             raise CheckNagiosWarning("DNS name resolution took longer than expected %d" % dns_time, perf_data=perf_data)
         if notnone_and_lt(packet_loss_crit, perc_packet_loss):
-            raise CheckNagiosCritical("PING lost %d%% packets" % perc_packet_loss, perf_data=perf_data)
+            raise CheckCritical("PING lost %d%% packets" % perc_packet_loss, perf_data=perf_data)
         if notnone_and_lt(packet_loss_warn, perc_packet_loss):
             raise CheckNagiosWarning("PING lost %d%% packets" % perc_packet_loss, perf_data=perf_data)
         if notnone_and_lt(ping_crit, ping_data['avg']):
-            raise CheckNagiosCritical("PING rtt is greater than expected %d ms" % ping_data['avg'], perf_data=perf_data)
+            raise CheckCritical("PING rtt is greater than expected %d ms" % ping_data['avg'], perf_data=perf_data)
         if notnone_and_lt(ping_warn, ping_data['avg']):
             raise CheckNagiosWarning("PING rtt is greater than expected %d ms" % ping_data['avg'], perf_data=perf_data)
         if notnone_and_lt(wmi_crit, wmi_time):
-            raise CheckNagiosCritical("WMI took longer than expected %d ms" % wmi_time, perf_data=perf_data)
+            raise CheckCritical("WMI took longer than expected %d ms" % wmi_time, perf_data=perf_data)
         if notnone_and_lt(wmi_warn, wmi_time):
-            raise CheckNagiosWarning("WMI took longer than expected %d ms" % wmi_time, perf_data=perf_data)
+            raise CheckWarning("WMI took longer than expected %d ms" % wmi_time, perf_data=perf_data)
 
         out = CheckResult("Data Collected %s" % data['ID'], perf_data=perf_data, addl=' '.join(sys.argv))
     except CheckWarning as e:
