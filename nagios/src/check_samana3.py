@@ -171,6 +171,9 @@ def log(data, logname, crit, warn):
     if outval > 0:
         messages = "\n"
         for i in events:
+            if len(messages) > 512:
+                messages += "Truncated..."
+                break;
             if 'Message' in i:
                 messages += i['Message'] + "\n"
             else:
