@@ -150,7 +150,7 @@ class CitrixXD:
       registrationstate_num = REGISTRATION_STATENUM[self.data['RegistrationState']]
 
     return (
-      self.data['RegistrationState'],
+      registrationstate_str,
       "Server registration state is %s (%s)" % (
         registrationstate_str, 
         registrationstate_num),
