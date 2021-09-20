@@ -19,6 +19,8 @@ def ping_host(ip, count=3):
     }
     p = subprocess.Popen(["ping", "-c", str(count), ip], stdout = subprocess.PIPE)
     out = p.communicate()
+    if p.returncode != 0:
+        raise CheckCritical("Server is not responding")
     packets = None
     rtt = None
     try:
