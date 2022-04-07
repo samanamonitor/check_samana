@@ -77,10 +77,15 @@ class Client:
     self.get_desktopgroups(site_id)
     self.data['farm']['epoch'] = int(time())
     self.data['hosts'] = {}
-    data = self.get_data('https://api-us.cloud.com/cvadapis/%s/Machines' % site_id)
-    if 'Items' not in data:
-      raise Exception("Invalid data received from Citrix Cloud getting machines %s" % (data))
-    self.machines = data['Items']
+    self.machines = []
+    cont = True
+    while cont:
+      data = self.get_data('https://api-us.cloud.com/cvadapis/%s/Machines' % site_id)
+      if 'Items' not in data:
+        raise Exception("Invalid data received from Citrix Cloud getting machines %s" % (data))
+      self.machines += data['Items']
+      cont = 'ContinuationToken' in data
+
     for m in self.machines:
       m['epoch'] = int(time())
       m['DesktopGroupName'] = 'None' if m['DeliveryGroup'] is None else m['DeliveryGroup']['Name']

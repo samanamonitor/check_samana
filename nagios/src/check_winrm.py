@@ -92,12 +92,11 @@ class WinRMScript:
             command_id = p.run_command(shell_id, 'powershell', ['-encodedcommand {0}'.format(encoded_ps), ])
             std_out, std_err, status_code = p.get_command_output(shell_id, command_id)
             self.check_error(std_err)
+            p.cleanup_command(shell_id, command_id)
+            p.close_shell(shell_id)
 
         except Exception as e:
           raise CheckWinRMExceptionUNKNOWN("Unable to get data from Server (%s) %s." % (type(e).__name__, str(e)))
-        finally:
-            p.cleanup_command(shell_id, command_id)
-            p.close_shell(shell_id)
 
         if status_code != 0:
             raise CheckWinRMExceptionUNKNOWN(std_err)
