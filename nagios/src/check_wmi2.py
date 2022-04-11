@@ -147,6 +147,7 @@ def main(argv):
         hostaddress = None
         username = None
         password = None
+        domain = None
         namespace = "root\\cimv2"
         url = None
         warning = None
@@ -165,7 +166,12 @@ def main(argv):
             if o == '-H':
                 hostaddress = a
             elif o == '-U':
-                username = a
+                temp = a.split("\\")
+                if len(temp) > 1:
+                    domain = temp[0]
+                    username = temp[1]
+                else:
+                    username = a
             elif o == '-p':
                 password = a
             elif o == 'n':
