@@ -109,7 +109,10 @@ class WinRMScript:
             temp = std_err.split('\n', 1)
             if len(temp) > 0:
                 std_err = temp[1]
-        root = ET.fromstring(std_err)
+        try:
+            root = ET.fromstring(std_err)
+        except ParseError:
+            return
         ns={ 'ps':root.tag.split('}')[0].split('{')[1] }
         msg = "Error executing Powershell Command.\n"
         error = False
