@@ -8,31 +8,28 @@ def process_data(data):
 
 def application (environ, start_response):
     data = {
-        'hostaddress': None,
-        'u_domain': None,
-        'username': None,
-        'password': None,
-        'authfile': None,
-        'nagiosaddress': None,
-        'script': None,
-        'warning': None,
-        'critical': None,
-        'url': None,
-        'scriptarguments': None,
-        'cleanup': True
+        "auth": {
+            "username": "",
+            "password": "",
+            "domain": ""
+        },
+        "hostname": "",
+        "etcdserver": "",
+        "warning": -1,
+        "critical": -1,
+        "id-type": 0,
+        "queries": []
     }
+
     try:
         request_body_size = int(environ.get('CONTENT_LENGTH', 0))
     except (ValueError):
         request_body_size = 0
 
-    request_body = json.load(environ['wsgi.input'])
+    request_body = json.load(environ['wsgi.input'], size=request_body_size)
 
-
-#    d = parse_qs(environ['QUERY_STRING'])
-#    for k in data.keys():
-#        data[k] = d.get(k, [ None ])[0]
-    response_body = json.dumps(request_body)
+    res={"status": 0, "info1": "", "perf1": [], "info2": "", "perf2": []}
+    response_body = json.dumps(res)
 
     status = '200 OK'
     response_headers = [
