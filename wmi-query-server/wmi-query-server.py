@@ -26,7 +26,7 @@ def application (environ, start_response):
     except (ValueError):
         request_body_size = 0
 
-    request_body = json.load(environ['wsgi.input'], size=request_body_size)
+    request_body = json.load(environ['wsgi.input'])
 
     res={"status": 0, "info1": "", "perf1": [], "info2": "", "perf2": []}
     response_body = json.dumps(res)
