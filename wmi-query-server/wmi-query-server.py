@@ -25,7 +25,7 @@ def application (environ, start_response):
     d = parse_qs(environ['QUERY_STRING'])
     for k in data.keys():
         data[k] = d.get(k, [ None ])[0]
-    response_body = json.dumps(process_data(data))
+    response_body = json.dumps(process_data(d))
 
     status = '200 OK'
     response_headers = [
