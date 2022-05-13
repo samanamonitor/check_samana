@@ -21,11 +21,18 @@ def application (environ, start_response):
         'scriptarguments': None,
         'cleanup': True
     }
+    try:
+        request_body_size = int(environ.get('CONTENT_LENGTH', 0))
+    except (ValueError):
+        request_body_size = 0
 
-    d = parse_qs(environ['QUERY_STRING'])
-    for k in data.keys():
-        data[k] = d.get(k, [ None ])[0]
-    response_body = json.dumps(process_data(d))
+    request_body = json.load(environ['wsgi.input'])
+
+
+#    d = parse_qs(environ['QUERY_STRING'])
+#    for k in data.keys():
+#        data[k] = d.get(k, [ None ])[0]
+    response_body = json.dumps(request_body)
 
     status = '200 OK'
     response_headers = [
