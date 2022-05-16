@@ -98,9 +98,9 @@ def process_thresholds(threshold):
     for i in range(len(perfnames)):
         print(perfnames[i])
         try:
-            ret += string_to_threshold(perfnames[i], tlist[i])
+            ret += [string_to_threshold(perfnames[i], tlist[i])]
         except IndexError:
-            ret += string_to_threshold(perfnames[i], '')
+            ret += [string_to_threshold(perfnames[i], '')]
     return ret
 
 def validate_input(data):
