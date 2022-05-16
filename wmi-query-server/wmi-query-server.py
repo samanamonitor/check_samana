@@ -198,7 +198,7 @@ def main(argv):
                 data['auth']['username'] = a
         elif o == '-p':
             data['auth']['password'] = a
-        elif o == 'q':
+        elif o == '-q':
             try:
                 data['queries'] = json.loads(a)
             except Exception:
