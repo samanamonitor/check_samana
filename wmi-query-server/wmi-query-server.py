@@ -114,8 +114,8 @@ def validate_input(data):
     if len(data["queries"]) == 0:
         return { "status": 3, "info1": "Missing Queries"}
     for i in range(len(data["queries"])):
-        if "name" not in data["queries"][i] or
-            "namespace" not in data["queries"][i] or
+        if "name" not in data["queries"][i] or \
+            "namespace" not in data["queries"][i] or \
             "query" not in data["queries"][i]:
             return {"status": 3, "info1": "Invalid query"}
     if len(data["warning"]) != len(perfnames):
