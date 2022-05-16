@@ -234,6 +234,7 @@ def main(argv):
     if res['status'] == 0:
         res=process_data(data)
 
+    print(json.dumps(res))
     print("%s  - %s | %s" % (STATUS[res.get('status', 3)], res.get('info1', "UNKNOWN"), res.get('perf1', "")))
     info2 = res.get('info2')
     if info2 is not None and info2 != "":
