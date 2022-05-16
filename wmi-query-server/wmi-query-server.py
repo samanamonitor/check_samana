@@ -148,7 +148,7 @@ def process_data(data):
             pywmi.close()
     except CheckUnknown as e:
         return { "status": e.status, "info1": e.info }
-    except Exception as e
+    except Exception as e:
         return {"status": "3", "something went wrong %s" % e}
 
     return {"status": 0, "info1": "", "perf1": [], "info2": "", "perf2": [json.dumps(out)]}
