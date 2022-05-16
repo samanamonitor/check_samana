@@ -145,9 +145,9 @@ def process_data(data):
                 qs[ns] = []
             qs[ns] += [data["queries"][i]]
         for ns in qs.keys():
-            print(json.dumps(qs[ns]))
             pywmi.open(data["hostname"], data["auth"]["username"], data["auth"]["password"], data["auth"]["domain"], ns)
             for q in qs[ns]:
+                print(json.dumps(qs[ns][q]))
                 out[qs[ns][q]['name']] = pywmi.query(qs[ns][q]['query'])
             pywmi.close()
     except CheckUnknown as e:
