@@ -228,8 +228,9 @@ def main(argv):
         res=process_data(data)
 
     print("%s %s | %s" % (STATUS[res.get('status', 3)], res.get('info1', "UNKNOWN"), res.get('perf1', "")))
-    if res['info2'] is not None and res['info2'] != "":
-        print("%s | %s" % (res['info2'], res['perf2']))
+    info2 = res.get('info2')
+    if info2 is not None and info2 != "":
+        print("%s | %s" % (info2, res.get('perf2', "")))
     return res['status']
 
 if __name__ == "__main__":
