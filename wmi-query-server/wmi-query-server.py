@@ -146,7 +146,7 @@ def process_data(data):
                 qs[ns] = []
             qs[ns] += data["queries"][i]
         for ns in qs.keys():
-            pywmi.open(data["hostname"], data["username"], data["password"], data["domain"], ns)
+            pywmi.open(data["hostname"], data["auth"]["username"], data["auth"]["password"], data["auth"]["domain"], ns)
             for q in qs[ns]:
                 out[qs[ns][q]['name']] = pywmi.query(qs[ns][q]['query'])
             pywmi.close()
