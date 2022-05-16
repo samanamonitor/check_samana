@@ -143,7 +143,7 @@ def process_data(data):
             ns=data["queries"][i]["namespace"]
             if ns not in qs:
                 qs[ns] = []
-            qs[ns] += data["queries"][i]
+            qs[ns] += [data["queries"][i]]
         for ns in qs.keys():
             print(json.dumps(qs[ns]))
             pywmi.open(data["hostname"], data["auth"]["username"], data["auth"]["password"], data["auth"]["domain"], ns)
