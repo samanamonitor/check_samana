@@ -223,6 +223,7 @@ def main(argv):
             print(usage())
             return 3
 
+    res = validate_input(data)
     if res['status'] == 0:
         res=process_data(data)
 
