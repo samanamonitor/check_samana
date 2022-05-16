@@ -2,6 +2,7 @@
 
 import json
 import pywmi
+import time
 from samana.base import get_dns_ip, ping_host, perf, auth_file
 
 data = {
@@ -97,7 +98,6 @@ def process_thresholds(threshold):
     tlist = threshold.split(",")
 
     for i in range(len(perfnames)):
-        print(perfnames[i])
         try:
             ret += [string_to_threshold(perfnames[i], tlist[i])]
         except IndexError:
