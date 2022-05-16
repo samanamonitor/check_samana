@@ -201,7 +201,7 @@ def main(argv):
         elif o == 'q':
             try:
                 data['queries'] = json.loads(a)
-            except Exception
+            except Exception:
                 data['queries'] = None
         elif o == '-e':
             temp = a.split(':')
