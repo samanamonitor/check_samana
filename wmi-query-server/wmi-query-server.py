@@ -119,7 +119,7 @@ def validate_input(data):
             "query" not in data["queries"][i]:
             return {"status": 3, "info1": "Invalid query"}
     if len(data["warning"]) != len(perfnames):
-        return { "status": 3, "info1": "Invalid warning data %s" % data["warning"]}
+        return { "status": 3, "info1": "Invalid warning data %s" % json.dumps(data["warning"])}
     for i in range(len(perfnames)):
         if data["warning"][i]["error"]:
             return { "status": 3, 
