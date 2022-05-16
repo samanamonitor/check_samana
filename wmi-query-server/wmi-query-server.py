@@ -152,7 +152,7 @@ def process_data(data):
     except CheckUnknown as e:
         return { "status": e.status, "info1": e.info }
     except Exception as e:
-        return {"status": "3", "info1": "something went wrong %s" % e}
+        return {"status": 3, "info1": "something went wrong %s" % e}
 
     return {"status": 0, "info1": "", "perf1": [], "info2": "", "perf2": [json.dumps(out)]}
 
