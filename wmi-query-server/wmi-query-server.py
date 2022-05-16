@@ -233,4 +233,4 @@ def main(argv):
 
 if __name__ == "__main__":
     import sys
-    return main(sys.argv)
+    main(sys.argv)
