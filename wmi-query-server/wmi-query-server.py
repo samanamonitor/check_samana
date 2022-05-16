@@ -2,6 +2,7 @@
 
 import json
 import pywmi
+from samana.base import get_dns_ip, ping_host, perf, auth_file
 
 data = {
     "auth": {
@@ -180,7 +181,6 @@ def application (environ, start_response):
 
 def main(argv):
     import getopt
-    from samana.base import get_dns_ip, ping_host, perf, auth_file
     try:
         opts, args = getopt.getopt(sys.argv[1:], "H:U:p:q:e:t:w:c:a:i:h")
     except getopt.GetoptError as e:
