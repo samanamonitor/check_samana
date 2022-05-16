@@ -138,7 +138,7 @@ def process_data(data):
         wmi_start = time.time()
         qs={}
         out={}
-        for i in range(data["queries"]):
+        for i in range(len(data["queries"])):
             ns=data["queries"][i]["namespace"]
             if ns not in qs:
                 qs[ns] = []
