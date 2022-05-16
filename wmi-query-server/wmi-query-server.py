@@ -223,11 +223,16 @@ def main(argv):
             print(usage())
             return 3
 
+    if len(data['warning']) == 0:
+        data['warning'] = process_thresholds('')
+    if len(data['critical']) == 0:
+        data['critical'] = process_thresholds('')
+
     res = validate_input(data)
     if res['status'] == 0:
         res=process_data(data)
 
-    print("%s %s | %s" % (STATUS[res.get('status', 3)], res.get('info1', "UNKNOWN"), res.get('perf1', "")))
+    print("%s  - %s | %s" % (STATUS[res.get('status', 3)], res.get('info1', "UNKNOWN"), res.get('perf1', "")))
     info2 = res.get('info2')
     if info2 is not None and info2 != "":
         print("%s | %s" % (info2, res.get('perf2', "")))
