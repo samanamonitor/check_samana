@@ -117,7 +117,7 @@ def validate_input(data):
     if len(data["queries"]) == 0:
         return { "status": 3, "info1": "Missing Queries"}
     for i in range(len(data["queries"])):
-        print(json.dumps(data["queries"]))
+        print(json.dumps(data["queries"], indent=1))
         if "name" not in data["queries"][i] or \
             "namespace" not in data["queries"][i] or \
             "query" not in data["queries"][i]:
