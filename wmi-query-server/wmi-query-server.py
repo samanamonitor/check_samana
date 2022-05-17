@@ -151,8 +151,8 @@ def process_data(data):
                 out[qs[ns][q]['name']] = pywmi.query(qs[ns][q]['query'])
             pywmi.close()
         wmi_time = int((time.time() - wmi_start) * 1000)
-        c = etcd.Client(host=data['etcdserver']['address'], port=data['etcdserver']['port'])
-        c.put("samanamonitor/data/%s" % data['ID'], json.dumps(data), ttl)
+        #c = etcd.Client(host=data['etcdserver']['address'], port=data['etcdserver']['port'])
+        #c.put("samanamonitor/data/%s" % data['ID'], json.dumps(data), ttl)
         print(json.dumps(out))
     except CheckUnknown as e:
         return { "status": e.status, "info1": e.info }
