@@ -148,7 +148,7 @@ def get_id(data, idtype='md5'):
 
 def process_data(data):
     try:
-        perf = []
+        perf = [0] * len(perfnames)
         (hostip, perf[0]) = get_dns_ip(data["hostname"])
         ping_data = ping_host(hostip)
         perf[1] = 100-int(100.0 * ping_data['packets_received'] / ping_data['packets_sent'])
