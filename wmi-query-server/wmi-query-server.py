@@ -210,7 +210,7 @@ def application (environ, start_response):
     data = json.load(environ['wsgi.input'])
 
     res = validate_input(data)
-    print("test")
+    print(json.dumps(res))
     if res['status'] == 0:
         temp=process_data(data)
         res['status'] = temp.status
