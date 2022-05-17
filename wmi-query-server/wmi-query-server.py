@@ -181,6 +181,7 @@ def process_data(data):
         traceback_info = traceback.extract_tb(tb)
         out = CheckResult("Error: %s at line %s" % (str(e), tb.tb_lineno), addl=traceback_info.format, status=3, status_str="UNKNOWN")
 
+    perf_data = ""
     out = CheckResult("Data Collected %s" % data['ID'], perf_data=perf_data, addl=' '.join(sys.argv))
     return out
 
