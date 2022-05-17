@@ -162,7 +162,7 @@ def process_data(data):
         (hostip, perfvalues[0]) = get_dns_ip(data["hostname"])
         print("end dns")
         print("start ping")
-        ping_data = ping_host(hostip)
+        ping_data = ping_host(hostip, count=1)
         print("end ping")
         perfvalues[1] = 100-int(100.0 * ping_data['packets_received'] / ping_data['packets_sent'])
         perfvalues[2] = ping_data['avg']
