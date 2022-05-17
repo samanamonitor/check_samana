@@ -156,7 +156,6 @@ def process_data(data):
         perfvalues = [0] * len(perfnames)
         (hostip, perfvalues[0]) = get_dns_ip(data["hostname"])
         ping_data = ping_host(hostip)
-        print(json.dumps(ping_data))
         perfvalues[1] = 100-int(100.0 * ping_data['packets_received'] / ping_data['packets_sent'])
         perfvalues[2] = ping_data['avg']
 
@@ -184,7 +183,6 @@ def process_data(data):
             w = data['warning'][i]['value'] if data['warning'][i]['enabled'] else None
             c = data['critical'][i]['value'] if data['critical'][i]['enabled'] else None
             perf_data += "%s " % perf(perfnames[i], perfvalues[i], w, c)
-            #print(perf(perfnames[i], perfvalues[i], w, c))
         addl = ""
         if data["debug"] == 1:
             addl += "\n" + ' '.join(sys.argv)
