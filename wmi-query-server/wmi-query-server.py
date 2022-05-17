@@ -152,7 +152,7 @@ def process_data(data):
 
         wmi_start = time.time()
         qs={ "root\\cimv2": [{ "name": "computer", "namespace": "root\\cimv2", "query": "SELECT * FROM Win32_ComputerSystem", "class": ""}]}
-        out={}
+        wmi_out={}
         for i in range(len(data["queries"])):
             ns=data["queries"][i]["namespace"]
             if ns not in qs:
@@ -161,21 +161,33 @@ def process_data(data):
         for ns in qs.keys():
             pywmi.open(data["hostname"], data["auth"]["username"], data["auth"]["password"], data["auth"]["domain"], ns)
             for q in range(len(qs[ns])):
-                out[qs[ns][q]['name']] = pywmi.query(qs[ns][q]['query'])
+                wmi_out[qs[ns][q]['name']] = pywmi.query(qs[ns][q]['query'])
             pywmi.close()
         wmi_time = int((time.time() - wmi_start) * 1000)
-        data['ID'] = get_id(out, data['id-type'])
+        data['ID'] = get_id(wmi_out, data['id-type'])
 
         #c = etcd.Client(host=data['etcdserver']['address'], port=data['etcdserver']['port'])
-        #c.put("samanamonitor/data/%s" % data['ID'], json.dumps(out), ttl)
-        print(json.dumps(out))
-        print(json.dumps(data))
+        #c.put("samanamonitor/data/%s" % data['ID'], json.dumps(wmi_out), ttl)
     except CheckUnknown as e:
         return { "status": e.status, "info1": e.info }
+    except CheckWarning as e:
+        out = e.result
+    except CheckCritical as e:
+        out = e.result
+    except CheckUnknown as e:
+        out = e.result
     except Exception as e:
-        return {"status": 3, "info1": "something went wrong %s" % e}
+        exc_type, exc_obj, tb = sys.exc_info()
+        traceback_info = traceback.extract_tb(tb)
+        out = CheckResult("Error: %s at line %s" % (str(e), tb.tb_lineno), addl=traceback_info.format, status=3, status_str="UNKNOWN")
 
-    return {"status": 0, "info1": "", "perf1": [], "info2": "", "perf2": [json.dumps(out)]}
+    out = CheckResult("Data Collected %s" % data['ID'], perf_data=perf_data, addl=' '.join(sys.argv))
+    return out
+
+#    except Exception as e:
+#        return {"status": 3, "info1": "something went wrong %s" % e}
+
+#    return {"status": 0, "info1": "", "perf1": [], "info2": "", "perf2": [json.dumps(out)]}
 
 def application (environ, start_response):
     from cgi import parse_qs, escape
@@ -189,7 +201,12 @@ def application (environ, start_response):
 
     res = validate_input(data)
     if res['status'] == 0:
-        res=process_data(data)
+        temp=process_data(data)
+        res['status'] = temp.status
+        res['info1'] = temp.info
+        res['perf1'] = temp.perf_data
+        res['info2'] = temp.addl
+        res['perf2'] = ""
 
     response_body = json.dumps(res)
     status = '200 OK'
@@ -255,11 +272,12 @@ def main(argv):
     if res['status'] == 0:
         res=process_data(data)
 
-    print("%s  - %s | %s" % (STATUS[res.get('status', 3)], res.get('info1', "UNKNOWN"), res.get('perf1', "")))
-    info2 = res.get('info2')
-    if info2 is not None and info2 != "":
-        print("%s | %s" % (info2, res.get('perf2', "")))
-    return res['status']
+    #print("%s  - %s | %s" % (STATUS[res.get('status', 3)], res.get('info1', "UNKNOWN"), res.get('perf1', "")))
+    #info2 = res.get('info2')
+    #if info2 is not None and info2 != "":
+    #    print("%s | %s" % (info2, res.get('perf2', "")))
+    print(res)
+    return res.status
 
 if __name__ == "__main__":
     import sys
