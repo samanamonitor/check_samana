@@ -219,7 +219,7 @@ def application (environ, start_response):
         res['info2'] = temp.addl
         res['perf2'] = ""
 
-    response_body = json.dumps(res)
+    response_body = json.dumps(res).encode('utf-8')
 
     status = '200 OK'
     response_headers = [
