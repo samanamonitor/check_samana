@@ -114,7 +114,7 @@ def validate_input(data):
         return { "status": 3, "info1": "Missing Hostname"}
     if not data["etcdserver"]["port"].isnumeric():
         return { "status": 3, "info1": "Invalid Etcd Server port"}
-    if len(data["queries"]) == 0:
+    if not isinstance(data["queries"], list) and len(data["queries"]) == 0:
         return { "status": 3, "info1": "Missing Queries"}
     for i in range(len(data["queries"])):
         if "name" not in data["queries"][i] or \
@@ -149,6 +149,7 @@ def process_data(data):
             for q in range(len(qs[ns])):
                 out[qs[ns][q]['name']] = pywmi.query(qs[ns][q]['query'])
             pywmi.close()
+        print(json.dumps(out))
     except CheckUnknown as e:
         return { "status": e.status, "info1": e.info }
     except Exception as e:
@@ -224,7 +225,6 @@ def main(argv):
         elif o == '-h':
             print(usage())
             return 3
-    print(json.dumps(data, indent=1))
 
     if len(data['warning']) == 0:
         data['warning'] = process_thresholds('')
