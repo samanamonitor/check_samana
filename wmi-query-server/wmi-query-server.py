@@ -14,6 +14,7 @@ data = {
         "password": "",
         "domain": ""
     },
+    "debug": 0,
     "hostname": "",
     "etcdserver": { "address": "127.0.0.1", "port": "2379", "secure": False },
     "warning": [],
