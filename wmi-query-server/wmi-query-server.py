@@ -169,7 +169,7 @@ def process_data(data):
         data['ID'] = get_id(wmi_out, data['id-type'])
 
         c = etcd.Client(host=data['etcdserver']['address'], port=data['etcdserver']['port'])
-        c.put("samanamonitor/data/%s" % data['ID'], json.dumps(wmi_out), ttl)
+        c.put("samanamonitor/data/%s" % data['ID'], json.dumps(wmi_out), data['ttl'])
         perf_data = ""
         addl = ""
         if data["debug"] == 1:
