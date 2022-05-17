@@ -201,14 +201,14 @@ def process_data(data):
 
 def application (environ, start_response):
     from cgi import parse_qs, escape
-
+    print("test")
     try:
         request_body_size = int(environ.get('CONTENT_LENGTH', 0))
     except (ValueError):
         request_body_size = 0
 
     data = json.load(environ['wsgi.input'])
-    print("test")
+
     res = validate_input(data)
     if res['status'] == 0:
         temp=process_data(data)
