@@ -206,15 +206,22 @@ def application (environ, start_response):
         request_body_size = int(environ.get('CONTENT_LENGTH', 0))
     except (ValueError):
         request_body_size = 0
+    try:
+        data = json.load(environ['wsgi.input'])
+        if 'warning' not in data or not isinstance(data['warning'], list) or len(data['warning']) == 0:
+            data['warning'] = process_thresholds('')
+        if 'critical' not in data or not isinstance(data['critical'], list) or len(data['critical']) == 0:
+            data['critical'] = process_thresholds('')
+        res = validate_input(data)
+    except json.decoder.JSONDecodeError as e:
+        res = { 
+            "status": 3,
+            "info1": "Unable to decode input",
+            "perf1": "",
+            "info2": str(e)
+            "perf2": ""
+            }
 
-    data = json.load(environ['wsgi.input'])
-
-    if 'warning' not in data or not isinstance(data['warning'], list) or len(data['warning']) == 0:
-        data['warning'] = process_thresholds('')
-    if 'critical' not in data or not isinstance(data['critical'], list) or len(data['critical']) == 0:
-        data['critical'] = process_thresholds('')
-
-    res = validate_input(data)
     if res['status'] == 0:
         temp=process_data(data)
         res['status'] = temp.status
