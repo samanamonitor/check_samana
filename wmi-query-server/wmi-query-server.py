@@ -17,7 +17,7 @@ data = {
     },
     "debug": 0,
     "hostname": "",
-    "etcdserver": { "address": "127.0.0.1", "port": 2379, "secure": False },
+    "etcdserver": { "address": "127.0.0.1", "port": "2379", "secure": False },
     "warning": [],
     "critical": [],
     "ttl": 300,
@@ -220,6 +220,7 @@ def application (environ, start_response):
         res['perf2'] = ""
 
     response_body = json.dumps(res)
+    print(response_body)
     status = '200 OK'
     response_headers = [
         ('Content-Type', 'application/json'),
