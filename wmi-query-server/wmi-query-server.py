@@ -5,6 +5,7 @@ import pywmi
 import time
 from samana.nagios import CheckUnknown, CheckWarning, CheckCritical, CheckResult
 from samana.base import get_dns_ip, ping_host, perf, auth_file
+from samana import etcd
 
 data = {
     "auth": {
@@ -137,7 +138,7 @@ def process_data(data):
         perc_packet_loss = 100-int(100.0 * ping_data['packets_received'] / ping_data['packets_sent'])
 
         wmi_start = time.time()
-        qs={}
+        qs={ "root\\cimv2": { "name": "computer", "namespace": "root\\cimv2", "query": "SELECT * FROM Win32_ComputerSystem", "class": ""}}
         out={}
         for i in range(len(data["queries"])):
             ns=data["queries"][i]["namespace"]
@@ -149,6 +150,9 @@ def process_data(data):
             for q in range(len(qs[ns])):
                 out[qs[ns][q]['name']] = pywmi.query(qs[ns][q]['query'])
             pywmi.close()
+        wmi_time = int((time.time() - wmi_start) * 1000)
+        c = etcd.Client(host=data['etcdserver']['address'], port=data['etcdserver']['port'])
+        c.put("samanamonitor/data/%s" % data['ID'], json.dumps(data), ttl)
         print(json.dumps(out))
     except CheckUnknown as e:
         return { "status": e.status, "info1": e.info }
