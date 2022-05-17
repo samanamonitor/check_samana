@@ -182,7 +182,10 @@ def process_data(data):
         out = CheckResult("Error: %s at line %s" % (str(e), tb.tb_lineno), addl=traceback_info.format, status=3, status_str="UNKNOWN")
 
     perf_data = ""
-    out = CheckResult("Data Collected %s" % data['ID'], perf_data=perf_data, addl=' '.join(sys.argv))
+    addl = ""
+    if data["debug"] == 1:
+        addl += "\n" + ' '.join(sys.argv)
+    out = CheckResult("Data Collected ID=%s" % data['ID'], perf_data=perf_data, addl=addl)
     return out
 
 #    except Exception as e:
