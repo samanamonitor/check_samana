@@ -133,6 +133,7 @@ def validate_input(data):
 
 def legacy(indata, idtype='md5'):
     from hashlib import md5, sha256
+    print(json.dumps(indata))
 
     computer = indata['computer'][0]['properties']
     cpu = indata['cpu'][0]['properties']
