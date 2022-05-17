@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 
-print("load library")
 import json
 import pywmi
 import time
@@ -12,7 +11,6 @@ import traceback
 import sys
 from cgi import parse_qs, escape
 
-print("start global vars")
 
 data = {
     "auth": {
@@ -158,12 +156,8 @@ def get_id(data, idtype='md5'):
 def process_data(data):
     try:
         perfvalues = [0] * len(perfnames)
-        print("start dns")
         (hostip, perfvalues[0]) = get_dns_ip(data["hostname"])
-        print("end dns")
-        print("start ping")
         ping_data = ping_host(hostip, count=1)
-        print("end ping")
         perfvalues[1] = 100-int(100.0 * ping_data['packets_received'] / ping_data['packets_sent'])
         perfvalues[2] = ping_data['avg']
 
@@ -175,20 +169,16 @@ def process_data(data):
             if ns not in qs:
                 qs[ns] = []
             qs[ns] += [data["queries"][i]]
-        print("start wmi")
         for ns in qs.keys():
             pywmi.open(data["hostname"], data["auth"]["username"], data["auth"]["password"], data["auth"]["domain"], ns)
             for q in range(len(qs[ns])):
                 wmi_out[qs[ns][q]['name']] = pywmi.query(qs[ns][q]['query'])
             pywmi.close()
-        print("end wmi")
         perfvalues[3] = int((time.time() - wmi_start) * 1000)
 
         data['ID'] = get_id(wmi_out, data['id-type'])
-        print("start etcd")
         c = etcd.Client(host=data['etcdserver']['address'], port=data['etcdserver']['port'])
         c.put("samanamonitor/data/%s" % data['ID'], json.dumps(wmi_out), data['ttl'])
-        print("end etcd")
 
         perf_data = ""
         for i in range(len(perfnames)):
@@ -215,27 +205,18 @@ def process_data(data):
     return out
 
 def application (environ, start_response):
-    print("start application")
 
     try:
         request_body_size = int(environ.get('CONTENT_LENGTH', 0))
     except (ValueError):
         request_body_size = 0
     try:
-        print("start load post")
         data = json.load(environ['wsgi.input'])
-        print("end load post")
-        print("start warning")
         if 'warning' not in data or not isinstance(data['warning'], list) or len(data['warning']) == 0:
             data['warning'] = process_thresholds('')
-        print("end warning")
-        print("start critical")
         if 'critical' not in data or not isinstance(data['critical'], list) or len(data['critical']) == 0:
             data['critical'] = process_thresholds('')
-        print("end critical")
-        print("start validate input")
         res = validate_input(data)
-        print("end validate input")
     except json.decoder.JSONDecodeError as e:
         res = { 
             "status": 3,
@@ -246,18 +227,14 @@ def application (environ, start_response):
             }
 
     if res['status'] == 0:
-        print("start process")
         temp=process_data(data)
-        print("end process")
         res['status'] = temp.status
         res['info1'] = temp.info
         res['perf1'] = temp.perf_data
         res['info2'] = temp.addl
         res['perf2'] = ""
 
-    print("start encode")
     response_body = json.dumps(res).encode('utf-8')
-    print("end encode")
 
     status = '200 OK'
     response_headers = [
@@ -322,10 +299,6 @@ def main(argv):
     if res['status'] == 0:
         res=process_data(data)
 
-    #print("%s  - %s | %s" % (STATUS[res.get('status', 3)], res.get('info1', "UNKNOWN"), res.get('perf1', "")))
-    #info2 = res.get('info2')
-    #if info2 is not None and info2 != "":
-    #    print("%s | %s" % (info2, res.get('perf2', "")))
     print(res)
     return res.status
 
