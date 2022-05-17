@@ -138,7 +138,7 @@ def process_data(data):
         perc_packet_loss = 100-int(100.0 * ping_data['packets_received'] / ping_data['packets_sent'])
 
         wmi_start = time.time()
-        qs={ "root\\cimv2": { "name": "computer", "namespace": "root\\cimv2", "query": "SELECT * FROM Win32_ComputerSystem", "class": ""}}
+        qs={ "root\\cimv2": [{ "name": "computer", "namespace": "root\\cimv2", "query": "SELECT * FROM Win32_ComputerSystem", "class": ""}]}
         out={}
         for i in range(len(data["queries"])):
             ns=data["queries"][i]["namespace"]
