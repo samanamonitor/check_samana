@@ -110,6 +110,8 @@ def process_thresholds(threshold):
     return ret
 
 def validate_input(data):
+    if 'ttl' not in data:
+        data['ttl'] = 300
     if data["auth"]["username"] == "":
         return { "status": 3, "info1": "Missing Username"}
     if data["auth"]["password"] == "":
