@@ -209,8 +209,12 @@ def application (environ, start_response):
 
     data = json.load(environ['wsgi.input'])
 
+    if 'warning' not in data or not isinstance(data['warning'], list) or len(data['warning']) == 0:
+        data['warning'] = process_thresholds('')
+    if 'critical' not in data or not isinstance(data['critical'], list) or len(data['critical']) == 0:
+        data['critical'] = process_thresholds('')
+
     res = validate_input(data)
-    print(json.dumps(res))
     if res['status'] == 0:
         temp=process_data(data)
         res['status'] = temp.status
@@ -226,7 +230,6 @@ def application (environ, start_response):
         ('Content-Type', 'application/json'),
         ('Content-Length', str(len(response_body)))
     ]
-    print(response_body)
     start_response(status, response_headers)
 
     return [response_body]
