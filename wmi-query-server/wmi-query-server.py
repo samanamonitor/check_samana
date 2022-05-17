@@ -170,6 +170,11 @@ def process_data(data):
 
         c = etcd.Client(host=data['etcdserver']['address'], port=data['etcdserver']['port'])
         c.put("samanamonitor/data/%s" % data['ID'], json.dumps(wmi_out), ttl)
+        perf_data = ""
+        addl = ""
+        if data["debug"] == 1:
+            addl += "\n" + ' '.join(sys.argv)
+        out = CheckResult("Data Collected ID=%s" % data['ID'], perf_data=perf_data, addl=addl)
     except CheckUnknown as e:
         return { "status": e.status, "info1": e.info }
     except CheckWarning as e:
@@ -183,11 +188,6 @@ def process_data(data):
         traceback_info = traceback.extract_tb(tb)
         out = CheckResult("Error: %s at line %s" % (str(e), tb.tb_lineno), addl=traceback_info.format, status=3, status_str="UNKNOWN")
 
-    perf_data = ""
-    addl = ""
-    if data["debug"] == 1:
-        addl += "\n" + ' '.join(sys.argv)
-    out = CheckResult("Data Collected ID=%s" % data['ID'], perf_data=perf_data, addl=addl)
     return out
 
 #    except Exception as e:
