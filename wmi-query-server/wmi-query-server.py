@@ -167,8 +167,8 @@ def process_data(data):
         wmi_time = int((time.time() - wmi_start) * 1000)
         data['ID'] = get_id(wmi_out, data['id-type'])
 
-        #c = etcd.Client(host=data['etcdserver']['address'], port=data['etcdserver']['port'])
-        #c.put("samanamonitor/data/%s" % data['ID'], json.dumps(wmi_out), ttl)
+        c = etcd.Client(host=data['etcdserver']['address'], port=data['etcdserver']['port'])
+        c.put("samanamonitor/data/%s" % data['ID'], json.dumps(wmi_out), ttl)
     except CheckUnknown as e:
         return { "status": e.status, "info1": e.info }
     except CheckWarning as e:
