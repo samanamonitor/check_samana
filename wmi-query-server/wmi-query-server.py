@@ -131,15 +131,15 @@ def validate_input(data):
                     (data["warning"][i]["name"], data["warning"][i]["str"])}
     return {"status": 0}
 
-def get_id(data):
+def get_id(data, idtype='md5'):
     computer = data['computer'][0]['properties']
     fqdn = "%s.%s" % (computer['DNSHostName'], computer['Domain'])
     fqdn = fqdn.lower()
-    if data['id-type'] == 'md5':
+    if idtype == 'md5':
         return md5(fqdn.encode("utf8")).hexdigest().upper()
-    elif data['id-type'] == 'sha256':
+    elif idtype == 'sha256':
         return sha256(fqdn.encode("utf8")).hexdigest().upper()
-    elif data['id-type'] == 'fqdn':
+    elif idtype == 'fqdn':
         return fqdn
     return "invalid"
 
@@ -163,7 +163,7 @@ def process_data(data):
                 out[qs[ns][q]['name']] = pywmi.query(qs[ns][q]['query'])
             pywmi.close()
         wmi_time = int((time.time() - wmi_start) * 1000)
-        data['ID'] = get_id(data)
+        data['ID'] = get_id(out)
 
         #c = etcd.Client(host=data['etcdserver']['address'], port=data['etcdserver']['port'])
         #c.put("samanamonitor/data/%s" % data['ID'], json.dumps(out), ttl)
