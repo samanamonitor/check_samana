@@ -177,7 +177,8 @@ def process_data(data):
         for i in range(len(perfnames)):
             w = data['warning'][i]['value'] if data['warning'][i]['enabled'] else None
             c = data['critical'][i]['value'] if data['critical'][i]['enabled'] else None
-            perf_data += "%s " % (perf(perfnames[i], perf[i], w, c))
+            #perf_data += "%s " % perf(perfnames[i], perf[i], w, c)
+            print(perf(perfnames[i], perf[i], w, c))
         addl = ""
         if data["debug"] == 1:
             addl += "\n" + ' '.join(sys.argv)
