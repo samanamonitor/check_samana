@@ -164,7 +164,7 @@ def process_data(data):
                 out[qs[ns][q]['name']] = pywmi.query(qs[ns][q]['query'])
             pywmi.close()
         wmi_time = int((time.time() - wmi_start) * 1000)
-        data['ID'] = get_id(out)
+        data['ID'] = get_id(out, data['id-type'])
 
         #c = etcd.Client(host=data['etcdserver']['address'], port=data['etcdserver']['port'])
         #c.put("samanamonitor/data/%s" % data['ID'], json.dumps(out), ttl)
