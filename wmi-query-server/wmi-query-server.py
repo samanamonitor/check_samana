@@ -208,8 +208,9 @@ def application (environ, start_response):
         request_body_size = 0
 
     data = json.load(environ['wsgi.input'])
-    print("test")
+
     res = validate_input(data)
+    print("test")
     if res['status'] == 0:
         temp=process_data(data)
         res['status'] = temp.status
