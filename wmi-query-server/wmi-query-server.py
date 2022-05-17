@@ -18,7 +18,7 @@ data = {
     "warning": [],
     "critical": [],
     "ttl": 300,
-    "id-type": 0,
+    "id-type": "fqdn",
     "queries": []
 }
 STATUS = [ 'OK', 'WARNING', 'CRITICAL', 'UNKNOWN' ]
@@ -131,6 +131,74 @@ def validate_input(data):
                     (data["warning"][i]["name"], data["warning"][i]["str"])}
     return {"status": 0}
 
+def legacy(indata, idtype='md5'):
+    from hashlib import md5, sha256
+
+    computer = indata['computer'][0]['properties']
+    cpu = indata['cpu'][0]['properties']
+    os = indata['os'][0]['properties']
+    TotalSwapSpaceSize = 0
+    for i in indata['pf']:
+        TotalSwapSpaceSize += i['properties']['AllocatedBaseSize']
+
+    t = os['LastBootUpTime'].split('.')[0]
+    z = int(os['LastBootUpTime'][-4:])
+    zh = abs(int(z / 60))
+    zm = int(z % 60)
+    sign = '-' if z < 0 else '+'
+    st = time.strptime("%s%s%02d%02d" % (t, sign, zh, zm), "%Y%m%d%H%M%S%z")
+    fqdn = "%s.%s" % (computer['DNSHostName'], computer['Domain'])
+    fqdn = fqdn.lower()
+    if idtype == 'md5':
+        serverid = md5(fqdn.encode("utf8")).hexdigest().upper()
+    elif idtype == 'sha256':
+        serverid = sha256(fqdn.encode("utf8")).hexdigest().upper()
+    elif idtype == 'fqdn':
+        serverid = fqdn
+    else:
+        raise CheckUnknown("Invalid id type %s" % idtype)
+
+    ret = {
+        'epoch': int(time.time()),
+        'DNSHostName': computer['DNSHostName'],
+        'Domain': computer['Domain'],
+        'ID': serverid,
+        'PercentIdleTime': int(cpu['PercentIdleTime']),
+        'PercentInterruptTime': int(cpu['PercentInterruptTime']),
+        'PercentPrivilegedTime': int(cpu['PercentPrivilegedTime']),
+        'PercentProcessorTime': int(cpu['PercentProcessorTime']),
+        'PercentUserTime': int(cpu['PercentUserTime']),
+        'FreePhysicalMemory': os['FreePhysicalMemory'],
+        'FreeSpaceInPagingFiles': os['FreeSpaceInPagingFiles'],
+        'FreeVirtualMemory': os['FreeVirtualMemory'],
+        'TotalSwapSpaceSize': TotalSwapSpaceSize,
+        'TotalVirtualMemorySize': os['TotalVirtualMemorySize'],
+        'TotalVisibleMemorySize': os['TotalVisibleMemorySize'],
+        'NumberOfProcesses': os['NumberOfProcesses'],
+        'LastBootUpTime': os['LastBootUpTime'],
+        'UpTime': int((time.time() - time.mktime(st) + st.tm_gmtoff) / 3600),
+        'Disks': [],
+        'Services': [],
+        'Events': {
+            'System': [],
+            'Application': [],
+            'Citrix Delivery Services': []
+        }
+    }
+    for s in indata['services']:
+        s['properties']['ServiceName'] = s['properties'].get('Name')
+        ret['Services'].append(s['properties'])
+    for e in indata['evt_system']:
+        ret['Events']['System'].append(e['properties'])
+    for e in indata['evt_application']:
+        ret['Events']['Application'].append(e['properties'])
+    for e in indata['evt_sf']:
+        ret['Events']['Citrix Delivery Services'].append(e['properties'])
+    for d in indata['disk']:
+        ret['Disks'].append(d['properties'])
+
+    return ret
+
 def process_data(data):
     try:
         (hostip, dns_time) = get_dns_ip(data["hostname"])
@@ -151,9 +219,11 @@ def process_data(data):
                 out[qs[ns][q]['name']] = pywmi.query(qs[ns][q]['query'])
             pywmi.close()
         wmi_time = int((time.time() - wmi_start) * 1000)
+        l = legacy(out, data['id-type'])
+
         #c = etcd.Client(host=data['etcdserver']['address'], port=data['etcdserver']['port'])
-        #c.put("samanamonitor/data/%s" % data['ID'], json.dumps(data), ttl)
-        print(json.dumps(out))
+        #c.put("samanamonitor/data/%s" % l['ID'], json.dumps(l), ttl)
+        print(json.dumps(l))
     except CheckUnknown as e:
         return { "status": e.status, "info1": e.info }
     except Exception as e:
