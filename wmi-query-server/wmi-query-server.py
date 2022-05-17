@@ -218,7 +218,7 @@ def application (environ, start_response):
             "status": 3,
             "info1": "Unable to decode input",
             "perf1": "",
-            "info2": str(e)
+            "info2": str(e),
             "perf2": ""
             }
 
