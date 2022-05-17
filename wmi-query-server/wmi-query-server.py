@@ -9,6 +9,7 @@ from samana import etcd
 from hashlib import md5, sha256
 import traceback
 import sys
+from cgi import parse_qs, escape
 
 data = {
     "auth": {
@@ -203,7 +204,6 @@ def process_data(data):
     return out
 
 def application (environ, start_response):
-    from cgi import parse_qs, escape
 
     try:
         request_body_size = int(environ.get('CONTENT_LENGTH', 0))
@@ -306,5 +306,4 @@ def main(argv):
     return res.status
 
 if __name__ == "__main__":
-    import sys
     exit(main(sys.argv))
