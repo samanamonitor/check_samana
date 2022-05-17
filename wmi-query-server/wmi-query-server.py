@@ -289,6 +289,6 @@ def main(argv):
     print(res)
     return res.status
 
-if __name__ == "__main__":
-    import sys
-    exit(main(sys.argv))
+#if __name__ == "__main__":
+#    import sys
+#    exit(main(sys.argv))
