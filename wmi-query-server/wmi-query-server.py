@@ -148,9 +148,11 @@ def get_id(data, idtype='md5'):
 
 def process_data(data):
     try:
-        (hostip, dns_time) = get_dns_ip(data["hostname"])
+        perf = []
+        (hostip, perf[0]) = get_dns_ip(data["hostname"])
         ping_data = ping_host(hostip)
-        perc_packet_loss = 100-int(100.0 * ping_data['packets_received'] / ping_data['packets_sent'])
+        perf[1] = 100-int(100.0 * ping_data['packets_received'] / ping_data['packets_sent'])
+        perf[2] = ping_data['avg']
 
         wmi_start = time.time()
         qs={ "root\\cimv2": [{ "name": "computer", "namespace": "root\\cimv2", "query": "SELECT * FROM Win32_ComputerSystem", "class": ""}]}
@@ -165,12 +167,17 @@ def process_data(data):
             for q in range(len(qs[ns])):
                 wmi_out[qs[ns][q]['name']] = pywmi.query(qs[ns][q]['query'])
             pywmi.close()
-        wmi_time = int((time.time() - wmi_start) * 1000)
-        data['ID'] = get_id(wmi_out, data['id-type'])
+        perf[3] = int((time.time() - wmi_start) * 1000)
 
+        data['ID'] = get_id(wmi_out, data['id-type'])
         c = etcd.Client(host=data['etcdserver']['address'], port=data['etcdserver']['port'])
         c.put("samanamonitor/data/%s" % data['ID'], json.dumps(wmi_out), data['ttl'])
+
         perf_data = ""
+        for i in range(len(perfnames)):
+            w = data['warning'][i]['value'] if data['warning'][i]['enabled'] else None
+            c = data['critical'][i]['value'] if data['critical'][i]['enabled'] else None
+            perf_data += "%s " % perf(perfnames[i], perf[i], w, c)
         addl = ""
         if data["debug"] == 1:
             addl += "\n" + ' '.join(sys.argv)
@@ -189,11 +196,6 @@ def process_data(data):
         out = CheckResult("Error: %s at line %s" % (str(e), tb.tb_lineno), addl=traceback_info.format, status=3, status_str="UNKNOWN")
 
     return out
-
-#    except Exception as e:
-#        return {"status": 3, "info1": "something went wrong %s" % e}
-
-#    return {"status": 0, "info1": "", "perf1": [], "info2": "", "perf2": [json.dumps(out)]}
 
 def application (environ, start_response):
     from cgi import parse_qs, escape
