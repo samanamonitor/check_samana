@@ -148,11 +148,11 @@ def get_id(data, idtype='md5'):
 
 def process_data(data):
     try:
-        perf = [0] * len(perfnames)
-        (hostip, perf[0]) = get_dns_ip(data["hostname"])
+        perfvalues = [0] * len(perfnames)
+        (hostip, perfvalues[0]) = get_dns_ip(data["hostname"])
         ping_data = ping_host(hostip)
-        perf[1] = 100-int(100.0 * ping_data['packets_received'] / ping_data['packets_sent'])
-        perf[2] = ping_data['avg']
+        perfvalues[1] = 100-int(100.0 * ping_data['packets_received'] / ping_data['packets_sent'])
+        perfvalues[2] = ping_data['avg']
 
         wmi_start = time.time()
         qs={ "root\\cimv2": [{ "name": "computer", "namespace": "root\\cimv2", "query": "SELECT * FROM Win32_ComputerSystem", "class": ""}]}
@@ -167,7 +167,7 @@ def process_data(data):
             for q in range(len(qs[ns])):
                 wmi_out[qs[ns][q]['name']] = pywmi.query(qs[ns][q]['query'])
             pywmi.close()
-        perf[3] = int((time.time() - wmi_start) * 1000)
+        perfvalues[3] = int((time.time() - wmi_start) * 1000)
 
         data['ID'] = get_id(wmi_out, data['id-type'])
         c = etcd.Client(host=data['etcdserver']['address'], port=data['etcdserver']['port'])
@@ -177,8 +177,8 @@ def process_data(data):
         for i in range(len(perfnames)):
             w = data['warning'][i]['value'] if data['warning'][i]['enabled'] else None
             c = data['critical'][i]['value'] if data['critical'][i]['enabled'] else None
-            #perf_data += "%s " % perf(perfnames[i], perf[i], w, c)
-            print(perf(perfnames[i], perf[i], w, c))
+            perf_data += "%s " % perf(perfnames[i], perf[i], w, c)
+            #print(perf(perfnames[i], perfvalues[i], w, c))
         addl = ""
         if data["debug"] == 1:
             addl += "\n" + ' '.join(sys.argv)
