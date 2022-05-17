@@ -117,6 +117,7 @@ def validate_input(data):
     if len(data["queries"]) == 0:
         return { "status": 3, "info1": "Missing Queries"}
     for i in range(len(data["queries"])):
+        print(json.dumps(data))
         if "name" not in data["queries"][i] or \
             "namespace" not in data["queries"][i] or \
             "query" not in data["queries"][i]:
@@ -147,7 +148,6 @@ def process_data(data):
         for ns in qs.keys():
             pywmi.open(data["hostname"], data["auth"]["username"], data["auth"]["password"], data["auth"]["domain"], ns)
             for q in range(len(qs[ns])):
-                print(json.dumps(qs[ns][q]))
                 out[qs[ns][q]['name']] = pywmi.query(qs[ns][q]['query'])
             pywmi.close()
     except CheckUnknown as e:
