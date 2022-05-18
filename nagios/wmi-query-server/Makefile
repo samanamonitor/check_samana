@@ -1,4 +1,5 @@
 LIBS = $(notdir $(wildcard ../lib/*.py))
+CUR_DIR = $(realpath .)
 
 all: $(LIBS)
 	docker build -t pywmi:v1 .
@@ -14,4 +15,4 @@ clean: $(LIBS)
 
 
 test:
-	docker run -it --rm --name test --mount type=bind,source=\$(pwd),destination=/opt/samana pywmi:v1 /bin/bash
+	docker run -it --rm --name test --mount type=bind,source=$(CUR_DIR),destination=/opt/samana pywmi:v1 /bin/bash
