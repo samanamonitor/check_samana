@@ -10,6 +10,17 @@ ETCDSERVER=$6
 ETCDPORT="2379"
 CONTAINER_NAME=test
 
+finish_test() {
+    LOG_CONT=$(docker stop ${CONTAINER_NAME} 2>&1)
+    out=$?
+    if [ "$?" != "0" ]; then
+        echo "Error stopping container($CONTAINER_NAME)."
+        echo $LOG_CONT
+    fi
+    echo "Test finished."
+    exit $out
+}
+
 echo "Creating container ${CONTAINER_NAME}"
 LOG_CONT=$(docker create -it --rm --name ${CONTAINER_NAME} --mount type=bind,source=${DIR},destination=/opt/samana ${IMAGE_NAME} 2>&1)
 out=$?
@@ -32,6 +43,7 @@ out=$?
 if [ "$?" != "0" ]; then
     echo "Unable to get IP address of the container"
     echo $CONT_IP
+    finish_test
     exit $out
 fi
 echo "Container(${CONTAINER_NAME}) started successfully."
@@ -47,12 +59,14 @@ out=$?
 if [ "$out" != "0" ]; then
     echo "Error sending query."
     echo $res
+    finish_test
     exit $out
 fi
 status=$(echo $res | jq -r .status)
 if [ "$status" != "0" ]; then
     echo "Error completing the query"
     echo $res | jq -r .info1
+    finish_test
     exit $status
 fi
 id=$(echo $res | jq -r .info1 | sed -e "s/.*ID=//")
@@ -63,6 +77,7 @@ out=$?
 if [ "$out" != "0" ]; then
     echo "Unable to collect data from ETCD server."
     echo $sdata
+    finish_test
     exit $out
 fi
 echo "Data collected."
@@ -75,10 +90,4 @@ for c in $classes; do
     fi
 done
 echo "Data checked."
-LOG_CONT=$(docker stop ${CONTAINER_NAME} 2>&1)
-out=$?
-if [ "$?" != "0" ]; then
-    echo "Error stopping container($CONTAINER_NAME)."
-    echo $LOG_CONT
-fi
-echo "Test finished."
+finish_test
