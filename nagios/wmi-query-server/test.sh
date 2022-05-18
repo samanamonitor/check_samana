@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x 
+
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 #IMAGE_NAME=$1
 #USERNAME=$2
