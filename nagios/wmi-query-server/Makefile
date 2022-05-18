@@ -13,13 +13,5 @@ clean: $(LIBS)
 	rm -f $^
 
 
-install: $(patsubst %,install_%,$(DIRS))
-
-
-install_%:
-	$(MAKE) -C $(subst install_,,$@) install
-	mkdir -p $(WSGI_WWW)
-	ln -sf $(NAGIOS_LIBEXEC)/check_winrm.py $(WSGI_WWW)
-
-clean_%:
-	$(MAKE) -C $(subst clean_,,$@) clean
+test:
+	run -it --rm --name test --mount type=bind,source=$(pwd),destination=/opt/samana pywmi:v1 /bin/bash
