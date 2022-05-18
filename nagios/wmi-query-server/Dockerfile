@@ -7,4 +7,4 @@ RUN mkdir -p /usr/local/nagios/share/wsgi/
 COPY wmi-query-server.py /usr/local/nagios/share/wsgi/
 RUN a2enconf wmi-query-server
 RUN mkdir -p /usr/lib/python3/dist-packages/samana
-COPY ../nagios/lib/base.py ../nagios/lib/etcd.py ../nagios/lib/nagios.py /usr/lib/python3/dist-packages/samana
+COPY base.py etcd.py nagios.py /usr/lib/python3/dist-packages/samana
