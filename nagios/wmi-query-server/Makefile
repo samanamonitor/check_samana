@@ -9,7 +9,8 @@ $(LIBS):
 $(DIRS):
 	$(MAKE) -C $@
 
-clean: $(patsubst %,clean_%,$(DIRS))
+clean: $(LIBS)
+	rm -f $^
 
 
 install: $(patsubst %,install_%,$(DIRS))
