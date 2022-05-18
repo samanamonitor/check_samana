@@ -1,13 +1,13 @@
 #!/bin/bash
 
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-IMAGE_NAME=$1
-USERNAME=$2
-PASSWORD=$3
-DOMAIN=$4
-WMISERVER=$5
-ETCDSERVER=$6
-ETCDPORT="2379"
+#IMAGE_NAME=$1
+#USERNAME=$2
+#PASSWORD=$3
+#DOMAIN=$4
+#WMISERVER=$5
+#ETCDSERVER=$6
+#ETCDPORT="2379"
 CONTAINER_NAME=test
 
 finish_test() {
@@ -20,6 +20,23 @@ finish_test() {
     echo "Test finished."
     exit $out
 }
+
+check_var() {
+    varname=$1
+    eval v='$'$varname
+    if [ -z "$v" ]; then
+        echo "Undefined $varname variable. Cannot continue."
+        exit 1
+    fi
+}
+
+check_var IMAGE_NAME
+check_var USERNAME
+check_var PASSWORD
+check_var DOMAIN
+check_var WMISERVER
+check_var ETCDSERVER
+check_var ETCDPORT
 
 echo "Creating container ${CONTAINER_NAME}"
 LOG_CONT=$(docker create -it --rm --name ${CONTAINER_NAME} --mount type=bind,source=${DIR},destination=/opt/samana ${IMAGE_NAME} 2>&1)
