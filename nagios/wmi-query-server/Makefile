@@ -14,4 +14,4 @@ clean: $(LIBS)
 
 
 test:
-	docker run -it --rm --name test --mount type=bind,source=$(pwd),destination=/opt/samana pywmi:v1 /bin/bash
+	docker run -it --rm --name test --mount type=bind,source=\$(pwd),destination=/opt/samana pywmi:v1 /bin/bash
