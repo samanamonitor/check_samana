@@ -59,3 +59,19 @@ if [ "$out" != "0" ]; then
     exit $out
 fi
 echo "Data collected."
+echo "Checking data"
+classes=$(echo $q | jq -r '.queries[] .name')
+for c in $classes; do
+    o=$(echo $sdata | jq -r ".$c")
+    if [ "$o" == "null" ]; then
+        echo "* Unable to get class $c from data"
+    fi
+done
+echo "Data checked."
+LOG_CONT=$(docker stop ${CONTAINER_NAME} 2>&1)
+out=$?
+if [ "$?" != "0" ]; then
+    echo "Error stopping container($CONTAINER_NAME)."
+    echo $LOG_CONT
+fi
+echo "Test finished."
