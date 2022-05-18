@@ -47,6 +47,7 @@ if [ "$?" != "0" ]; then
     exit $out
 fi
 echo "Container(${CONTAINER_NAME}) started successfully."
+sleep 5
 q=$(sed -e "s/%USERNAME%/$USERNAME/" \
         -e "s/%PASSWORD%/$PASSWORD/" \
         -e "s/%DOMAIN%/$DOMAIN/" \
