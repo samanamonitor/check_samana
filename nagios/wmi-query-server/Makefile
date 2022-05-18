@@ -15,9 +15,14 @@ pywmi.so:
 $(DIRS):
 	$(MAKE) -C $@
 
+rebuild:
+	docker image rm $(IMAGE_NAME)
+	docker build -t $(IMAGE_NAME) .
+
 clean: $(LIBS) pywmi.so
 	rm -f $^
 	docker image rm $(IMAGE_NAME)
 
 test:
 	docker create -it --rm --name test --mount type=bind,source=$(CUR_DIR),destination=/opt/samana $(IMAGE_NAME)
+	docker start test
