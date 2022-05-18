@@ -1,5 +1,5 @@
 .PHONY: $(DIRS)
-LIBS = $(wildcard ../*.py)
+LIBS = $(wildcard ../lib/*.py)
 
 all: $(LIBS)
 	echo $^
