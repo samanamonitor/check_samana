@@ -42,7 +42,7 @@ q=$(sed -e "s/%USERNAME%/$USERNAME/" \
         -e "s/%ETCDSERVER%/$ETCDSERVER/" \
         -e "s/%ETCDPORT%/$ETCDPORT/" ${DIR}/query-test.json)
 echo "Sending Query to container."
-res=$(curl -d "$q" http://${CONT_IP}/wmi 2>&1)
+res=$(curl -s -d "$q" http://${CONT_IP}/wmi 2>&1)
 out=$?
 if [ "$out" != "0" ]; then
     echo "Error sending query."
