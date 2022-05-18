@@ -1,6 +1,8 @@
 #!/bin/bash
 
-set -x 
+if [ -n "$SAMANA_DEBUG" ]; then
+    set -x
+fi
 
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 #IMAGE_NAME=$1
