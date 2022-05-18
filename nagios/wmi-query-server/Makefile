@@ -20,4 +20,4 @@ clean: $(LIBS) pywmi.so
 	docker image rm $(IMAGE_NAME)
 
 test:
-	docker run -it --rm --name test --mount type=bind,source=$(CUR_DIR),destination=/opt/samana $(IMAGE_NAME) /bin/bash
+	docker create -it --rm --name test --mount type=bind,source=$(CUR_DIR),destination=/opt/samana $(IMAGE_NAME)
