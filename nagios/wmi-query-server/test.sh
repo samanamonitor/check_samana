@@ -27,6 +27,13 @@ if [ "$?" != "0" ]; then
     echo $LOG_CONT
     exit $out
 fi
+CONT_IP=$(docker inspect test | jq -r .[0].NetworkSettings.Networks.bridge.IPAddress 2>&1)
+out=$?
+if [ "$?" != "0" ]; then
+    echo "Unable to get IP address of the container"
+    echo $CONT_IP
+    exit $out
+fi
 echo "Container(${CONTAINER_NAME}) started successfully."
 q=$(sed -e "s/%USERNAME%/$USERNAME/" \
         -e "s/%PASSWORD%/$PASSWORD/" \
