@@ -7,3 +7,5 @@ COPY wmi-query-server.py /usr/local/nagios/share/wsgi/
 RUN a2enconf wmi-query-server
 RUN mkdir -p /usr/lib/python3/dist-packages/samana
 COPY base.py etcd.py nagios.py /usr/lib/python3/dist-packages/samana/
+COPY start.sh /
+ENTRYPOINT /start.sh
