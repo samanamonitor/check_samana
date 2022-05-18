@@ -2,7 +2,7 @@ LIBS = $(notdir $(wildcard ../lib/*.py))
 CUR_DIR = $(realpath .)
 IMAGE_NAME = pywmi:v1
 
-all: $(LIBS)
+all: $(LIBS) pywmi.so
 	docker build -t $(IMAGE_NAME) .
 
 $(LIBS):
@@ -15,7 +15,7 @@ pywmi.so:
 $(DIRS):
 	$(MAKE) -C $@
 
-clean: $(LIBS)
+clean: $(LIBS) pywmi.so
 	rm -f $^
 	docker image rm $(IMAGE_NAME)
 
