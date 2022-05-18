@@ -5,7 +5,7 @@ all: $(LIBS)
 	echo $^
 
 $(LIBS):
-	cp ../lib/$@.py .
+	cp ../lib/$@ .
 
 $(DIRS):
 	$(MAKE) -C $@
