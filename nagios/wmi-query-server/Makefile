@@ -1,8 +1,7 @@
-.PHONY: $(DIRS)
 LIBS = $(notdir $(wildcard ../lib/*.py))
 
 all: $(LIBS)
-	echo $^
+	docker build -t pywmi:v1 .
 
 $(LIBS):
 	cp ../lib/$@ .
