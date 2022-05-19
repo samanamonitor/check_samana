@@ -30,4 +30,4 @@ dist pywmi_v1.tar.gz: pywmi_v1.tar
 	gzip pywmi_v1.tar
 
 upload: pywmi_v1.tar.gz
-	aws s3api put-object --bucket monitor.samanagroup.co --key $@ --body $@ --acl public-read
+	aws s3api put-object --bucket monitor.samanagroup.co --key $^ --body $^ --acl public-read
