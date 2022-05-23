@@ -36,21 +36,21 @@ data = {
             "namespace": "root\\cimv2",
             "query": "SELECT * FROM Win32_OperatingSystem",
             "class": ""
-        },{
-            "name": "disk",
-            "namespace": "root\\cimv2",
-            "query": "SELECT * FROM Win32_LogicalDisk",
-            "class": ""
-        },{
-            "name": "cpu",
-            "namespace": "root\\cimv2",
-            "query": "SELECT * FROM Win32_PerfFormattedData_PerfOS_Processor WHERE Name='_Total'" ,
-            "class": ""
-        },{
-            "name": "pf",
-            "namespace": "root\\cimv2",
-            "query": "SELECT * FROM Win32_PageFileUsage",
-            "class": ""
+#        },{
+#            "name": "disk",
+#            "namespace": "root\\cimv2",
+#            "query": "SELECT * FROM Win32_LogicalDisk",
+#            "class": ""
+#        },{
+#            "name": "cpu",
+#            "namespace": "root\\cimv2",
+#            "query": "SELECT * FROM Win32_PerfFormattedData_PerfOS_Processor WHERE Name='_Total'" ,
+#            "class": ""
+#        },{
+#            "name": "pf",
+#            "namespace": "root\\cimv2",
+#            "query": "SELECT * FROM Win32_PageFileUsage",
+#            "class": ""
 #        },{
 #            "name": "proc",
 #            "namespace": "root\\cimv2",
