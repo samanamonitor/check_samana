@@ -29,7 +29,7 @@ class CheckResult():
         perf = ""
         if isinstance(self.perf_data, list) and len(self.perf_data) > 0:
             perf = "| "
-            perf = " ".join(self.perf_data)
+            perf += " ".join(self.perf_data)
         elif isinstance(self.perf_data, str):
             perf = "| %s" % self.perf_data
 
