@@ -41,11 +41,11 @@ data = {
             "namespace": "root\\cimv2",
             "query": "SELECT * FROM Win32_LogicalDisk",
             "class": ""
-#        },{
-#            "name": "cpu",
-#            "namespace": "root\\cimv2",
-#            "query": "SELECT * FROM Win32_PerfFormattedData_PerfOS_Processor WHERE Name='_Total'" ,
-#            "class": ""
+        },{
+            "name": "cpu",
+            "namespace": "root\\cimv2",
+            "query": "SELECT * FROM Win32_PerfFormattedData_PerfOS_Processor WHERE Name='_Total'" ,
+            "class": ""
 #        },{
 #            "name": "pf",
 #            "namespace": "root\\cimv2",
