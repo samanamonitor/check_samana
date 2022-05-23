@@ -94,7 +94,7 @@ fi
 id=$(echo $res | jq -r .info1 | sed -e "s/.*ID=//")
 echo "Data was sent succesfully to the ETCD server"
 echo "Collecting data saved in ETCD server"
-sdata=$(etcdctl --peers http://${ETCDSERVER}:${ETCDPORT} get /samanamonitor/data/$id 2>&1)
+sdata=$(etcdctl --peers http://${ETCDSERVER}:${ETCDPORT} get /samanamonitor2/data/$id 2>&1)
 out=$?
 if [ "$out" != "0" ]; then
     echo "Unable to collect data from ETCD server."
