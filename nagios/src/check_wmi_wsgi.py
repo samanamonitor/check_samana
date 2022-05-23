@@ -160,8 +160,8 @@ def main(argv):
     except CheckUnknown as e:
         nagout=e
 
-    print(e)
-    exit(e.status)
+    print(nagout)
+    exit(nagout.status)
 
 if __name__ == "__main__":
   main(sys.argv)
