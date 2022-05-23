@@ -115,12 +115,8 @@ def process_thresholds(threshold):
     return ret
 
 def validate_input(data):
-    data['warning'] = process_thresholds(data["warning-str"])
-    data['critical'] = process_thresholds(data["critical-str"])
-    if len(data['warning']) == 0:
-        data['warning'] = process_thresholds('')
-    if len(data['critical']) == 0:
-        data['critical'] = process_thresholds('')
+    data['warning'] = process_thresholds(data.get("warning-str", ""))
+    data['critical'] = process_thresholds(data.get("critical-str", ""))
 
     if 'ttl' not in data:
         data['ttl'] = 300
