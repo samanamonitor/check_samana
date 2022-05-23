@@ -288,6 +288,7 @@ def main(argv):
 
     try:
         validate_input(data)
+        print(data)
         out=process_data(data)
     except json.decoder.JSONDecodeError as e:
         out = CheckUnknown("Unable to decode input", addl=str(e)).result
