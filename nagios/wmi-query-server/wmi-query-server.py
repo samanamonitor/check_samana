@@ -186,11 +186,11 @@ def process_data(data):
         c = etcd.Client(host=data['etcdserver']['address'], port=data['etcdserver']['port'])
         c.put("samanamonitor2/data/%s" % data['ID'], json.dumps(wmi_out), data['ttl'])
 
-        perf_data = ""
+        perf_data = []
         for i in range(len(perfnames)):
             w = data['warning'][i]['value'] if data['warning'][i]['enabled'] else None
             c = data['critical'][i]['value'] if data['critical'][i]['enabled'] else None
-            perf_data += "%s " % perf(perfnames[i], perfvalues[i], w, c)
+            perf_data += [perf(perfnames[i], perfvalues[i], w, c)]
         addl = ""
         if data["debug"] == 1:
             addl += "\n" + ' '.join(sys.argv)
