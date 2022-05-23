@@ -51,7 +51,7 @@ data = {
             "namespace": "root\\cimv2",
             "query": "SELECT * FROM Win32_PageFileUsage",
             "class": ""
-        },{
+#        },{
 #            "name": "proc",
 #            "namespace": "root\\cimv2",
 #            "query": "SELECT * FROM Win32_Process",
