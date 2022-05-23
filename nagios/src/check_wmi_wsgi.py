@@ -7,6 +7,7 @@ import sys, getopt
 import traceback
 from samana.nagios import CheckUnknown, CheckWarning, CheckCritical, CheckResult
 from samana.base import get_dns_ip, ping_host, perf, auth_file
+import urllib
 
 event_level = 2
 event_secs = 300
