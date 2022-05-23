@@ -297,7 +297,7 @@ def main(argv):
         res=process_data(data)
 
     print(res)
-    return res.status
+    return res['status']
 
 if __name__ == "__main__":
     exit(main(sys.argv))
