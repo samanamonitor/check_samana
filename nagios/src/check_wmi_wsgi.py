@@ -106,7 +106,7 @@ Usage:
 def main(argv):
     try:
         opts, args = getopt.getopt(sys.argv[1:], "H:he:t:U:p:n:w:c:m:a:i:N:Y:")
-        url = None
+        wmiproxy = None
 
         for o, a in opts:
             if o == '-H':
