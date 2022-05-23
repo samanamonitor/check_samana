@@ -12,6 +12,14 @@ import urllib.request
 event_level = 2
 event_secs = 300
 
+'''
+Using class Win32_PerfRawData_Counters_ProcessorInformation 
+  will pull the count of ticks within 100nanosecs
+Using class Win32_PerfFormattedData_PerfOS_Processor will 
+  probe raw data multiple times and average data. This is why 
+  it takes 200ms for the query to respond
+'''
+
 ct = time.strptime(time.ctime(time.time() - event_secs))
 timefilter = "%04d%02d%02d%02d%02d%02d.000-000" % (ct.tm_year, ct.tm_mon, ct.tm_mday, ct.tm_hour, ct.tm_min, ct.tm_sec)
 data = {
@@ -41,16 +49,16 @@ data = {
             "namespace": "root\\cimv2",
             "query": "SELECT * FROM Win32_LogicalDisk",
             "class": ""
-        },{
-            "name": "cpu",
-            "namespace": "root\\cimv2",
-            "query": "SELECT * FROM Win32_PerfRawData_Counters_ProcessorInformation WHERE Name='_Total'" ,
-            "class": ""
 #        },{
-#            "name": "pf",
+#            "name": "cpu",
 #            "namespace": "root\\cimv2",
-#            "query": "SELECT * FROM Win32_PageFileUsage",
+#            "query": "SELECT * FROM Win32_PerfFormattedData_PerfOS_Processor WHERE Name='_Total'" ,
 #            "class": ""
+        },{
+            "name": "pf",
+            "namespace": "root\\cimv2",
+            "query": "SELECT * FROM Win32_PageFileUsage",
+            "class": ""
 #        },{
 #            "name": "proc",
 #            "namespace": "root\\cimv2",
