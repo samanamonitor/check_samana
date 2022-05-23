@@ -61,24 +61,24 @@ data = {
             "namespace": "root\\cimv2",
             "query" : "SELECT Name, DisplayName, ProcessId, Started, StartName, State, Status FROM Win32_Service",
             "class": ""
-        },{
-            "name": "evt_system",
-            "namespace": "root\\cimv2",
-            "query": "SELECT * FROM Win32_NTLogEvent WHERE TimeGenerated > '%s' and EventType <= %d and Logfile = 'System'" % 
-                (timefilter, 2),
-            "class": ""
-        },{
-            "name": "evt_application",
-            "namespace": "root\\cimv2",
-            "query": "SELECT * FROM Win32_NTLogEvent WHERE TimeGenerated > '%s' and EventType <= %d and Logfile = 'Application'" % 
-                (timefilter, 2),
-            "class": ""
-        },{
-            "name": "evt_sf",
-            "namespace": "root\\cimv2",
-            "query": "SELECT * FROM Win32_NTLogEvent WHERE TimeGenerated > '%s' and EventType <= %d and Logfile = 'Citrix Delivery Services'" % 
-                (timefilter, 2),
-            "class": ""
+#        },{
+#            "name": "evt_system",
+#            "namespace": "root\\cimv2",
+#            "query": "SELECT * FROM Win32_NTLogEvent WHERE TimeGenerated > '%s' and EventType <= %d and Logfile = 'System'" % 
+#                (timefilter, 2),
+#            "class": ""
+#        },{
+#            "name": "evt_application",
+#            "namespace": "root\\cimv2",
+#            "query": "SELECT * FROM Win32_NTLogEvent WHERE TimeGenerated > '%s' and EventType <= %d and Logfile = 'Application'" % 
+#                (timefilter, 2),
+#            "class": ""
+#        },{
+#            "name": "evt_sf",
+#            "namespace": "root\\cimv2",
+#            "query": "SELECT * FROM Win32_NTLogEvent WHERE TimeGenerated > '%s' and EventType <= %d and Logfile = 'Citrix Delivery Services'" % 
+#                (timefilter, 2),
+#            "class": ""
         }]
     }
 
