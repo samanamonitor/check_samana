@@ -36,11 +36,11 @@ data = {
             "namespace": "root\\cimv2",
             "query": "SELECT * FROM Win32_OperatingSystem",
             "class": ""
-#        },{
-#            "name": "disk",
-#            "namespace": "root\\cimv2",
-#            "query": "SELECT * FROM Win32_LogicalDisk",
-#            "class": ""
+        },{
+            "name": "disk",
+            "namespace": "root\\cimv2",
+            "query": "SELECT * FROM Win32_LogicalDisk",
+            "class": ""
 #        },{
 #            "name": "cpu",
 #            "namespace": "root\\cimv2",
