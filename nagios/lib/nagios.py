@@ -31,7 +31,7 @@ class CheckResult():
             perf = " | "
             perf += " ".join(self.perf_data)
         elif isinstance(self.perf_data, str):
-            perf = "| %s" % self.perf_data
+            perf = " | %s" % self.perf_data
 
         addl = ""
         if self.addl is not None:
