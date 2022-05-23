@@ -150,15 +150,15 @@ def main(argv):
         out=json.loads(outstr.decode('utf-8'))
 
         if out["status"] == 1:
-            nagout=CheckWarning(out["info1"], out["perf1"], out["info2"])
+            nagout=CheckWarning(out["info1"], out["perf1"], out["info2"]).result
         elif out["status"] == 2:
-            nagout=CheckCritical(out["info1"], out["perf1"], out["info2"])
+            nagout=CheckCritical(out["info1"], out["perf1"], out["info2"]).result
         elif out["status"] == 3:
-            nagout=CheckUnknown(out["info1"], out["perf1"], out["info2"])
+            nagout=CheckUnknown(out["info1"], out["perf1"], out["info2"]).result
         else:
             nagout=CheckResult(out["info1"], out["perf1"], out["info2"])
     except CheckUnknown as e:
-        nagout=e
+        nagout=e.result
 
     print(nagout)
     exit(nagout.status)
