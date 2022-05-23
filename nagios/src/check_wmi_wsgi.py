@@ -138,7 +138,7 @@ def main(argv):
             elif o == '-h':
                 raise CheckUnknown("Help", addl=usage())
             else:
-                raise CheckUnknown("Unknown Argument %s" % a, addl=usage())
+                raise CheckUnknown("Unknown Argument '%s'" % a, addl=usage())
 
         if wmiproxy is None or wmiproxy == "":
             raise CheckUnknown("Invalide WMI proxy URL")
