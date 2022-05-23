@@ -30,7 +30,7 @@ data = {
     "queries": []
 }
 STATUS = [ 'OK', 'WARNING', 'CRITICAL', 'UNKNOWN' ]
-perfnames = [ 'dns', 'loss', 'ping', 'wmitime' ]
+perfnames = [ 'dns', 'loss', 'ping', 'wmitime', 'etcdtime' ]
 
 def usage(msg):
   return """%sCheck WMI v1.0.0
@@ -181,9 +181,10 @@ def process_data(data):
         perfvalues[3] = int((time.time() - wmi_start) * 1000)
 
         data['ID'] = get_id(wmi_out, data['id-type'])
+        etcd_start = time.time()
         c = etcd.Client(host=data['etcdserver']['address'], port=data['etcdserver']['port'])
         c.put("samanamonitor2/data/%s" % data['ID'], json.dumps(wmi_out), data['ttl'])
-
+        perfvalues[4] = int((time.time() - etcd_start) * 1000)
         perf_data = []
         for i in range(len(perfnames)):
             w = data['warning'][i]['end']['value'] if data['warning'][i]['enabled'] else None
