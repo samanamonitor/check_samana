@@ -57,10 +57,10 @@ data = {
 #            "query": "SELECT * FROM Win32_Process",
 #            "class": ""
 #        },{
-            "name": "services",
-            "namespace": "root\\cimv2",
-            "query" : "SELECT Name, DisplayName, ProcessId, Started, StartName, State, Status FROM Win32_Service",
-            "class": ""
+#            "name": "services",
+#            "namespace": "root\\cimv2",
+#            "query" : "SELECT Name, DisplayName, ProcessId, Started, StartName, State, Status FROM Win32_Service",
+#            "class": ""
 #        },{
 #            "name": "evt_system",
 #            "namespace": "root\\cimv2",
