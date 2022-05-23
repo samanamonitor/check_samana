@@ -44,7 +44,7 @@ data = {
         },{
             "name": "cpu",
             "namespace": "root\\cimv2",
-            "query": "SELECT * FROM Win32_PerfFormattedData_PerfOS_Processor WHERE Name='_Total'" ,
+            "query": "SELECT * FROM Win32_PerfRawData_Counters_ProcessorInformation WHERE Name='_Total'" ,
             "class": ""
 #        },{
 #            "name": "pf",
