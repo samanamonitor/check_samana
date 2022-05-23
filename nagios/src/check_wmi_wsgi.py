@@ -105,7 +105,7 @@ Usage:
 
 def main(argv):
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "H:he:t:U:p:n:w:c:m:a:i:N:Y:")
+        opts, args = getopt.getopt(sys.argv[1:], "H:he:t:U:p:w:c:a:i:Y:")
         wmiproxy = None
 
         for o, a in opts:
