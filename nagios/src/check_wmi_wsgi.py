@@ -142,7 +142,7 @@ def main(argv):
 
         if data["hostname"] is None or data["hostname"] == "":
             raise CheckUnknown("Host Address not defined")
-        if data["auth"]["username"] is None or data["auth"]["username"] = "":
+        if data["auth"]["username"] is None or data["auth"]["username"] == "":
             raise CheckUnknown("Auth data not defined")
 
         res=urllib.request.urlopen(wmiproxy,data=json.dumps(data).encode('utf-8'))
