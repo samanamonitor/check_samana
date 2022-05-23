@@ -18,12 +18,22 @@ class CheckUnknown(CheckException):
     pass
 
 class CheckResult():
-    def __init__(self, info, perf_data=None, addl=None, status=0, status_str="OK"):
+    def __init__(self, info, perf_data=[], addl=None, status=0, status_str="OK"):
         self.info = info
-        self.perf_data = " | %s" % perf_data if perf_data is not None else ""
+        self.perf_data = perf_data
         self.addl = "\n%s" % addl if addl is not None else ""
         self.status = status
         self.status_str = status_str
 
     def __str__(self):
-        return "%s - %s%s%s" % (self.status_str, self.info, self.perf_data, self.addl)
+        perf = ""
+        if isinstance(self.perf_data, list) and len(self.perf_data) > 0:
+            perf = "| "
+            perf = " ".join(self.perf_data)
+        elif isinstance(self.perf_data, str):
+            perf = "| %s" % self.perf_data
+
+        addl = ""
+        if self.addl is not None:
+            addl = "\n%s" % self.addl
+        return "%s - %s%s%s" % (self.status_str, self.info, perf, addl)
