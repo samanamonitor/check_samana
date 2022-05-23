@@ -31,7 +31,7 @@ $(IMAGE_TAR):
 	docker image save $(IMAGE_NAME) > $@
 
 dist $(IMAGE_FILE): $(IMAGE_TAR)
-	gzip $^
+	gzip -f $^
 
 upload: $(IMAGE_FILE)
 	aws s3api put-object --bucket $(S3BUCKET) --key $^ --body $^ --acl public-read
