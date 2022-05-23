@@ -23,6 +23,8 @@ data = {
     "etcdserver": { "address": "127.0.0.1", "port": "2379", "secure": False },
     "warning": [],
     "critical": [],
+    "warning-str": "",
+    "critical-str": "",
     "ttl": 300,
     "id-type": "fqdn",
     "queries": []
@@ -113,6 +115,13 @@ def process_thresholds(threshold):
     return ret
 
 def validate_input(data):
+    data['warning'] = process_thresholds(data["warning-str"])
+    data['critical'] = process_thresholds(data["critical-str"])
+    if len(data['warning']) == 0:
+        data['warning'] = process_thresholds('')
+    if len(data['critical']) == 0:
+        data['critical'] = process_thresholds('')
+
     if 'ttl' not in data:
         data['ttl'] = 300
     if 'debug' not in data:
@@ -155,6 +164,7 @@ def get_id(data, idtype='md5'):
 
 def process_data(data):
     try:
+
         perfvalues = [0] * len(perfnames)
         (hostip, perfvalues[0]) = get_dns_ip(data["hostname"])
         ping_data = ping_host(hostip, count=1)
@@ -178,7 +188,7 @@ def process_data(data):
 
         data['ID'] = get_id(wmi_out, data['id-type'])
         c = etcd.Client(host=data['etcdserver']['address'], port=data['etcdserver']['port'])
-        c.put("samanamonitor/data/%s" % data['ID'], json.dumps(wmi_out), data['ttl'])
+        c.put("samanamonitor2/data/%s" % data['ID'], json.dumps(wmi_out), data['ttl'])
 
         perf_data = ""
         for i in range(len(perfnames)):
@@ -212,10 +222,6 @@ def application (environ, start_response):
         request_body_size = 0
     try:
         data = json.load(environ['wsgi.input'])
-        if 'warning' not in data or not isinstance(data['warning'], list) or len(data['warning']) == 0:
-            data['warning'] = process_thresholds('')
-        if 'critical' not in data or not isinstance(data['critical'], list) or len(data['critical']) == 0:
-            data['critical'] = process_thresholds('')
         res = validate_input(data)
     except json.decoder.JSONDecodeError as e:
         res = { 
@@ -278,9 +284,9 @@ def main(argv):
         elif o == '-t':
             data['ttl'] = a
         elif o == '-w':
-            data['warning'] = process_thresholds(a)
+            data["warning-str"] = a
         elif o == '-c':
-            data['critical'] = process_thresholds(a)
+            data["critical-str"] = a
         elif o == '-a':
             (data['auth']['username'], data['auth']['password'], 
                 data['auth']['domain']) = auth_file(a)
@@ -289,11 +295,6 @@ def main(argv):
         elif o == '-h':
             print(usage())
             return 3
-
-    if len(data['warning']) == 0:
-        data['warning'] = process_thresholds('')
-    if len(data['critical']) == 0:
-        data['critical'] = process_thresholds('')
 
     res = validate_input(data)
     if res['status'] == 0:
