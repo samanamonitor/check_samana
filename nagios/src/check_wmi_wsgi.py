@@ -52,11 +52,11 @@ data = {
             "query": "SELECT * FROM Win32_PageFileUsage",
             "class": ""
         },{
-            "name": "proc",
-            "namespace": "root\\cimv2",
-            "query": "SELECT * FROM Win32_Process",
-            "class": ""
-        },{
+#            "name": "proc",
+#            "namespace": "root\\cimv2",
+#            "query": "SELECT * FROM Win32_Process",
+#            "class": ""
+#        },{
             "name": "services",
             "namespace": "root\\cimv2",
             "query" : "SELECT Name, DisplayName, ProcessId, Started, StartName, State, Status FROM Win32_Service",
