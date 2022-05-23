@@ -111,7 +111,7 @@ def main(argv):
         for o, a in opts:
             if o == '-H':
                 data["hostname"] = a
-            if o == '-Y':
+            elif o == '-Y':
                 wmiproxy = a
             elif o == '-U':
                 temp = a.split("\\")
