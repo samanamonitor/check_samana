@@ -210,13 +210,14 @@ def process_data(data):
 
 def application (environ, start_response):
 
+    res = {}
     try:
         request_body_size = int(environ.get('CONTENT_LENGTH', 0))
     except (ValueError):
         request_body_size = 0
     try:
         data = json.load(environ['wsgi.input'])
-        res = validate_input(data)
+        validate_input(data)
         out=process_data(data)
     except json.decoder.JSONDecodeError as e:
         out = CheckUnknown("Unable to decode input", addl=str(e)).result
@@ -286,7 +287,7 @@ def main(argv):
             return 3
 
     try:
-        res = validate_input(data)
+        validate_input(data)
         out=process_data(data)
     except json.decoder.JSONDecodeError as e:
         out = CheckUnknown("Unable to decode input", addl=str(e)).result
