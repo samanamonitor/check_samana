@@ -151,6 +151,7 @@ def main(argv):
         res=urllib.request.urlopen(wmiproxy,data=json.dumps(data).encode('utf-8'))
         outstr=res.read()
         out=json.loads(outstr.decode('utf-8'))
+        print(out)
 
         if out["status"] == 1:
             nagout=CheckWarning(out["info1"], out["perf1"], out["info2"]).result
