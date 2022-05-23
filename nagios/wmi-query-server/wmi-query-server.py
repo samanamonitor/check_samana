@@ -123,28 +123,26 @@ def validate_input(data):
     if 'debug' not in data:
         data['debug'] = 0
     if data["auth"]["username"] == "":
-        return { "status": 3, "info1": "Missing Username"}
+        raise CheckUnknown("Missing Username")
     if data["auth"]["password"] == "":
-        return { "status": 3, "info1": "Missing Password"}
+        raise CheckUnknown("Missing Password")
     if data["hostname"] == "":
-        return { "status": 3, "info1": "Missing Hostname"}
+        raise CheckUnknown("Missing Hostname")
     if not data["etcdserver"]["port"].isnumeric():
-        return { "status": 3, "info1": "Invalid Etcd Server port"}
+        raise CheckUnknown("Invalid Etcd Server port")
     if not isinstance(data["queries"], list) and len(data["queries"]) == 0:
-        return { "status": 3, "info1": "Missing Queries"}
+        raise CheckUnknown("Missing Queries")
     for i in range(len(data["queries"])):
         if "name" not in data["queries"][i] or \
             "namespace" not in data["queries"][i] or \
             "query" not in data["queries"][i]:
-            return {"status": 3, "info1": "Invalid query"}
+            raise CheckUnknown("Invalid query %s" % data["queries"])
     if len(data["warning"]) != len(perfnames):
-        return { "status": 3, "info1": "Invalid warning data %s" % json.dumps(data["warning"])}
+        raise CheckUnknown("Invalid warning data %s" % json.dumps(data["warning"]))
     for i in range(len(perfnames)):
         if data["warning"][i]["error"]:
-            return { "status": 3, 
-                "info1": "Invalid warning data at %s with string %s" % 
-                    (data["warning"][i]["name"], data["warning"][i]["str"])}
-    return {"status": 0}
+            raise CheckUnknown("Invalid warning data at %s with string %s" % 
+                    (data["warning"][i]["name"], data["warning"][i]["str"]))
 
 def get_id(data, idtype='md5'):
     computer = data['computer'][0]['properties']
@@ -219,22 +217,17 @@ def application (environ, start_response):
     try:
         data = json.load(environ['wsgi.input'])
         res = validate_input(data)
+        out=process_data(data)
     except json.decoder.JSONDecodeError as e:
-        res = { 
-            "status": 3,
-            "info1": "Unable to decode input",
-            "perf1": "",
-            "info2": str(e),
-            "perf2": ""
-            }
+        out = CheckUnknown("Unable to decode input", addl=str(e)).result
+    except CheckException as e:
+        out = e.result
 
-    if res['status'] == 0:
-        temp=process_data(data)
-        res['status'] = temp.status
-        res['info1'] = temp.info
-        res['perf1'] = temp.perf_data
-        res['info2'] = temp.addl
-        res['perf2'] = ""
+    res['status'] = out.status
+    res['info1'] = out.info
+    res['perf1'] = out.perf_data
+    res['info2'] = out.addl
+    res['perf2'] = ""
 
     response_body = json.dumps(res).encode('utf-8')
 
@@ -292,12 +285,16 @@ def main(argv):
             print(usage())
             return 3
 
-    res = validate_input(data)
-    if res['status'] == 0:
-        res=process_data(data)
+    try:
+        res = validate_input(data)
+        out=process_data(data)
+    except json.decoder.JSONDecodeError as e:
+        out = CheckUnknown("Unable to decode input", addl=str(e)).result
+    except CheckException as e:
+        out = e.result
 
-    print(res)
-    return res['status']
+    print(out)
+    return out.status
 
 if __name__ == "__main__":
     exit(main(sys.argv))
