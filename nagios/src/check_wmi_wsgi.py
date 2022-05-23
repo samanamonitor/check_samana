@@ -140,7 +140,7 @@ def main(argv):
             else:
                 raise CheckUnknown("Unknown Argument", addl=usage())
 
-        if data["hostname"] is None or data["hostname"] = "":
+        if data["hostname"] is None or data["hostname"] == "":
             raise CheckUnknown("Host Address not defined")
         if data["auth"]["username"] is None or data["auth"]["username"] = "":
             raise CheckUnknown("Auth data not defined")
