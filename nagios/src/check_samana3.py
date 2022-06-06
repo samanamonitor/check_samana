@@ -3,7 +3,7 @@
 import sys, getopt
 import json
 import re
-import samanaetcd as etcd
+import samana.etcd as etcd
 import time
 
 debug = 0
