@@ -64,12 +64,12 @@ int Error_init(EtcdErrorObject *self, PyObject *args, PyObject *kwds)
         return -1;
 
     char *json_str = PyUnicode_AsUTF8(py_json);
+    json_error_t error_json;
+    json_t *root = NULL;
     if(json_str == NULL) {
         PyErr_Format(EtcdException, "Invalid Init data %S", py_json);
         goto exit;
     }
-    json_error_t error_json;
-    json_t *root = NULL;
     root = json_loads(json_str, 0, &error_json);
     if(!root) {
         PyErr_Format(EtcdException, "JSON error: on line %d: %s\n%s", error_json.line, error_json.text, json_str);
