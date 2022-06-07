@@ -406,7 +406,7 @@ def main(argv):
             port=url_re.group(4)
             if port is None:
                 port=2379
-            c = etcd.Client(host=host, port=port, protocol=protocol)
+            c = etcd.Client(host=host, port=int(port), protocol=protocol)
         else:
             if etcdserver != '':
                 c = etcd.Client(host=etcdserver, port=etcdport)
