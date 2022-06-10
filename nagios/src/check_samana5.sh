@@ -19,6 +19,10 @@ get-cpu() {
     local WARNING=$2
     local CRITICAL=$3
     CPU=($(echo $JSON_DATA | jq -r ".PercentIdleTime"))
+    if [ "$?" != "0" ]; then
+        echo -e "UNKNOWN - Invalid Data:\n%{JSON_DATA}"
+        return 3
+    fi
     IDLE=${CPU[0]}
     PERCUSED=$(( 100 - ${IDLE} ))
     PERFUSED="cpuLoad=${PERCUSED};${WARNING};${CRITICAL};0;100"
@@ -42,6 +46,10 @@ get-ram() {
     local CRITICAL=$3
     RAM=($(echo ${JSON_DATA} | \
         jq -r ".TotalVisibleMemorySize, .FreePhysicalMemory"))
+    if [ "$?" != "0" ]; then
+        echo -e "UNKNOWN - Invalid Data:\n%{JSON_DATA}"
+        return 3
+    fi
     TOTAL=$((${RAM[0]} / 1024))
     FREE=$((${RAM[1]} / 1024))
     USED=$(($TOTAL - $FREE))
@@ -68,6 +76,10 @@ get-swap() {
     local CRITICAL=$3
     SWAP=($(echo $JSON_DATA | \
         jq -r ".TotalSwapSpaceSize , .FreeSpaceInPagingFiles"))
+    if [ "$?" != "0" ]; then
+        echo -e "UNKNOWN - Invalid Data:\n%{JSON_DATA}"
+        return 3
+    fi
     TOTAL=$(( ${SWAP[0]} / 1024 ))
     FREE=$(( ${SWAP[1]} / 1024 ))
     USED=$(( ${TOTAL} - ${FREE} ))
@@ -95,6 +107,10 @@ get-log() {
     local CRITICAL=$4
     EVENTS=$(echo ${JSON_DATA} | \
         jq ".Events.${LOGNAME}")
+    if [ "$?" != "0" ]; then
+        echo -e "UNKNOWN - Invalid Data:\n%{JSON_DATA}"
+        return 3
+    fi
     if [ "$EVENTS" == "null" ]; then
         echo "UNKNOWN - Event '${LOGNAME}' log not found in server."
         return 3
@@ -127,6 +143,10 @@ get-services() {
         select(.DisplayName + .ServiceName| test(\"${EXCLUDE}\";  \"i\")| not) | 
     { DisplayName: .DisplayName, ServiceName: .ServiceName, Status: .Status, State: .State } ]"
     ALLSERVICES=$(echo ${JSON_DATA} | jq "$q")
+    if [ "$?" != "0" ]; then
+        echo -e "UNKNOWN - Invalid Data:\n%{JSON_DATA}"
+        return 3
+    fi
     RUNNING=$(echo ${ALLSERVICES} | jq "[ .[] | select((.Status == 4) or (.State==\"Running\"))]")
     STOPPED=$(echo ${ALLSERVICES} | jq "[ .[] | select((.Status != 4) or ((.State!=null) and (.State!=\"Running\")))]")
     RUNNING_LEN=$(echo ${RUNNING} | jq "length")
@@ -153,6 +173,10 @@ get-hddrives() {
     local RET=0
     local STATE="OK"
     DISKS=$(echo ${JSON_DATA} | jq ".Disks")
+    if [ "$?" != "0" ]; then
+        echo -e "UNKNOWN - Invalid Data:\n%{JSON_DATA}"
+        return 3
+    fi
     if [ "${DISKS:0:1}" == "{" ]; then #one object
         DISKS=$(echo $DISKS | jq "[ . ]")
     fi
@@ -198,6 +222,10 @@ get-uptime() {
     local WARNING=$2
     local CRITICAL=$3
     UPTIME=$(echo $JSON_DATA | jq ".UpTime | floor")
+    if [ "$?" != "0" ]; then
+        echo -e "UNKNOWN - Invalid Data:\n%{JSON_DATA}"
+        return 3
+    fi
     if [ -n "${CRITICAL}" ] && [ ${UPTIME} -gt ${CRITICAL} ]; then
         RET=2
         STATE="CRITICAL"
