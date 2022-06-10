@@ -257,10 +257,10 @@ if [ -z ${ETCDSERVER} ]; then
     ETCDSERVER="localhost:2379"
 fi
 
-KEY=/samanamonitor2/${HOSTID}
+KEY=/samanamonitor/data/${HOSTID}
 ENDPOINT="http://${ETCDSERVER}"
 
-JSON_DATA=$(etcdctl --endpoints ${ENDPOINT} get ${KEY} 2>&1)
+JSON_DATA=$(etcdctl --endpoint ${ENDPOINT} get ${KEY} 2>&1)
 if [ "$?" != "0" ]; then
     echo "UNKNOWN - $JSON_DATA"
     exit 3
