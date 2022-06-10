@@ -127,7 +127,7 @@ get-log() {
         STATE="OK"
     fi
     echo "${STATE} - Error or Warning Events=${EVENT_COUNT}"
-    echo ${EVENTS} | jq -r .[].Message
+    echo ${EVENTS} | jq -r ".[].Message[0:50]"
     return $RET
 }
 
