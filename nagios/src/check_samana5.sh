@@ -106,7 +106,7 @@ get-log() {
     local WARNING=$3
     local CRITICAL=$4
     EVENTS=$(echo ${JSON_DATA} | \
-        jq ".Events.[\"${LOGNAME}\"]")
+        jq ".Events.\"${LOGNAME}\"")
     if [ "$?" != "0" ]; then
         echo -e "UNKNOWN - Invalid Data:\n${JSON_DATA}"
         return 3
