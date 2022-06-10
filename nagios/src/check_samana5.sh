@@ -20,7 +20,7 @@ get-cpu() {
     local CRITICAL=$3
     CPU=($(echo $JSON_DATA | jq -r ".PercentIdleTime"))
     if [ "$?" != "0" ]; then
-        echo -e "UNKNOWN - Invalid Data:\n%{JSON_DATA}"
+        echo -e "UNKNOWN - Invalid Data:\n${JSON_DATA}"
         return 3
     fi
     IDLE=${CPU[0]}
@@ -47,7 +47,7 @@ get-ram() {
     RAM=($(echo ${JSON_DATA} | \
         jq -r ".TotalVisibleMemorySize, .FreePhysicalMemory"))
     if [ "$?" != "0" ]; then
-        echo -e "UNKNOWN - Invalid Data:\n%{JSON_DATA}"
+        echo -e "UNKNOWN - Invalid Data:\n${JSON_DATA}"
         return 3
     fi
     TOTAL=$((${RAM[0]} / 1024))
@@ -77,7 +77,7 @@ get-swap() {
     SWAP=($(echo $JSON_DATA | \
         jq -r ".TotalSwapSpaceSize , .FreeSpaceInPagingFiles"))
     if [ "$?" != "0" ]; then
-        echo -e "UNKNOWN - Invalid Data:\n%{JSON_DATA}"
+        echo -e "UNKNOWN - Invalid Data:\n${JSON_DATA}"
         return 3
     fi
     TOTAL=$(( ${SWAP[0]} / 1024 ))
@@ -108,7 +108,7 @@ get-log() {
     EVENTS=$(echo ${JSON_DATA} | \
         jq ".Events['${LOGNAME}']")
     if [ "$?" != "0" ]; then
-        echo -e "UNKNOWN - Invalid Data:\n%{JSON_DATA}"
+        echo -e "UNKNOWN - Invalid Data:\n${JSON_DATA}"
         return 3
     fi
     if [ "$EVENTS" == "null" ]; then
@@ -144,7 +144,7 @@ get-services() {
     { DisplayName: .DisplayName, ServiceName: .ServiceName, Status: .Status, State: .State } ]"
     ALLSERVICES=$(echo ${JSON_DATA} | jq "$q")
     if [ "$?" != "0" ]; then
-        echo -e "UNKNOWN - Invalid Data:\n%{JSON_DATA}"
+        echo -e "UNKNOWN - Invalid Data:\n${JSON_DATA}"
         return 3
     fi
     RUNNING=$(echo ${ALLSERVICES} | jq "[ .[] | select((.Status == 4) or (.State==\"Running\"))]")
@@ -174,7 +174,7 @@ get-hddrives() {
     local STATE="OK"
     DISKS=$(echo ${JSON_DATA} | jq ".Disks")
     if [ "$?" != "0" ]; then
-        echo -e "UNKNOWN - Invalid Data:\n%{JSON_DATA}"
+        echo -e "UNKNOWN - Invalid Data:\n${JSON_DATA}"
         return 3
     fi
     if [ "${DISKS:0:1}" == "{" ]; then #one object
@@ -223,7 +223,7 @@ get-uptime() {
     local CRITICAL=$3
     UPTIME=$(echo $JSON_DATA | jq ".UpTime | floor")
     if [ "$?" != "0" ]; then
-        echo -e "UNKNOWN - Invalid Data:\n%{JSON_DATA}"
+        echo -e "UNKNOWN - Invalid Data:\n${JSON_DATA}"
         return 3
     fi
     if [ -n "${CRITICAL}" ] && [ ${UPTIME} -gt ${CRITICAL} ]; then
