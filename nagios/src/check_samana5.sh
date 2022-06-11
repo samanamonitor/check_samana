@@ -311,7 +311,7 @@ case ${MODULE} in
         if [ -z "${SUBMODULE}" ]; then
             usage "Log name not defined. Use -s <log name>"
         fi
-        get-log "${JSON_DATA}" ${SUBMODULE} ${WARNING} ${CRITICAL}
+        get-log "${JSON_DATA}" "${SUBMODULE}" ${WARNING} ${CRITICAL}
         ret=$?
         ;;
     services )
