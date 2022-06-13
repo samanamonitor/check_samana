@@ -6,6 +6,9 @@ CFLAGS=-DNDEBUG -g -O3 -Wall -fPIC -Wstrict-prototypes \
 etcd.so: etcd.o client.o exception.o result.o
 	$(CC) -shared $^ -o $@ -lcurl -lpython$(PYTHON_VER)m -ljansson
 
+install:
+
+
 test:
 	python3 test.py
 
