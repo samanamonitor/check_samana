@@ -9,6 +9,8 @@ S3BUCKET = monitor.samanagroup.co
 all build: $(LIBS) pywmi.so
 	docker build -t $(IMAGE_NAME) .
 
+install:
+
 $(LIBS):
 	cp ../lib/$@ .
 
