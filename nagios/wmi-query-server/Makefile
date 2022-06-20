@@ -6,6 +6,9 @@ IMAGE_TAR = pywmi_$(IMAGE_VERSION).tar
 IMAGE_FILE = $(IMAGE_TAR).gz
 S3BUCKET = monitor.samanagroup.co
 
+dummy:
+
+
 all build: $(LIBS) pywmi.so
 	docker build -t $(IMAGE_NAME) .
 
