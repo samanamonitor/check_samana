@@ -44,7 +44,7 @@ Function create-definition {
                 $def[$member] = @{}
                 [Enum]::GetNames($t.FullName)  | % {
                     $num = $t::$_.value__
-                    $def[$member][$_]=$num
+                    $def[$member][$num]=$_
                 }
             }
         }
