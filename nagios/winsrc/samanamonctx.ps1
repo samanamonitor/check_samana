@@ -39,9 +39,9 @@ Function create-definition {
     $m | Get-Member | ForEach {
         $member=$_.Name
         if ($m."$member" -ne $null ) {
-            $def[$member] = @{}
             $t=($m."$member").GetType()
             if($t.BaseType.ToString() -eq "System.Enum") {
+                $def[$member] = @{}
                 [Enum]::GetNames($t.FullName)  | % {
                     $num = $t::$_.value__
                     $def[$member][$_]=$num
