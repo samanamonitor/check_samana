@@ -33,6 +33,25 @@ Function get-config {
     } catch {}
 }
 
+Function create-definition {
+    param( $m )
+    $def=@{}
+    $m | Get-Member | ForEach {
+        $member=$_.Name
+        if ($m."$member" -ne $null ) {
+            $def[$member] = @{}
+            $t=($m."$member").GetType()
+            if($t.BaseType.ToString() -eq "System.Enum") {
+                [Enum]::GetNames($t.FullName)  | % {
+                    $num = $t::$_.value__
+                    $def[$member][$_]=$num
+                }
+            }
+        }
+    }
+    return $def
+}
+
 Add-PSSnapin Citrix.*
 
 $ComputerName=$env:COMPUTERNAME.ToLower()
@@ -61,8 +80,11 @@ $DesktopGroup["none"] = @{
     "Registered" = 0;
 }
 
-
+$definitions = $null
 Get-BrokerMachine -MaxRecordCount 5000 | ForEach {
+    if ($definitions -eq $null) {
+        $definitions = create-definition $_
+    }
     if($_.DesktopGroupName -eq $null) {
         $dg = $DesktopGroup["none"]
     } else {
@@ -91,6 +113,7 @@ Get-BrokerMachine -MaxRecordCount 5000 | ForEach {
     $epoch = [Math]::Floor([decimal](Get-Date(Get-Date).ToUniversalTime()-uformat "%s"))
     $_ | Add-Member -NotePropertyName epoch -NotePropertyValue 0
     $_.epoch = $epoch
+    $_ | Add-Member -NotePropertyName Definitions -NotePropertyValue $definitions
     $value = $_ | ConvertTo-JSON -Compress
     if ($_.DnsName -ne "" ) {
         $res = Invoke-WebRequest -UseBasicParsing -Method "PUT" -Body @{value=$value; ttl=$ttl} `
