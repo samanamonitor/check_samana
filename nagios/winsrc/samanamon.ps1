@@ -79,7 +79,7 @@ $computer = Get-WmiObject -Query $query
 $data['DNSHostName'] = $computer.DNSHostName
 $data['Domain'] = $computer.Domain
 
-$ComputerFQDN = "$($data['DNSHostName']).$($data['Domain'])"
+$ComputerFQDN = "$($data['DNSHostName']).$($data['Domain'])".ToLower()
 $utf8 = New-Object -TypeName System.Text.UTF8Encoding
 if($idMethod -eq "md5") {
     $hash = New-Object -TypeName System.Security.Cryptography.MD5CryptoServiceProvider
