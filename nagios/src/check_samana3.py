@@ -12,6 +12,35 @@ def help():
     print "%s\n%s -H <hostid> -m <module> [-s <submodule>] [-c <critical>] [-w <warning>]" % (sys.argv, sys.argv[0])
     sys.exit(3)
 
+def getConfig(name):
+    loglevel = 4
+    configfile = "/usr/local/nagios/etc/check_samana/config.json"
+    ex = []
+    crit = []
+
+    try:
+        file = open(configfile, "r")
+        temp = json.load(file)
+        file.close()
+    except Exception as e:
+        print "UNKNOWN - Cannot read configuration file %s: %s" % (configfile, e)
+        print environ
+        exit(3)
+
+    if debug:
+        print name
+    if name in temp:
+        if 'exceptions' in temp[name]:
+            ex = temp[name]['exceptions']
+        if 'level' in temp[name]:
+            loglevel = temp[name]['level']
+        if 'critical' in temp[name]:
+            crit = temp[name]['critical']
+
+    if debug:
+        print ex
+    return (loglevel, ex, crit)
+
 def cpu(data, crit, warn):
     global debug
     state = "UNKNOWN"
@@ -174,8 +203,8 @@ def log(data, logname, crit, warn):
             if len(messages) > 512:
                 messages += "Truncated..."
                 break;
-            if 'Message' in i:
-                messages += i['Message'] + "\n"
+            if 'Message' in i and i['Message'] is not None:
+                messages += i.get('Message', "") + "\n"
             else:
                 messages += "<UNKNOWN>\n"
 
