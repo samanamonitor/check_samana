@@ -83,7 +83,7 @@ def new_ctx_host(hostdata, role, method="fqdn"):
     host.set_macro('$_HOSTHOME_DDC$', ddc_name)
     if method == "fqdn":
         host_id = host.address
-    elif method == "md5"
+    elif method == "md5":
         host_id = md5(host.address.encode('utf8')).hexdigest().upper()
     host.set_macro('$_HOSTEARGS$', '-idMethod %s' % method)
     host.set_macro('$_HOSTID$', host_id)
