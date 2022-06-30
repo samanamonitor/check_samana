@@ -79,11 +79,14 @@ class Client:
     self.data['hosts'] = {}
     self.machines = []
     cont = True
+    continuationtoken = ""
+
     while cont:
-      data = self.get_data('https://api-us.cloud.com/cvadapis/%s/Machines' % site_id)
+      data = self.get_data('https://api-us.cloud.com/cvadapis/%s/Machines%s' % (site_id, continuationtoken))
       if 'Items' not in data:
         raise Exception("Invalid data received from Citrix Cloud getting machines %s" % (data))
       self.machines += data['Items']
+      continuationtoken = "?ContinuationToken=%s" % data.get("ContinuationToken", "")
       cont = 'ContinuationToken' in data
 
     for m in self.machines:
