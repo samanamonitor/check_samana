@@ -66,7 +66,7 @@ def add_ctx_hg(hg_name, alias):
         autohg.save()
     return dg_hg
 
-def new_ctx_host(hostdata, role):
+def new_ctx_host(hostdata, role, method="fqdn"):
     if "SAMM_Remove" in hostdata['Tags']:
         return None
     hg_alias = hostdata['DesktopGroupName'].lower()
@@ -81,9 +81,12 @@ def new_ctx_host(hostdata, role):
     host.address=hostdata['DNSName'].lower()
     host.set_attribute('use', role)
     host.set_macro('$_HOSTHOME_DDC$', ddc_name)
-    host.set_macro('$_HOSTEARGS$', '-idMethod fqdn')
-    #host_id = md5(hostdata['DNSName'].lower().encode('utf8')).hexdigest().upper()
-    host.set_macro('$_HOSTID$', host.address)
+    if method == "fqdn":
+        host_id = host.address
+    elif method == "md5"
+        host_id = md5(host.address.encode('utf8')).hexdigest().upper()
+    host.set_macro('$_HOSTEARGS$', '-idMethod %s' % method)
+    host.set_macro('$_HOSTID$', host_id)
     host.add_to_hostgroup(hg_name)
     return host
 
