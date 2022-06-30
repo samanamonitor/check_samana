@@ -59,7 +59,7 @@ def add_ctx_hg(hg_name, alias):
     except KeyError:
         dg_hg = Hostgroup(filename=auto_objects)
         dg_hg.hostgroup_name = hg_name
-        dg_hg.alias = hostdata['DesktopGroupName'].lower()
+        dg_hg.alias = alias
         autohg = auto_init()
         autohg.attribute_appendfield('hostgroup_members', dg_hg.get_shortname())
         dg_hg.save()
