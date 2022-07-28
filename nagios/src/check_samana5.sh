@@ -107,6 +107,11 @@ get-log() {
     local CRITICAL=$4
     EVENTS=$(echo ${JSON_DATA} | \
         jq ".Events.\"${LOGNAME}\"")
+    TEMPIFS=$IFS
+    IFS=$'\n'
+    EXCEPTIONS=($(etcdctl get "/samanamonitor/config/${HOSTID}/logs/${LOGNAME}/exception" | 
+            jq ".[] | (.EventCode|tostring) + \"+\" + .SourceName" ))
+    IFS=$TEMPIFS
     if [ "$?" != "0" ]; then
         echo -e "UNKNOWN - Invalid Data:\n${JSON_DATA}"
         return 3
@@ -180,7 +185,7 @@ get-hddrives() {
     if [ "${DISKS:0:1}" == "{" ]; then #one object
         DISKS=$(echo $DISKS | jq "[ . ]")
     fi
-    q=".[] | .Name + \" \" + (.Size|tostring) + \" \" + \
+    q=".[] | select( .DriveType == 3 ) |.Name + \" \" + (.Size|tostring) + \" \" + \
         (.FreeSpace|tostring) + \" \" + \
         ((.Size - .FreeSpace)|tostring) + \" \" + \
         (((.Size - .FreeSpace) * 100 / .Size)|floor|tostring)"
