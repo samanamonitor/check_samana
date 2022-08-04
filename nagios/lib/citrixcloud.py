@@ -80,7 +80,7 @@ class Client:
     self.machines = []
     cont = True
     max_items=50
-    continuationtoken = "?configured=true&async=false"
+    continuationtoken = "?limit=%dconfigured=true&async=false" % max_items
     self.headers['Citrix-InstanceId'] = site_id
     self.headers['User-Agent'] = 'Mozilla/5.0'
 
@@ -90,7 +90,7 @@ class Client:
       if 'Items' not in data:
         raise Exception("Invalid data received from Citrix Cloud getting machines %s" % (data))
       self.machines += data['Items']
-      continuationtoken = "?configured=true&async=false&ContinuationToken=%s" % (data.get("ContinuationToken", ""))
+      continuationtoken = "?limit=%dconfigured=true&async=false&ContinuationToken=%s" % (max_items, data.get("ContinuationToken", ""))
       cont = 'ContinuationToken' in data
 
     for m in self.machines:
