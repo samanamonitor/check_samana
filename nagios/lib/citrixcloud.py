@@ -82,6 +82,7 @@ class Client:
     max_items=50
     continuationtoken = "?configured=true&async=false"
     self.headers['Citrix-InstanceId'] = site_id
+    self.headers['User-Agent'] = 'Mozilla/5.0'
 
     while cont:
       data = self.get_data('https://api-us.cloud.com/cvad/manage/Machines')
