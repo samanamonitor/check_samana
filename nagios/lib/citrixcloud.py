@@ -87,7 +87,7 @@ class Client:
         raise Exception("Invalid data received from Citrix Cloud getting machines %s" % (data))
       self.machines += data['Items']
       continuationtoken = "?ContinuationToken=%s" % data.get("ContinuationToken", "")
-      print(len(self.machines) + continuationtoken)
+      print("%d - %s" % (len(self.machines), continuationtoken))
       cont = 'ContinuationToken' in data
 
     for m in self.machines:
