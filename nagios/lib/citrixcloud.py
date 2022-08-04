@@ -39,6 +39,7 @@ class Client:
     self.expires = time() + float(auth.get('expires_in', '0'))
     self.headers['Authorization'] = "CwsAuth Bearer=%s" % self.token
     self.headers['Citrix-CustomerId'] = self.customer_id
+    self.headers['Citrix-InstanceId'] = self.site_id
 
   def get_data(self, url):
     if time() > self.expires:
@@ -80,14 +81,15 @@ class Client:
     self.machines = []
     cont = True
     max_items=50
-    continuationtoken = "?limit=%d" % (max_items)
+    continuationtoken = "?configured=true&async=false"
 
     while cont:
-      data = self.get_data('https://api-us.cloud.com/cvadapis/%s/Machines%s' % (site_id, continuationtoken))
+      data = self.get_data('https://api-us.cloud.com/cvad/manage/Machines')
+      #data = self.get_data('https://api-us.cloud.com/cvadapis/%s/Machines%s' % (site_id, continuationtoken))
       if 'Items' not in data:
         raise Exception("Invalid data received from Citrix Cloud getting machines %s" % (data))
       self.machines += data['Items']
-      continuationtoken = "?limit=%d&ContinuationToken=%s" % (max_items, data.get("ContinuationToken", ""))
+      continuationtoken = "?configured=true&async=false&ContinuationToken=%s" % (data.get("ContinuationToken", ""))
       cont = 'ContinuationToken' in data
 
     for m in self.machines:
