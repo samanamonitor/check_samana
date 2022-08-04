@@ -86,6 +86,7 @@ class Client:
       if 'Items' not in data:
         raise Exception("Invalid data received from Citrix Cloud getting machines %s" % (data))
       self.machines += data['Items']
+      print(len(self.machines))
       continuationtoken = "?ContinuationToken=%s" % data.get("ContinuationToken", "")
       cont = 'ContinuationToken' in data
 
