@@ -39,7 +39,6 @@ class Client:
     self.expires = time() + float(auth.get('expires_in', '0'))
     self.headers['Authorization'] = "CwsAuth Bearer=%s" % self.token
     self.headers['Citrix-CustomerId'] = self.customer_id
-    self.headers['Citrix-InstanceId'] = self.site_id
 
   def get_data(self, url):
     if time() > self.expires:
@@ -82,6 +81,7 @@ class Client:
     cont = True
     max_items=50
     continuationtoken = "?configured=true&async=false"
+    self.headers['Citrix-InstanceId'] = site_id
 
     while cont:
       data = self.get_data('https://api-us.cloud.com/cvad/manage/Machines')
