@@ -80,13 +80,14 @@ class Client:
     self.machines = []
     cont = True
     max_items=50
-    continuationtoken = "?limit=%dconfigured=true&async=false" % max_items
-    self.headers['Citrix-InstanceId'] = site_id
-    self.headers['User-Agent'] = 'Mozilla/5.0'
+    #continuationtoken = "?limit=%dconfigured=true&async=false" % max_items
+    continuationtoken = "?limit=%d" % max_items
+    #self.headers['Citrix-InstanceId'] = site_id
+    #self.headers['User-Agent'] = 'Mozilla/5.0'
 
     while cont:
-      data = self.get_data('https://api-us.cloud.com/cvad/manage/Machines')
-      #data = self.get_data('https://api-us.cloud.com/cvadapis/%s/Machines%s' % (site_id, continuationtoken))
+      #data = self.get_data('https://api-us.cloud.com/cvad/manage/Machines')
+      data = self.get_data('https://api-us.cloud.com/cvadapis/%s/Machines%s' % (site_id, continuationtoken))
       if 'Items' not in data:
         raise Exception("Invalid data received from Citrix Cloud getting machines %s" % (data))
       self.machines += data['Items']
