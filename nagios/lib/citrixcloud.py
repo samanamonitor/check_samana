@@ -79,7 +79,7 @@ class Client:
     self.data['hosts'] = {}
     self.machines = []
     cont = True
-    max_items=100
+    max_items=50
     continuationtoken = "?limit=%d" % (max_items)
 
     while cont:
