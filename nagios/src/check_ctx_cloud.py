@@ -79,7 +79,7 @@ def main():
             elif o == '-d':
                 site_id = a
             elif o == '-h':
-                usage(sys.argv)
+                raise CheckUnknown(usage(sys.argv))
             else:
                 raise CheckUnknown("Unknown argument %s" % o, addl=usage())
 
