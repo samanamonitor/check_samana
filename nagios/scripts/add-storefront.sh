@@ -14,5 +14,5 @@ if [ -z "${CONTNAME}" ]; then
         "$sample"
 else
     sample=$(docker exec -it ${CONTNAME} etcdctl get /samanamonitor/config/storefront-example)
-    docker exec -it ${CONTNAME} etcdct set /samanamonitor/config/$SFID "$sample"
+    docker exec -it ${CONTNAME} etcdctl set /samanamonitor/config/$SFID "$sample"
 fi
