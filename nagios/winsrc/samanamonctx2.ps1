@@ -213,12 +213,13 @@ Get-BrokerMachine -MaxRecordCount 5000 | ForEach {
     $fqdn=$_.DnsName.ToLower()
     if ($_.DnsName -ne "" ) {
         $temp = $e.Set("$basepath/hosts/$fqdn", $value, $ttl)
+        $temp = $e.Set("$basepath/computer/$fqdn/data", $value, $ttl)
     }
-    $inmaint = $e.Get("$basepath/maintenance/$fqdn")
+    $inmaint = $e.Get("$basepath/computers/$fqdn/maintenance")
     if($_.InMaintenanceMode -and $inmaint.node -eq $null) {
-        $temp = $e.Set("$basepath/maintenance/$fqdn", $epoch)
+        $temp = $e.Set("$basepath/computers/$fqdn/maintenance", $epoch)
     } elseif (-not $_.InMaintenanceMode -and $inmaint.node -ne $null) {
-        $temp = $e.Rm("$basepath/maintenance/$fqdn")
+        $temp = $e.Rm("$basepath/computers/$fqdn/maintenance")
     }
 }
 
