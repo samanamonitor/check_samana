@@ -212,13 +212,13 @@ Get-BrokerMachine -MaxRecordCount 5000 | ForEach {
     $value = $_ | ConvertTo-JSON -Compress
     $fqdn=$_.DnsName.ToLower()
     if ($_.DnsName -ne "" ) {
-        $e.Set("$basepath/hosts/$fqdn", $value, $ttl)
+        $temp = $e.Set("$basepath/hosts/$fqdn", $value, $ttl)
     }
     $inmaint = $e.Get("$basepath/maintenance/$fqdn")
     if($_.InMaintenanceMode -and $inmaint.node -eq $null) {
-        $e.Set("$basepath/maintenance/$fqdn", $epoch)
+        $temp = $e.Set("$basepath/maintenance/$fqdn", $epoch)
     } elseif (-not $_.InMaintenanceMode -and $inmaint.node -ne $null) {
-        $e.Rm("$basepath/maintenance/$fqdn")
+        $temp = $e.Rm("$basepath/maintenance/$fqdn")
     }
 }
 
@@ -231,12 +231,12 @@ $DesktopGroup.Keys | ForEach {
     }
     $dg["epoch"] = [Math]::Floor([decimal](Get-Date(Get-Date).ToUniversalTime()-uformat "%s"))
     $value = $dg | ConvertTo-JSON -Compress
-    $e.Set("$basepath/desktopgroup/$($_)", $value, $ttl)
+    $temp = $e.Set("$basepath/desktopgroup/$($_)", $value, $ttl)
 
 }
 $Farm["epoch"] = [Math]::Floor([decimal](Get-Date(Get-Date).ToUniversalTime()-uformat "%s"))
 $Farm['LoadIndex'] /= $Farm['TotalServers']
 $value = $Farm | ConvertTo-JSON -Compress
-$e.Set("$basepath/farm", $value, $ttl)
+$temp = $e.Set("$basepath/farm", $value, $ttl)
 
 $ComputerName | Out-Host
