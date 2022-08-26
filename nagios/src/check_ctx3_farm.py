@@ -300,7 +300,6 @@ def main():
       if expected_text is None: expected_text = ''
     elif module == 'inmaintenance':
       output = machines.getInMaintenance()
-      if expected_text is None: expected_text = ''
     elif module == 'registrationstate':
       output = machines.getRegistrationState()
       if expected_text is None: expected_text = ''
