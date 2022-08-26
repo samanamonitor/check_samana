@@ -76,10 +76,10 @@ class CitrixXD:
       if age_secs > 600:
         raise CXDToolOld("Data is too old %d seconds" % age_secs)
       r = http.request('GET', 'http://%s:%s/%s' % (etcdserver, etcdport, maint_path))
-      data['inmaintenancemodetime'] = 0
+      self.data['inmaintenancemodetime'] = 0
       if r.status == 200: 
         t=json.loads(json.loads(r.data.decode('UTF-8'))['node']['value'])
-        data['inmaintenancemodetime'] = self.data['epoch'] - t
+        self.data['inmaintenancemodetime'] = self.data['epoch'] - t
 
     except KeyError:
       if hostname is not None:
