@@ -5,6 +5,7 @@ import sys, getopt
 import time
 import unicodedata
 import urllib3
+import sys
 
 TYPE_FARM        = 0
 TYPE_DESKTOPGROUP= 1
@@ -231,8 +232,8 @@ to get a license.
 Copyright (c) 2017 Samana Group LLC
 
 Usage:
-  check_ctx2_farm.py -D <ddc> [ -e <etcdserver[:port]> ] -m <module> -w <warning> -c <critical> [ [-H <host name>] | [-g <delivery group name>] ]
-  check_ctx2_farm.py -h
+  %s -D <ddc> [ -e <etcdserver[:port]> ] -m <module> -w <warning> -c <critical> [ [-H <host name>] | [-g <delivery group name>] ]
+  %s -h
 
   <ddc> Citrix Desktop Deliver Controller hostname or IP address
   <host name> Session Host server to be queried
@@ -245,7 +246,7 @@ Usage:
     LoadIndex: will return the load index and the time it has been in this state
     LoadUser: will return the number of users connected
     DeliveryGroupName: will return the Delivery Group name a server is part of.
-"""
+""" % (sys.argv[0], sys.argv[0])
   print(usage)
 
 def main():
