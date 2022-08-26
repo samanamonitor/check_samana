@@ -174,6 +174,7 @@ $DesktopGroup["none"] = @{
 
 $definitions = $null
 $e = [EtcdConnection]::new($SamanaMonitorURI)
+$basepath="samanamonitor/ctx_data/$ComputerName"
 
 Get-BrokerMachine -MaxRecordCount 5000 | ForEach {
     if ($definitions -eq $null) {
@@ -209,8 +210,15 @@ Get-BrokerMachine -MaxRecordCount 5000 | ForEach {
     $_.epoch = $epoch
     $_ | Add-Member -NotePropertyName Definitions -NotePropertyValue $definitions
     $value = $_ | ConvertTo-JSON -Compress
+    $fqdn=$_.DnsName.ToLower()
     if ($_.DnsName -ne "" ) {
-        $e.Set("samanamonitor/ctx_data/$($ComputerName)/hosts/$($_.DnsName.ToLower())", $value, $ttl)
+        $e.Set("$basepath/hosts/$fqdn", $value, $ttl)
+    }
+    $inmaint = $e.Get("$basepath/maintenance/$fqdn")
+    if($_.InMaintenanceMode -and $inmaint.node -eq $null) {
+        $e.Set("$basepath/maintenance/$fqdn", $epoch)
+    } elseif (-not $_.InMaintenanceMode -and $inmaint.node -ne $null) {
+        $e.Rm("$basepath/maintenance/$fqdn")
     }
 }
 
@@ -223,16 +231,12 @@ $DesktopGroup.Keys | ForEach {
     }
     $dg["epoch"] = [Math]::Floor([decimal](Get-Date(Get-Date).ToUniversalTime()-uformat "%s"))
     $value = $dg | ConvertTo-JSON -Compress
-    $res = Invoke-WebRequest -UseBasicParsing -Method "PUT" -Body @{value=$value; ttl=$ttl} `
-        -uri "$($SamanaMonitorURI)/v2/keys/samanamonitor/ctx_data/$($ComputerName)/desktopgroup/$($_)" `
-        -ContentType "application/x-www-form-urlencoded"
+    $e.Set("$basepath/desktopgroup/$($_)", $value, $ttl)
 
 }
 $Farm["epoch"] = [Math]::Floor([decimal](Get-Date(Get-Date).ToUniversalTime()-uformat "%s"))
 $Farm['LoadIndex'] /= $Farm['TotalServers']
 $value = $Farm | ConvertTo-JSON -Compress
-$res = Invoke-WebRequest -UseBasicParsing -Method "PUT" -Body @{value=$value; ttl=$ttl} `
-    -uri "$($SamanaMonitorURI)/v2/keys/samanamonitor/ctx_data/$($ComputerName)/farm" `
-    -ContentType "application/x-www-form-urlencoded"
+$e.Set("$basepath/farm", $value, $ttl)
 
 $ComputerName | Out-Host
