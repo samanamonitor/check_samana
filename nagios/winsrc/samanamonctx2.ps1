@@ -176,6 +176,16 @@ $definitions = $null
 $e = [EtcdConnection]::new($SamanaMonitorURI)
 $basepath="samanamonitor/ctx_data/$ComputerName"
 
+Function Save-State {
+    param([bool]$Set, [PSObject]$Etcd, [string]$Path, $Value)
+    $current_state = $Etcd.Get($Path)
+    if ($Set -and $current_state.node -eq $null) {
+        $temp = $Etcd.Set($Path, $Value)
+    } elseif (-not $Set -and $current_state.node -ne $null) {
+        $temp = $Etcd.Rm($Path)
+    }
+}
+
 Get-BrokerMachine -MaxRecordCount 5000 | ForEach {
     if ($definitions -eq $null) {
         $definitions = create-definition $_
@@ -215,12 +225,12 @@ Get-BrokerMachine -MaxRecordCount 5000 | ForEach {
         $temp = $e.Set("$basepath/hosts/$fqdn", $value, $ttl)
         $temp = $e.Set("$basepath/computer/$fqdn/data", $value, $ttl)
     }
-    $inmaint = $e.Get("$basepath/computer/$fqdn/maintenance")
-    if($_.InMaintenanceMode -and $inmaint.node -eq $null) {
-        $temp = $e.Set("$basepath/computer/$fqdn/maintenance", $epoch)
-    } elseif (-not $_.InMaintenanceMode -and $inmaint.node -ne $null) {
-        $temp = $e.Rm("$basepath/computer/$fqdn/maintenance")
-    }
+
+    Save-State -Set ($_.InMaintenanceMode) -Etcd $e `
+        -Path "$basepath/computer/$fqdn/maintenance" -Value $epoch
+
+    Save-State -Set ($_.Registered -ne "Registered") -Etcd $e `
+        -Path "$basepath/computer/$fqdn/registered" -Value $epoch
 }
 
 $DesktopGroup.Keys | ForEach {
