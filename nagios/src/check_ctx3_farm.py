@@ -133,13 +133,14 @@ class CitrixXD:
 
   def getInMaintenance(self):
     addl_data="Last push: %d s\n" % (time.time() - self.data['epoch'])
+    maint_time=time.strftime("%H:%M:%S", time.gmtime(self.data['inmaintenancemodetime']))
     if self.type != TYPE_SERVER:
       raise CXDInvalidData("This information can only be obtained from a host")
     return (
       self.data['inmaintenancemodetime'],
       "Server %s in Maintenance Mode%s" % (
         "IS" if self.data['InMaintenanceMode'] else "IS NOT", 
-        " for %d seconds" % self.data['inmaintenancemodetime'] if self.data['InMaintenanceMode'] else ""),
+        " for %s hours" % maint_time if self.data['InMaintenanceMode'] else ""),
       addl_data,
       None,
       None,
