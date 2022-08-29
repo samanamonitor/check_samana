@@ -57,7 +57,7 @@ class CitrixXD:
     maint_path = path
     if hostname is not None:
       path += "/computer/%s/data" % hostname
-      maint_path = "/computer/%s/maintenance" % hostname
+      maint_path += "/computer/%s/maintenance" % hostname
       self.type = TYPE_SERVER
     elif deliverygroup is not None:
       path += "/desktopgroup/" + deliverygroup
