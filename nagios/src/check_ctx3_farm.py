@@ -78,6 +78,7 @@ class CitrixXD:
       r = http.request('GET', 'http://%s:%s/%s' % (etcdserver, etcdport, maint_path))
       self.data['inmaintenancemodetime'] = 0
       if r.status == 200: 
+        print(r.data)
         t=json.loads(json.loads(r.data.decode('UTF-8'))['node']['value'])
         self.data['inmaintenancemodetime'] = self.data['epoch'] - t
 
