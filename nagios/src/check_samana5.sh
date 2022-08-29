@@ -109,8 +109,11 @@ get-log() {
         jq ".Events.\"${LOGNAME}\"")
     TEMPIFS=$IFS
     IFS=$'\n'
-    EXCEPTIONS=($(etcdctl get "/samanamonitor/config/${HOSTID}/logs/${LOGNAME}/exception" | 
+    EXC_JSON=$(etcdctl get "/samanamonitor/config/logs/${HOSTID}/${LOGNAME}/exception" 2>/dev/null)
+    if [ -n "$EXC_JSON" ]; then
+        EXCEPTIONS=($(echo $EXC_JSON |
             jq ".[] | (.EventCode|tostring) + \"+\" + .SourceName" ))
+    fi
     IFS=$TEMPIFS
     if [ "$?" != "0" ]; then
         echo -e "UNKNOWN - Invalid Data:\n${JSON_DATA}"
