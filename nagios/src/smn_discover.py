@@ -110,6 +110,12 @@ def reload():
         return d.reload()
     return -1
 
+def get_farm_db():
+    # run Get-AcctDBConnection and output will be:
+    # Server=smnnovctxddc1\sqlexpress;Initial Catalog=CitrixSAMANASite;Integrated Security=True
+    data="Server=smnnovctxddc1\\sqlexpress;Initial Catalog=CitrixSAMANASite;Integrated Security=True"
+    data.split(';')[0].split('=')[1]
+
 
 def main(argv):
     pass
