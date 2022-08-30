@@ -13,9 +13,9 @@ class Client():
     def get(self, key):
         req = Request(url='%s://%s:%s/%s/keys/%s' %(self.protocol, self.host, self.port, self.version_prefix, key))
         try:
-            with urlopen(req) as f:
-                res_str = f.read()
-                data = json.loads(res_str.decode("utf8"))
+            f = urlopen(req)
+            res_str = f.read()
+            data = json.loads(res_str.decode("utf8"))
         except HTTPError:
             raise EtcdKeyNotFound(payload={'errorCode': 100, 'index': 0, 'message': 'Key not found', 'cause': key})
         except Exception as e:
