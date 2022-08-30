@@ -1,5 +1,6 @@
 from urllib.request import urlopen, Request
 from urllib.parse import urlencode
+from urllib.error import HTTPError
 import json
 
 class Client():
@@ -11,11 +12,14 @@ class Client():
 
     def get(self, key):
         req = Request(url='%s://%s:%s/%s/keys/%s' %(self.protocol, self.host, self.port, self.version_prefix, key))
-        with urlopen(req) as f:
-            res_str = f.read()
-            data = json.loads(res_str.decode("utf8"))
-            if f.status != 200:
-                raise EtcdKeyNotFound(payload={'errorCode': 100, 'index': 0, 'message': 'Key not found', 'cause': key})
+        try:
+            with urlopen(req) as f:
+                res_str = f.read()
+                data = json.loads(res_str.decode("utf8"))
+        except HTTPError:
+            raise EtcdKeyNotFound(payload={'errorCode': 100, 'index': 0, 'message': 'Key not found', 'cause': key})
+        except Exception as e:
+            raise EtcdException(payload={'errorCode': -1, 'index': 0, 'message': str(e) })
         return EtcdResult(action=data['action'], node=data['node'])
 
     def put(self, key, value, ttl):
