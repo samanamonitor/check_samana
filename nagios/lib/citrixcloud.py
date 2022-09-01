@@ -116,3 +116,8 @@ class Client:
       if m['InMaintenanceMode'] is True:
         dg['InMaintenanceMode'] += 1
         farm['InMaintenanceMode'] += 1
+    for dg in self.data['desktopgroup']:
+      if dg['TotalServers'] > 0:
+        dg['LoadIndex'] /= dg['TotalServers']
+      else:
+        dg['LoadIndex'] = 10000
