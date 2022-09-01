@@ -46,6 +46,8 @@ def get_site_data(ctx, site_id, ttl, etcdserver, etcdport):
     for host_name in ctx.data['hosts'].keys():
         etcdclient.put('samanamonitor/ctx_data/%s/hosts/%s' % \
             (site_id, parse.quote(host_name.lower())), json.dumps(ctx.data['hosts'][host_name]), ttl)
+        etcdclient.put('samanamonitor/ctx_data/%s/computer/%s/data' % \
+            (site_id, parse.quote(host_name.lower())), json.dumps(ctx.data['hosts'][host_name]), ttl)
     return CheckResult("Data Collected %s" % site_id)
 
 def main():
