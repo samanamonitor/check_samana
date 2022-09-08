@@ -255,7 +255,7 @@ while getopts ":hc:w:E:H:m:s:i:e:" opt; do
         usage
         ;;
         H )
-        HOSTID=${OPTARG}
+        HOSTID=$(echo "${OPTARG}" | tr '[:upper:]' '[:lower:]')
         ;;
         E )
         ETCDSERVER=${OPTARG}
