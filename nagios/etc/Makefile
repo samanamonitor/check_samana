@@ -15,7 +15,7 @@ clean: $(patsubst %,clean_%,$(DIRS))
 
 
 install: $(patsubst %,install_%,$(DIRS))
-	install.sh enable
+	./install.sh enable
 
 
 install_%:
