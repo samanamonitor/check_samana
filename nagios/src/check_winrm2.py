@@ -383,7 +383,7 @@ def main():
         'warning': None,
         'critical': None,
         'url': None,
-        'scriptarguments': None,
+        'scriptarguments': {},
         'cleanup': True
     }
     opts, args = getopt.getopt(sys.argv[1:], "H:d:u:p:ha:n:s:w:c:U:A:C")
