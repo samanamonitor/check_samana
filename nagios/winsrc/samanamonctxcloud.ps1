@@ -286,8 +286,8 @@ Function GetorCreate-Task {
     try {
         $t = Get-ScheduledTask -TaskName CtxDaasSamanaMon -ErrorAction Stop
     } catch {
-        Create-Task -ScriptPath $ScriptPath -User $User -Password $Password -`
-            XDCredentialsProfileName $XDCredentialsProfileName -EtcdServer $EtcdServer `
+        Create-Task -ScriptPath $ScriptPath -User $User -Password $Password `
+            -XDCredentialsProfileName $XDCredentialsProfileName -EtcdServer $EtcdServer `
             -Etcdport $Etcdport
         $t = Get-ScheduledTask -TaskName CtxDaasSamanaMon
     }
