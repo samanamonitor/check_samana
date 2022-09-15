@@ -215,7 +215,7 @@ Function Get-CitrixData {
     }
     try {
         $p=Get-XDCredentials -ProfileName $XDCredentialsProfileName
-        Get-XDAuthentication –ProfileName $XDCredentialsProfileName
+        Get-XDAuthentication -ProfileName $XDCredentialsProfileName
     } catch {
         Log -Level 0 -Message "Credential Profile cannot be found. Aborting."
         return
