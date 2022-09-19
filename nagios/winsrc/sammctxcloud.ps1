@@ -1,4 +1,6 @@
-$XDCredentialsProfileName='%(XDCredentialsProfileName)s'
+$CustomerId='%(CustomerId)s'
+$APIKey='%(APIKey)s'
+$SecretKey='$(SecretKey)s'
 $EtcdServer='%(EtcdServer)s'
 $EtcdPort='%(EtcdPort)s'
 [string]$BasePath="/samanamonitor/ctx_data"
@@ -20,13 +22,12 @@ Function UrlEncode {
 
 $init_time=Epoch
 try {
-    $p=Get-XDCredentials -ProfileName $XDCredentialsProfileName
+    Set-XDCredentials -CustomerId $CustomerId -APIKey $APIKey -SecretKey $SecretKey
 } catch {
     throw "Credential Profile cannot be found. Aborting."
 }
-Get-XDAuthentication -ProfileName $XDCredentialsProfileName
+Get-XDAuthentication
 return
-$customerId=$p.Credentials.CustomerId
 $sitename=(Get-BrokerSite).Name
 $init_time = [Math]::Round((Epoch) - $init_time, 3)
 
