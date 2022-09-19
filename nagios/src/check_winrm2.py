@@ -81,7 +81,7 @@ class WinRMScript:
                 std_err = temp[1]
         try:
             root = ET.fromstring(std_err)
-        except ParseError:
+        except ET.ParseError:
             return
         ns={ 'ps':root.tag.split('}')[0].split('{')[1] }
         msg = "Error executing Powershell Command.\n"
