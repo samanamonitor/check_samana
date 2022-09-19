@@ -96,7 +96,9 @@ class WinRMScript:
             p.close_shell(shell_id)
 
         except Exception as e:
-          raise CheckWinRMExceptionUNKNOWN("Unable to get data from Server (%s) %s." % (type(e).__name__, str(e)))
+            p.cleanup_command(shell_id, command_id)
+            p.close_shell(shell_id)
+            raise CheckWinRMExceptionUNKNOWN("Unable to get data from Server (%s) %s." % (type(e).__name__, str(e)))
 
         if status_code != 0:
             raise CheckWinRMExceptionUNKNOWN(std_err)
