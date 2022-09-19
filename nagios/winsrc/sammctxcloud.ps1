@@ -12,7 +12,7 @@ asnp Citrix.Broker.Admin.V2
 Get-XDAuthentication -ProfileName $XDCredentialsProfileName
 
 Function Epoch {
-    return $(Get-Date(Get-Date).ToUniversalTime()-uformat "%s")
+    return $(Get-Date(Get-Date).ToUniversalTime()-uformat "%%s")
 }
 Function UrlEncode {
     param([string]$s)
