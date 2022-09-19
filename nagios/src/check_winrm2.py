@@ -58,6 +58,7 @@ class WinRMScript:
                 username=self.username,
                 password=self.password)
             shell_id = p.open_shell()
+            print(script % scriptarguments)
             encoded_ps = b64encode((script % scriptarguments).encode('utf_16_le')).decode('ascii')
             command_id = p.run_command(shell_id, 'powershell', ['-encodedcommand {0}'.format(encoded_ps), ])
             std_out, std_err, status_code = p.get_command_output(shell_id, command_id)
