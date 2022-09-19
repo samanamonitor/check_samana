@@ -22,8 +22,7 @@ $init_time=Epoch
 try {
     $p=Get-XDCredentials -ProfileName $XDCredentialsProfileName
 } catch {
-    "Credential Profile cannot be found. Aborting." | Write-Host
-    return
+    throw "Credential Profile cannot be found. Aborting."
 }
 Get-XDAuthentication -ProfileName $XDCredentialsProfileName
 return
