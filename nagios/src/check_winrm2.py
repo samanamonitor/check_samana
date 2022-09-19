@@ -238,6 +238,7 @@ def process_data(data):
 
         winrm_start = time()
         client = WinRMScript(data['hostaddress'], user_auth)
+        print(data['scriptarguments'])
         out = client.run(data['scriptfile'], data['scriptarguments'])
         winrm_time = (time() - winrm_start) * 1000
 
