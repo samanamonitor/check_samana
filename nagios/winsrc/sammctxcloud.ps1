@@ -24,7 +24,7 @@ $init_time=Epoch
 try {
     Set-XDCredentials -CustomerId $CustomerId -APIKey $APIKey -SecretKey $SecretKey
 } catch {
-    throw "Credential Profile cannot be found. Aborting."
+    throw "Credential Profile cannot be found. Aborting. $_"
 }
 Get-XDAuthentication
 return
