@@ -18,7 +18,7 @@ Function UrlEncode {
     param([string]$s)
     return [System.web.HttpUtility]::UrlEncode($s)
 }
-
+return
 
 $init_time=Epoch
 try {
@@ -67,9 +67,9 @@ $ms.Close()
 $compression_time = [Math]::Round( (Epoch) - $compression_time, 3)
 
 $upload_time = Epoch
-#$res = Invoke-WebRequest -Uri "http://$($EtcdServer):$($EtcdPort)/v2/keys$sitepath/raw" `
-#    -Method Put -Body @{value=$a;ttl=$Ttl} `
-#    -ContentType "application/x-www-form-urlencoded"
+$res = Invoke-WebRequest -Uri "http://$($EtcdServer):$($EtcdPort)/v2/keys$sitepath/raw" `
+    -Method Put -Body @{value=$a;ttl=$Ttl} `
+    -ContentType "application/x-www-form-urlencoded"
 $upload_time = [Math]::Round( (Epoch) - $upload_time, 3)
 "Location: $($sitepath)/raw" | Write-Host -NoNewline
 
