@@ -90,7 +90,7 @@ class WinRMScript:
             t = tag.get('S')
             if t == 'Error':
                 error = True
-            msg += "%s : %s\n" % (t, tag.text)
+            msg += "%s : %s\n" % (t, tag.text.replace("_x000D__x000A_", ""))
         if error:
             raise CheckWinRMExceptionUNKNOWN(msg)
 
