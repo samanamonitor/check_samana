@@ -9,7 +9,6 @@ $EtcdPort='%(EtcdPort)s'
 
 
 asnp Citrix.Broker.Admin.V2
-Get-XDAuthentication -ProfileName $XDCredentialsProfileName
 
 Function Epoch {
     return $(Get-Date(Get-Date).ToUniversalTime()-uformat "%%s")
@@ -18,16 +17,16 @@ Function UrlEncode {
     param([string]$s)
     return [System.web.HttpUtility]::UrlEncode($s)
 }
-return
 
 $init_time=Epoch
 try {
     $p=Get-XDCredentials -ProfileName $XDCredentialsProfileName
-    Get-XDAuthentication -ProfileName $XDCredentialsProfileName
 } catch {
     Log -Level 0 -Message "Credential Profile cannot be found. Aborting."
     return
 }
+Get-XDAuthentication -ProfileName $XDCredentialsProfileName
+return
 $customerId=$p.Credentials.CustomerId
 $sitename=(Get-BrokerSite).Name
 $init_time = [Math]::Round((Epoch) - $init_time, 3)
