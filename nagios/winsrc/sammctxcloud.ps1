@@ -1,6 +1,6 @@
 $CustomerId='%(CustomerId)s'
 $APIKey='%(APIKey)s'
-$SecretKey='$(SecretKey)s'
+$SecretKey='%(SecretKey)s'
 $EtcdServer='%(EtcdServer)s'
 $EtcdPort='%(EtcdPort)s'
 [string]$BasePath="/samanamonitor/ctx_data"
