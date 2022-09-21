@@ -4,7 +4,7 @@ Switch($Action) {
                 $Params -eq $null -or $TaskName -eq $null -or $TaskDescription -eq $null) {
             throw "Invalid Set of parameters. ScriptPath, ScriptName and Params are mandatory"
         }
-        if ( -not Test-Path "$ScriptPath\$ScriptName") {
+        if ( -not (Test-Path "$ScriptPath\$ScriptName")) {
             throw "Script $ScriptPath\$ScriptName doesn't exist locally. Download first."
         }
         $trigger=new-scheduledtasktrigger -Once -At (Get-Date)
@@ -41,7 +41,7 @@ Switch($Action) {
         if($ScriptPath -eq $null -or $ScriptName -eq $null) {
             throw "Invalid Set of parameters. ScriptPath and ScriptName are mandatory"            
         }
-        if (-not Test-Path $ScriptPath) {
+        if (-not (Test-Path $ScriptPath)) {
             New-Item $ScriptPath -ItemType Directory
         }
         Invoke-WebRequest -Uri "$BaseUri/$Scriptname" -OutFile "$ScriptPath\$ScriptName"
