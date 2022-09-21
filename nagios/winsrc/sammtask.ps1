@@ -13,13 +13,14 @@ Switch($Action) {
         $action=new-scheduledtaskaction -Execute "Powershell.exe" `
             -Argument "-NoProfile -WindowStyle Hidden -command $ScriptPath\$ScriptName $Params"
 
-        Register-ScheduledTask -Action $action `
+        $t = Register-ScheduledTask -Action $action `
             -Trigger $trigger `
             -User $User `
             -Password $Password `
             -TaskName $TaskName `
             -TaskPath Samana `
             -Description $TaskDescription
+        "Created Task $($t.TaskName)." | Write-Host
     }
     "Delete-Task" {
         if($TaskName -eq $null) {
