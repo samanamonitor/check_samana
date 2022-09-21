@@ -35,7 +35,7 @@ Switch($Action) {
         if ($t.State -ne "Ready") {
             throw "Task is not Ready. Current state is $($t.State)"
         }
-        Start-ScheduledTask -TaskName $TaskName -TaskPath Samana
+        Start-ScheduledTask -TaskName $TaskName
     }
     "List-Tasks" {
         Get-ScheduledTask
