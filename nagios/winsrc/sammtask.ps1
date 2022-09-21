@@ -51,7 +51,7 @@ Switch($Action) {
         if($ScriptPath -eq $null -or $ScriptName -eq $null) {
             throw "Invalid Set of parameters. ScriptPath and ScriptName are mandatory"            
         }
-        Clear-Item $ScriptPath\$ScriptName
+        Remove-Item $ScriptPath\$ScriptName -Recurse
     }
     "Cleanup" {
         if($ScriptPath -eq $null) {
