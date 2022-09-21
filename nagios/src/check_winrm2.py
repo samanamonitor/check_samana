@@ -249,7 +249,7 @@ def process_data(data):
         for varname in data['scriptarguments']:
             data['variables'] += "$%s='%s'\r\n" % (varname, data['scriptarguments'][varname])
         out = client.run(scriptline=data.get('scriptline', None), 
-            scriptfile=data.get('scriptfile', None), data['variables'])
+            scriptfile=data.get('scriptfile', None), variables=data['variables'])
         winrm_time = (time() - winrm_start) * 1000
 
         perc_packet_loss = 100-int(100.0 * ping_data['packets_received'] / ping_data['packets_sent'])
