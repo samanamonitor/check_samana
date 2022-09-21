@@ -34,6 +34,9 @@ Switch($Action) {
         }
         Start-ScheduledTask -TaskName $TaskName
     }
+    "List-Tasks" {
+        Get-ScheduledTask -TaskPath \
+    }
     "Download-Script" {
         if($ScriptPath -eq $null -or $ScriptName -eq $null) {
             throw "Invalid Set of parameters. ScriptPath and ScriptName are mandatory"            
