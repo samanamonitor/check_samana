@@ -243,7 +243,6 @@ def process_data(data):
         data['variables'] = ''
         for varname in data['scriptarguments']:
             data['variables'] += "$%s='%s'\r\n" % (varname, data['scriptarguments'][varname])
-        print(data['scriptfile'], data['variables'])
         out = client.run(data['scriptfile'], data['variables'])
         winrm_time = (time() - winrm_start) * 1000
 
