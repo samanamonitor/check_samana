@@ -1,5 +1,3 @@
-%(variables)s
-
 Switch($Action) {
     "Create-Task" {
         if ($ScriptPath -eq $null -or $ScriptName -eq $null -or `
