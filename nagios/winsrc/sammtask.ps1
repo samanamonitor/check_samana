@@ -43,7 +43,7 @@ Switch($Action) {
             throw "Invalid Set of parameters. BaseUri, ScriptPath and ScriptName are mandatory"            
         }
         if (-not (Test-Path $ScriptPath)) {
-            New-Item $ScriptPath -ItemType Directory
+            New-Item $ScriptPath -ItemType Directory | Out-Null
         }
         Invoke-WebRequest -Uri "$BaseUri/$Scriptname" -OutFile "$ScriptPath\$ScriptName"
     }
