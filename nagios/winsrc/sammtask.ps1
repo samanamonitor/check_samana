@@ -39,8 +39,8 @@ Switch($Action) {
         Get-ScheduledTask -TaskPath \Samana
     }
     "Download-Script" {
-        if($ScriptPath -eq $null -or $ScriptName -eq $null) {
-            throw "Invalid Set of parameters. ScriptPath and ScriptName are mandatory"            
+        if($BaseUri -eq $null -or $ScriptPath -eq $null -or $ScriptName -eq $null) {
+            throw "Invalid Set of parameters. BaseUri, ScriptPath and ScriptName are mandatory"            
         }
         if (-not (Test-Path $ScriptPath)) {
             New-Item $ScriptPath -ItemType Directory
