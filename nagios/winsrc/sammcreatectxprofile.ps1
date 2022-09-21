@@ -1,3 +1,10 @@
+param(
+    [string]$Action,
+    $CustomerId,
+    $APIKey,
+    $SecretKey,
+    $ProfileName)
+
 asnp Citrix.Broker.Admin.V2
 Switch($Action) {
     "Create-Profile" {
