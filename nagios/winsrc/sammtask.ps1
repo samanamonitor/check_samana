@@ -38,7 +38,7 @@ Switch($Action) {
         Start-ScheduledTask -TaskName $TaskName -TaskPath Samana
     }
     "List-Tasks" {
-        Get-ScheduledTask -TaskPath \Samana
+        Get-ScheduledTask
     }
     "Download-Script" {
         if($BaseUri -eq $null -or $ScriptPath -eq $null -or $ScriptName -eq $null) {
