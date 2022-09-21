@@ -41,7 +41,7 @@ class WinRMScript:
             self.username = auth['domain'] + '\\' + auth['username']
         self.password = auth['password']
 
-    def run(self, scriptfile, scriptarguments):
+    def run(self, scriptfile, variables):
         with open(scriptfile, "r") as f:
             script = f.read()
 
@@ -58,7 +58,7 @@ class WinRMScript:
                 username=self.username,
                 password=self.password)
             shell_id = p.open_shell()
-            encoded_ps = b64encode((script % scriptarguments).encode('utf_16_le')).decode('ascii')
+            encoded_ps = b64encode((script % {'variables': variables}).encode('utf_16_le')).decode('ascii')
             command_id = p.run_command(shell_id, 'powershell', ['-encodedcommand {0}'.format(encoded_ps), ])
             std_out, std_err, status_code = p.get_command_output(shell_id, command_id)
             self.check_error(std_err)
@@ -240,8 +240,11 @@ def process_data(data):
 
         winrm_start = time()
         client = WinRMScript(data['hostaddress'], user_auth)
-        print(data['scriptarguments'])
-        out = client.run(data['scriptfile'], data['scriptarguments'])
+        data['variables'] = ''
+        for varname in data['scriptarguments']:
+            data['variables'] += "$%s='%s'\r\n" % (varname, data['scriptarguments'][varname])
+        print(data['scriptfile'], data['variables'])
+        out = client.run(data['scriptfile'], data['variables'])
         winrm_time = (time() - winrm_start) * 1000
 
         perc_packet_loss = 100-int(100.0 * ping_data['packets_received'] / ping_data['packets_sent'])
