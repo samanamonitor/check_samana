@@ -25,7 +25,7 @@ Switch($Action) {
         if($TaskName -eq $null) {
             throw "Invalid Set of parameters. TaskName is mandatory"            
         }
-        Unregister-ScheduledTask -TaskName $TaskName
+        Unregister-ScheduledTask -TaskName $TaskName -Confirm:$False
     }
     "Run-Task" {
         if($TaskName -eq $null) {
