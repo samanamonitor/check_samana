@@ -26,6 +26,7 @@ Switch($Action) {
             throw "Invalid Set of parameters. TaskName is mandatory"            
         }
         Unregister-ScheduledTask -TaskName $TaskName -Confirm:$False
+        "Deleted Task $TaskName" | Write-Host
     }
     "Run-Task" {
         if($TaskName -eq $null) {
@@ -36,6 +37,7 @@ Switch($Action) {
             throw "Task is not Ready. Current state is $($t.State)"
         }
         Start-ScheduledTask -TaskName $TaskName
+        "Started Task $TaskName" | Write-Host
     }
     "List-Tasks" {
         Get-ScheduledTask
@@ -48,18 +50,21 @@ Switch($Action) {
             New-Item $ScriptPath -ItemType Directory | Out-Null
         }
         Invoke-WebRequest -Uri "$BaseUri/$Scriptname" -OutFile "$ScriptPath\$ScriptName"
+        "Script $ScriptPath\$ScriptName has been installed" | Write-Host
     }
     "Delete-Script" {
         if($ScriptPath -eq $null -or $ScriptName -eq $null) {
             throw "Invalid Set of parameters. ScriptPath and ScriptName are mandatory"            
         }
         Remove-Item $ScriptPath\$ScriptName
+        "Script $ScriptPath\$ScriptName Deleted" | Write-Host
     }
     "Cleanup" {
         if($ScriptPath -eq $null) {
             throw "Invalid Set of parameters. ScriptPath is mandatory"            
         }
         Remove-Item $ScriptPath -Recurse
+        "Cleanup completed" | Write-Host
     }
     Default {
         throw "Invalid Action"
