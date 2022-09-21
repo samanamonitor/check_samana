@@ -16,13 +16,14 @@ Switch($Action) {
             -User $User `
             -Password $Password `
             -TaskName $TaskName `
+            -TaskPath Samana `
             -Description $TaskDescription
     }
     "Delete-Task" {
         if($TaskName -eq $null) {
             throw "Invalid Set of parameters. TaskName is mandatory"            
         }
-        Unregister-ScheduledTask -TaskName $TaskName
+        Unregister-ScheduledTask -TaskName $TaskName -TaskPath Samana
     }
     "Run-Task" {
         if($TaskName -eq $null) {
@@ -32,10 +33,10 @@ Switch($Action) {
         if ($t.State -ne "Ready") {
             throw "Task is not Ready. Current state is $($t.State)"
         }
-        Start-ScheduledTask -TaskName $TaskName
+        Start-ScheduledTask -TaskName $TaskName -TaskPath Samana
     }
     "List-Tasks" {
-        Get-ScheduledTask -TaskPath \
+        Get-ScheduledTask -TaskPath \Samana
     }
     "Download-Script" {
         if($ScriptPath -eq $null -or $ScriptName -eq $null) {
