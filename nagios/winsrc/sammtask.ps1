@@ -18,7 +18,6 @@ Switch($Action) {
             -User $User `
             -Password $Password `
             -TaskName $TaskName `
-            -TaskPath Samana `
             -Description $TaskDescription
         "Created Task $($t.TaskName)." | Write-Host
     }
@@ -26,7 +25,7 @@ Switch($Action) {
         if($TaskName -eq $null) {
             throw "Invalid Set of parameters. TaskName is mandatory"            
         }
-        Unregister-ScheduledTask -TaskName $TaskName -TaskPath Samana
+        Unregister-ScheduledTask -TaskName $TaskName
     }
     "Run-Task" {
         if($TaskName -eq $null) {
