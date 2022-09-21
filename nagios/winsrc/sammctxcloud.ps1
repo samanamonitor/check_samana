@@ -25,7 +25,7 @@ try {
     throw "Credential Profile cannot be found. Aborting. $_"
 }
 Get-XDAuthentication -ProfileName $ProfileName
-return
+
 $sitename=(Get-BrokerSite).Name
 $init_time = [Math]::Round((Epoch) - $init_time, 3)
 
