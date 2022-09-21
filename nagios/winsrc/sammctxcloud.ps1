@@ -1,14 +1,11 @@
-$CustomerId='%(CustomerId)s'
-$APIKey='%(APIKey)s'
-$SecretKey='%(SecretKey)s'
-$EtcdServer='%(EtcdServer)s'
-$EtcdPort='%(EtcdPort)s'
-[string]$BasePath="/samanamonitor/ctx_data"
-[int]$MaxRecords=250
-[int]$Ttl=360
-[int]$DebugLevel=0
-[Boolean]$Timing=$True
-
+param($ProfileName,
+    $EtcdServer,
+    $EtcdPort,
+    [string]$BasePath="/samanamonitor/ctx_data",
+    [int]$MaxRecords=250,
+    [int]$Ttl=360,
+    [int]$DebugLevel=0,
+    [Boolean]$Timing=$True)
 
 asnp Citrix.Broker.Admin.V2
 
@@ -22,11 +19,12 @@ Function UrlEncode {
 
 $init_time=Epoch
 try {
-    Set-XDCredentials -CustomerId $CustomerId -APIKey $APIKey -SecretKey $SecretKey
+    $p = Get-XDCredentials -ProfileName $ProfileName
+    $CustomerId = $p.Credentials.CustomerId
 } catch {
     throw "Credential Profile cannot be found. Aborting. $_"
 }
-Get-XDAuthentication
+Get-XDAuthentication -ProfileName $ProfileName
 return
 $sitename=(Get-BrokerSite).Name
 $init_time = [Math]::Round((Epoch) - $init_time, 3)
