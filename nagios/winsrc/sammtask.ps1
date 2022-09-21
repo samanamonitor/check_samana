@@ -1,8 +1,10 @@
 Switch($Action) {
     "Create-Task" {
         if ($ScriptPath -eq $null -or $ScriptName -eq $null -or `
-                $Params -eq $null -or $TaskName -eq $null -or $TaskDescription -eq $null) {
-            throw "Invalid Set of parameters. TaskName, TaskDescription, ScriptPath, ScriptName and Params are mandatory"
+                $Params -eq $null -or $TaskName -eq $null -or `
+                $TaskDescription -eq $null, -or $User -eq $null -or $Password -eq $null) {
+            throw "Invalid Set of parameters. TaskName, TaskDescription, User, Password, " + `
+                "ScriptPath, ScriptName and Params are mandatory"
         }
         if ( -not (Test-Path "$ScriptPath\$ScriptName")) {
             throw "Script $ScriptPath\$ScriptName doesn't exist locally. Download first."
