@@ -16,7 +16,15 @@ class WRProtocol(Protocol):
         'rsp': "http://schemas.microsoft.com/wbem/wsman/1/windows/shell",
         'p': "http://schemas.microsoft.com/wbem/wsman/1/wsman.xsd"
     }
-    def send(self, shell_id, command_id, stdin_input):
+    def get(self):
+        req = {'env:Envelope': self._get_soap_header(
+                    resource_uri='http://schemas.microsoft.com/wbem/wsman/1/windows/shell/cmd',  # NOQA
+                    action='http://schemas.xmlsoap.org/ws/2004/09/transfer/Get')}
+        req['env:Envelope'].setdefault('env:Body', {})
+        res=self.send_message(xmltodict.unparse(req))
+        return res
+
+    def send(self, shell_id, command_id, stdin_input, end=False):
         req = {'env:Envelope': self._get_soap_header(
                     resource_uri='http://schemas.microsoft.com/wbem/wsman/1/windows/shell/cmd',  # NOQA
                     action='http://schemas.microsoft.com/wbem/wsman/1/windows/shell/Send',  # NOQA
@@ -25,7 +33,7 @@ class WRProtocol(Protocol):
                     'rsp:Send', {}).setdefault('rsp:Stream', {})
         stdin_envelope['@CommandId'] = command_id
         stdin_envelope['@Name'] = 'stdin'
-        stdin_envelope['@End'] = "false"
+        stdin_envelope['@End'] = str(end)
         stdin_envelope['@xmlns:rsp'] = 'http://schemas.microsoft.com/wbem/wsman/1/windows/shell'
         stdin_envelope['#text'] = base64.b64encode(stdin_input)
         start_time = time()
@@ -125,12 +133,6 @@ class WinRMScript:
         std_err = ''
         self.command_id = self.p.run_command(self.shell_id, 'wmic', [])
         return self.p.receive(self.shell_id, self.command_id)
-        #std_out, std_err, status_code = self.p.get_command_output(self.shell_id, self.command_id)
-        #self.check_error(std_err)
-
-        #if status_code != 0:
-        #    raise CheckWinRMExceptionUNKNOWN(std_err)
-        #return "%s\n%s" % (std_out, "")
 
     def posh(self, scriptline=None, scriptfile=None):
         script = None
@@ -145,12 +147,10 @@ class WinRMScript:
         else:
             params = []
 
-
         error = 0
         std_out = ''
         std_err = ''
         command_id = self.p.run_command(self.shell_id, 'powershell', params)
-        std_out, std_err, status_code = self.p.get_command_output(self.shell_id, self.command_id)
         self.check_error(std_err)
 
         if status_code != 0:
