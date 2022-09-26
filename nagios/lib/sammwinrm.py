@@ -45,7 +45,6 @@ class WRProtocol(Protocol):
         start_time = time()
         res = self.send_message(xmltodict.unparse(req))
         total_time = time() - start_time
-        print(res)
         root = ET.fromstring(res)
 
         stdout = stderr = b''
@@ -112,10 +111,8 @@ class WinRMScript:
 
     def send(self, command, expect_receive=True):
         res = self.p.send(self.shell_id, self.command_id, command + "\r\n")
-        print("Sending: %f" % res[-1])
         if expect_receive:
             res = self.p.receive(self.shell_id, self.command_id)
-            print("Receiving: %f" % res[-1])
         else:
             res = ()
         return res
