@@ -1,6 +1,7 @@
 from winrm.protocol import Protocol
 from base64 import b64encode
 import xml.etree.ElementTree as ET
+from time import time
 
 import xmltodict
 import base64
@@ -20,7 +21,12 @@ class WRProtocol(Protocol):
         stdin_envelope['@End'] = "false"
         stdin_envelope['@xmlns:rsp'] = 'http://schemas.microsoft.com/wbem/wsman/1/windows/shell'
         stdin_envelope['#text'] = base64.b64encode(stdin_input)
-        return self.send_message(xmltodict.unparse(req))
+        start_time = time()
+        res = self.send_message(xmltodict.unparse(req))
+        total_time = time() - start_time
+        root = ET.fromstring(res)
+
+        return res
     def receive(self, shell_id, command_id):
         req = {'env:Envelope': self._get_soap_header(
                     resource_uri='http://schemas.microsoft.com/wbem/wsman/1/windows/shell/cmd',  # NOQA
@@ -30,7 +36,10 @@ class WRProtocol(Protocol):
             'rsp:Receive', {}).setdefault('rsp:DesiredStream', {})
         stream['@CommandId'] = command_id
         stream['#text'] = 'stdout stderr'
+        start_time = time()
         res = self.send_message(xmltodict.unparse(req))
+        total_time = time() - start_time
+        print(res)
         root = ET.fromstring(res)
         stream_nodes = [
             node for node in root.findall('.//*')
@@ -95,11 +104,15 @@ class WinRMScript:
         self.p.cleanup_command(self.shell_id, self.command_id)
         self.p.close_shell(self.shell_id)
 
+    def get_class(self, class_name):
+
     def send(self, command, expect_receive=True):
         self.p.send(self.shell_id, self.command_id, command + "\r\n")
         if expect_receive:
-            return self.p.receive(self.shell_id, self.command_id)
-        return "..."
+            res = self.p.receive(self.shell_id, self.command_id)
+        else:
+            res = ()
+        return res
 
     def wmic(self):
         error = 0
