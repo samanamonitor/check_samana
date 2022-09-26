@@ -95,17 +95,24 @@ class WinRMScript:
         self.p.cleanup_command(self.shell_id, self.command_id)
         self.p.close_shell(self.shell_id)
 
+    def send(self, command, expect_receive=True):
+        self.p.send(self.shell_id, self.command_id, command + "\r\n")
+        if expect_receive:
+            return self.p.receive(self.shell_id, self.command_id)
+        return "..."
+
     def wmic(self):
         error = 0
         std_out = ''
         std_err = ''
         self.command_id = self.p.run_command(self.shell_id, 'wmic', [])
+        return self.p.receive(self.shell_id, self.command_id)
         #std_out, std_err, status_code = self.p.get_command_output(self.shell_id, self.command_id)
-        self.check_error(std_err)
+        #self.check_error(std_err)
 
-        if status_code != 0:
-            raise CheckWinRMExceptionUNKNOWN(std_err)
-        return "%s\n%s" % (std_out, "")
+        #if status_code != 0:
+        #    raise CheckWinRMExceptionUNKNOWN(std_err)
+        #return "%s\n%s" % (std_out, "")
 
     def posh(self, scriptline=None, scriptfile=None):
         script = None
