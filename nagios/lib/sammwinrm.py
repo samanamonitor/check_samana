@@ -9,6 +9,13 @@ import uuid
 
 
 class WRProtocol(Protocol):
+    namespace = {
+        'a': "http://schemas.xmlsoap.org/ws/2004/08/addressing",
+        's': "http://www.w3.org/2003/05/soap-envelope",
+        'w': "http://schemas.dmtf.org/wbem/wsman/1/wsman.xsd",
+        'rsp': "http://schemas.microsoft.com/wbem/wsman/1/windows/shell",
+        'p': "http://schemas.microsoft.com/wbem/wsman/1/wsman.xsd"
+    }
     def send(self, shell_id, command_id, stdin_input):
         req = {'env:Envelope': self._get_soap_header(
                     resource_uri='http://schemas.microsoft.com/wbem/wsman/1/windows/shell/cmd',  # NOQA
@@ -24,9 +31,8 @@ class WRProtocol(Protocol):
         start_time = time()
         res = self.send_message(xmltodict.unparse(req))
         total_time = time() - start_time
-        root = ET.fromstring(res)
+        return (res, total_time)
 
-        return res
     def receive(self, shell_id, command_id):
         req = {'env:Envelope': self._get_soap_header(
                     resource_uri='http://schemas.microsoft.com/wbem/wsman/1/windows/shell/cmd',  # NOQA
@@ -41,26 +47,23 @@ class WRProtocol(Protocol):
         total_time = time() - start_time
         print(res)
         root = ET.fromstring(res)
-        stream_nodes = [
-            node for node in root.findall('.//*')
-            if node.tag.endswith('Stream')]
+
         stdout = stderr = b''
-        return_code = -1
-        for stream_node in stream_nodes:
-            if not stream_node.text:
-                continue
-            if stream_node.attrib['Name'] == 'stdout':
-                stdout += base64.b64decode(stream_node.text.encode('ascii'))
-            elif stream_node.attrib['Name'] == 'stderr':
-                stderr += base64.b64decode(stream_node.text.encode('ascii'))
-        command_done = len([
-            node for node in root.findall('.//*')
-            if node.get('State', '').endswith('CommandState/Done')]) == 1
-        if command_done:
-            return_code = int(
-                next(node for node in root.findall('.//*')
-                     if node.tag.endswith('ExitCode')).text)
-        return stdout, stderr, return_code, command_done
+        stream_stdout = root.findall('.//rsp:Stream[@Name=\'stdout\']', self.namespace)
+        for s in stream_stdout:
+            stdout += base64.b64decode(stream_node.text.encode('ascii'))
+        stream_stderr = root.findall('.//rsp:Stream[@Name=\'stderr\']', self.namespace)
+        for s in stream_stderr:
+            stderr += base64.b64decode(stream_node.text.encode('ascii'))
+
+        cs=root.find('.//rsp:CommandState[@State=\'%(rsp)s/CommandState/Done\']' % self.namespace, self.namespace)
+        command_done = cs is not None
+        ec=root.find('.//rsp:ExitCode', self.namespace)
+        if ec is not None:
+            return_code = int(ec.text)
+        else:
+            return_code = -1
+        return stdout, stderr, return_code, command_done, total_time
 
 class CheckWinRMExceptionWARN(Exception):
     pass
@@ -108,9 +111,11 @@ class WinRMScript:
         pass
 
     def send(self, command, expect_receive=True):
-        self.p.send(self.shell_id, self.command_id, command + "\r\n")
+        res = self.p.send(self.shell_id, self.command_id, command + "\r\n")
+        print("Sending: %f" % res[-1])
         if expect_receive:
             res = self.p.receive(self.shell_id, self.command_id)
+            print("Receiving: %f" % res[-1])
         else:
             res = ()
         return res
