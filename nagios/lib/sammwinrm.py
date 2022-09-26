@@ -17,10 +17,17 @@ class WRProtocol(Protocol):
         'p': "http://schemas.microsoft.com/wbem/wsman/1/wsman.xsd"
     }
     def get(self):
-        req = {'env:Envelope': self._get_soap_header(
-                    resource_uri='http://schemas.microsoft.com/wbem/wsman/1/windows/shell/cmd',  # NOQA
-                    action='http://schemas.xmlsoap.org/ws/2004/09/transfer/Get')}
-        req['env:Envelope']['env:Header'].pop('a:ReplyTo')
+        req = {
+            'env:Envelope': { 
+                '@xmlns:env':'http://www.w3.org/2003/05/soap-envelope',
+                '@xmlns:a':'http://schemas.xmlsoap.org/ws/2004/08/addressing',
+                'env:Header': {
+                    'a:Action':'http://schemas.xmlsoap.org/ws/2004/09/transfer/Get',
+                    'a:MessageI':'xs:anyURI',
+                    'a:To':'xs:anyURI'
+                }
+            }
+        }
         req['env:Envelope'].setdefault('env:Body', {})
         print(xmltodict.unparse(req))
         res=self.send_message(xmltodict.unparse(req))
