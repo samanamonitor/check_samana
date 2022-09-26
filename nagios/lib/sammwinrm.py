@@ -83,7 +83,7 @@ class WinRMScript:
             self.username = auth['domain'] + '\\' + auth['username']
         self.password = auth['password']
 
-    def open():
+    def open(self):
         self.p = Protocol(
             endpoint='http://%s:5985/wsman' % self.hostaddress,
             transport='ntlm',
@@ -91,7 +91,7 @@ class WinRMScript:
             password=self.password)
         self.shell_id = self.p.open_shell()
 
-    def close():
+    def close(self):
         p.cleanup_command(shell_id, command_id)
         p.close_shell(shell_id)
 
