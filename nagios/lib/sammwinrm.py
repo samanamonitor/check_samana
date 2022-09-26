@@ -100,7 +100,7 @@ class WinRMScript:
         std_out = ''
         std_err = ''
         self.command_id = self.p.run_command(self.shell_id, 'wmic', [])
-        std_out, std_err, status_code = self.p.get_command_output(self.shell_id, self.command_id)
+        #std_out, std_err, status_code = self.p.get_command_output(self.shell_id, self.command_id)
         self.check_error(std_err)
 
         if status_code != 0:
