@@ -30,7 +30,7 @@ class WRProtocol(Protocol):
             'rsp:Receive', {}).setdefault('rsp:DesiredStream', {})
         stream['@CommandId'] = command_id
         stream['#text'] = 'stdout stderr'
-        res = p.send_message(xmltodict.unparse(req))
+        res = self.send_message(xmltodict.unparse(req))
         root = ET.fromstring(res)
         stream_nodes = [
             node for node in root.findall('.//*')
