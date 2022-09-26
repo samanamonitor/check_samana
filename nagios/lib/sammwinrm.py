@@ -50,10 +50,10 @@ class WRProtocol(Protocol):
 
         stdout = stderr = b''
         stream_stdout = root.findall('.//rsp:Stream[@Name=\'stdout\']', self.namespace)
-        for s in stream_stdout:
+        for stream_node in stream_stdout:
             stdout += base64.b64decode(stream_node.text.encode('ascii'))
         stream_stderr = root.findall('.//rsp:Stream[@Name=\'stderr\']', self.namespace)
-        for s in stream_stderr:
+        for stream_node in stream_stderr:
             stderr += base64.b64decode(stream_node.text.encode('ascii'))
 
         cs=root.find('.//rsp:CommandState[@State=\'%(rsp)s/CommandState/Done\']' % self.namespace, self.namespace)
