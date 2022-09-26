@@ -21,9 +21,10 @@ class WRProtocol(Protocol):
             'env:Envelope': { 
                 '@xmlns:env':'http://www.w3.org/2003/05/soap-envelope',
                 '@xmlns:a':'http://schemas.xmlsoap.org/ws/2004/08/addressing',
+                '@xmlns:xs':"http://www.w3.org/2001/XMLSchema",
                 'env:Header': {
                     'a:Action':'http://schemas.xmlsoap.org/ws/2004/09/transfer/Get',
-                    'a:MessageI':'xs:anyURI',
+                    'a:MessageID':'xs:anyURI',
                     'a:To':'xs:anyURI'
                 }
             }
