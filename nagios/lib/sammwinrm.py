@@ -105,6 +105,7 @@ class WinRMScript:
         self.p.close_shell(self.shell_id)
 
     def get_class(self, class_name):
+        pass
 
     def send(self, command, expect_receive=True):
         self.p.send(self.shell_id, self.command_id, command + "\r\n")
