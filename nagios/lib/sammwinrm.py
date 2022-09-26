@@ -92,42 +92,40 @@ class WinRMScript:
         self.shell_id = self.p.open_shell()
 
     def close(self):
-        p.cleanup_command(shell_id, command_id)
-        p.close_shell(shell_id)
+        self.p.cleanup_command(self.shell_id, self.command_id)
+        self.p.close_shell(self.shell_id)
 
     def wmic(self):
-        shell_id = None
-        command_id = None
-        p = None
         error = 0
         std_out = ''
         std_err = ''
-        command_id = p.run_command(shell_id, 'wmic', [])
-        std_out, std_err, status_code = p.get_command_output(shell_id, command_id)
+        self.command_id = self.p.run_command(self.shell_id, 'wmic', [])
+        std_out, std_err, status_code = self.p.get_command_output(self.shell_id, self.command_id)
         self.check_error(std_err)
 
         if status_code != 0:
             raise CheckWinRMExceptionUNKNOWN(std_err)
         return "%s\n%s" % (std_out, "")
 
-    def run(self, scriptline=''):
+    def posh(self, scriptline=None, scriptfile=None):
+        script = None
         if scriptfile is not None:
             with open(scriptfile, "r") as f:
                 script = f.read()
         elif scriptline is not None:
             script = scriptline
+        if script is not None:
+            encoded_ps = b64encode((variables + script).encode('utf_16_le')).decode('ascii')
+            params = [ '-encodedcommand', encoded_ps ]
         else:
-            raise CheckWinRMExceptionUNKNOWN("Invalid script")
+            params = []
 
-        shell_id = None
-        command_id = None
-        p = None
+
         error = 0
         std_out = ''
         std_err = ''
-        encoded_ps = b64encode((variables + script).encode('utf_16_le')).decode('ascii')
-        command_id = p.run_command(shell_id, 'powershell', ['-encodedcommand {0}'.format(encoded_ps), ])
-        std_out, std_err, status_code = p.get_command_output(shell_id, command_id)
+        command_id = self.p.run_command(self.shell_id, 'powershell', params)
+        std_out, std_err, status_code = self.p.get_command_output(self.shell_id, self.command_id)
         self.check_error(std_err)
 
         if status_code != 0:
