@@ -84,7 +84,7 @@ class WinRMScript:
         self.password = auth['password']
 
     def open(self):
-        self.p = Protocol(
+        self.p = WRProtocol(
             endpoint='http://%s:5985/wsman' % self.hostaddress,
             transport='ntlm',
             username=self.username,
