@@ -28,6 +28,23 @@ class WRProtocol(Protocol):
         res=self.send_message(xmltodict.unparse(req))
         return res
 
+    def signal(self, shell_id, command_id, s):
+        message_id = uuid.uuid4()
+        req = {'env:Envelope': self._get_soap_header(
+            resource_uri='http://schemas.microsoft.com/wbem/wsman/1/windows/shell/cmd',  # NOQA
+            action='http://schemas.microsoft.com/wbem/wsman/1/windows/shell/Signal',  # NOQA
+            shell_id=shell_id,
+            message_id=message_id)}
+
+        # Signal the Command references to terminate (close stdout/stderr)
+        signal = req['env:Envelope'].setdefault(
+            'env:Body', {}).setdefault('rsp:Signal', {})
+        signal['@CommandId'] = command_id
+        signal['rsp:Code'] = 'http://schemas.microsoft.com/wbem/wsman/1/windows/shell/signal/%s' % s  # NOQA
+
+        res = self.send_message(xmltodict.unparse(req))        
+        return res
+
     def send(self, shell_id, command_id, stdin_input, end=False):
         req = {'env:Envelope': self._get_soap_header(
                     resource_uri='http://schemas.microsoft.com/wbem/wsman/1/windows/shell/cmd',  # NOQA
@@ -140,8 +157,9 @@ class WinRMScript:
 
     def putfile(self):
         self.command_id = self.p.run_command(self.shell_id, 'copy', [ 'con', 'c:\\temp\\out.txt'])
-        self.send("this\r\nis\r\na test\r\n\r\n\x1a\r\n", expect_receive=False)
-        return 0
+        self.send("this\r\nis\r\na test\r\n\r\n", expect_receive=False)
+        self.p.signal("ctrl_c")
+        return self.p.receive(self.shell_id, self.command_id)
 
     def getfile(self):
         self.command_id = self.p.run_command(self.shell_id, 'type', [ 'c:\\temp\\out.txt' ])
