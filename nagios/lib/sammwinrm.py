@@ -165,11 +165,15 @@ class WinRMScript:
     def putfile(self, localfile, remotefile):
         self.command_id = self.p.run_command(self.shell_id, 'cmd', [ ])
         with open(localfile, "r") as f:
-            l = f.readline()
-            self.send("echo %s > %s" % (l[:-1], remotefile))
-            while l != '':
+            self.send("del %s" % remotefile)
+            while True
                 l = f.readline()
-                self.send("echo %s >> %s" % (l[:-1], remotefile))
+                if l == '': break
+                l = rstrip()
+                if l == '':
+                    self.send("echo. >> %s" % (l, remotefile))
+                else:
+                    self.send("echo %s >> %s" % (l[:-1], remotefile))
         return self.send("exit")
 
     def getfile(self):
