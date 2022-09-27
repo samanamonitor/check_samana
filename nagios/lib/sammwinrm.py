@@ -20,7 +20,7 @@ class WRProtocol(Protocol):
         message_id = uuid.uuid4()
         req = {
             'env:Envelope': self._get_soap_header(
-            resource_uri='http://schemas.microsoft.com/wbem/wsman/1/windows/shell/cmd',  # NOQA
+            resource_uri='http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/Win32_ComputerSystem',  # NOQA
             action='http://schemas.xmlsoap.org/ws/2004/09/transfer/Get',
             shell_id=shell_id)}
         req['env:Envelope'].setdefault('env:Body', {})
