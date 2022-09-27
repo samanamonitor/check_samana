@@ -171,7 +171,7 @@ class WinRMScript:
                 if l == '': break
                 l = l.rstrip()
                 if l == '':
-                    self.send("echo. >> %s" % (l, remotefile))
+                    self.send("echo. >> %s" % (remotefile))
                 else:
                     self.send("echo %s >> %s" % (l[:-1], remotefile))
         return self.send("exit")
