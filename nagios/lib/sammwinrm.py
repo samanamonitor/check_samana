@@ -210,7 +210,7 @@ class WinRMScript:
     def cmd(self, params=[], interactive=False):
         if len(params) == 0:
             interactive = True
-        self.command_id = self.p.run_command(self.shell_id, 'cmd', params)
+        self.command_id = self.p.run_command(self.shell_id, params[0], params[1:])
         res=self.receive(interactive)
         return res
 
