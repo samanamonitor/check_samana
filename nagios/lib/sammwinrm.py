@@ -2,6 +2,7 @@ from winrm.protocol import Protocol
 from base64 import b64encode
 import xml.etree.ElementTree as ET
 from time import time
+import os
 
 import xmltodict
 import base64
@@ -97,15 +98,6 @@ class WRProtocol(Protocol):
             return_code = -1
         return stdout, stderr, return_code, command_done, total_time
 
-class CheckWinRMExceptionWARN(Exception):
-    pass
-
-class CheckWinRMExceptionCRIT(Exception):
-    pass
-
-class CheckWinRMExceptionUNKNOWN(Exception):
-    pass
-
 
 class WinRMScript:
     def __init__(self, cleanup=True):
@@ -114,22 +106,26 @@ class WinRMScript:
         self.shell_id = None
         self.command_id = None
 
-    def open(self, hostaddress, auth):
-        if auth is None:
-            raise CheckWinRMExceptionUNKNOWN("Authentication data missing")
-        if 'domain' not in auth or auth['domain'] is None:
-            raise CheckWinRMExceptionUNKNOWN("The user domain name is a mandatory argument")
-        if 'username' not in auth or auth['username'] is None:
-            raise CheckWinRMExceptionUNKNOWN("The username is a mandatory argument")
-        if 'password' not in auth or auth['password'] is None:
-            raise CheckWinRMExceptionUNKNOWN("The password is a mandatory argument")
+    def open(self, hostaddress=None, auth=None):
+        self.username = os.environ.get('WINRM_USER')
+        self.password = os.environ.get('WINRM_PASSWORD')
+        self.domain = os.environ.get('WINRM_DOMAIN')
+        self.hostname = os.environ.get('WINRM_HOSTNAME')
+        if auth is not None:
+            self.username = auth.get('username')
+            self.password = auth.get('password')
+            self.domain = auth.get('domain')
 
-        self.hostaddress = hostaddress
-        if 'upn' in auth:
-            self.username = auth['username']
-        else:
-            self.username = auth['domain'] + '\\' + auth['username']
-        self.password = auth['password']
+        if self.username is None:
+            raise Exception("The username is a mandatory argument")
+        if self.password is None:
+            raise Exception("The password is a mandatory argument")
+        if self.domain is None:
+            raise Exception("The user domain name is a mandatory argument")
+
+        if hostaddress is not None:
+            self.hostaddress = hostaddress
+
         self.p = WRProtocol(
             endpoint='http://%s:5985/wsman' % self.hostaddress,
             transport='ntlm',
