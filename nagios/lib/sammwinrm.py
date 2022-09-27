@@ -163,6 +163,21 @@ class WinRMScript:
             res = ()
         return res
 
+    def receive(self, interactive=False):
+        stdin_data = ''
+        stderr_data = ''
+        total_time = 0
+        while True:
+            res=self.p.receive(self.shell_id, self.command_id)
+            if interactive and res[3] == False:
+                return res
+            stdin_data += res[0]
+            stderr_data += res[1]
+            total_time += res[4]
+            if res[3] == True:
+                break
+        return (stdin_data, stderr_data, res[2], res[3], total_time)
+
     def urlfile(self, url, remotefile):
         cmd="(new-object System.Net.WebClient).DownloadFile(\\\"%s\\\", \\\"%s\\\")" \
             % (url, remotefile)
@@ -177,13 +192,15 @@ class WinRMScript:
 
     def wmic(self, class_name=None, class_filter=None):
         params=[]
+        interactive=True
         if class_name is not None:
+            interactive = False
             params += [ 'PATH', class_name ]
             if class_filter is not None:
                 params += [ 'WHERE', class_filter ]
             params += [ 'GET', '/FORMAT:RAWXML' ]
         self.command_id = self.p.run_command(self.shell_id, 'wmic', params)
-        res=self.p.receive(self.shell_id, self.command_id)
+        res = self.receive(interactive)
         print(res)
         if class_name is not None:
             root = ET.fromstringlist(res[0].replace('\r','').split('\n')[:-1])
