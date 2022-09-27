@@ -110,7 +110,7 @@ class WinRMScript:
         self.username = os.environ.get('WINRM_USER')
         self.password = os.environ.get('WINRM_PASSWORD')
         self.domain = os.environ.get('WINRM_DOMAIN')
-        self.hostname = os.environ.get('WINRM_HOSTNAME')
+        self.hostaddress = os.environ.get('WINRM_HOSTNAME')
         if auth is not None:
             self.username = auth.get('username')
             self.password = auth.get('password')
