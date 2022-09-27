@@ -163,8 +163,7 @@ class WinRMScript:
         return res
 
     def urlfile(self, url, remotefile):
-        cmd="{$client = new-object System.Net.WebClient;\
-        $client.DownloadFile(\"%s\",\"%s\")}" % (url, remotefile)
+        cmd="(new-object System.Net.WebClient).DownloadFile(\\\"%s\\\", \\\"%s\\\")" % (url, remotefile)
         self.command_id = self.p.run_command(self.shell_id, 'powershell', [ "-command", cmd ])
         return self.p.receive(self.shell_id, self.command_id)
 
