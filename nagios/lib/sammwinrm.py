@@ -98,8 +98,70 @@ class WRProtocol(Protocol):
             return_code = -1
         return stdout, stderr, return_code, command_done, total_time
 
+class WinRMCommand:
+    def __init__(self, shell, class_name=None, class_filter=None):
+        self.shell = shell
+        self.data={}
+        self.class_name = class_name
+        self.class_filter = class_filter
+        self.command_id = None
+        if self.class_name is None:
+            self.interactive = True
+        else:
+            self.interactive = False
 
-class WinRMScript:
+    def signal(self, s):
+        self.signal_res = self.shell.signal(self.command_id, s)
+
+    def close(self):
+        if self.command_id is not None:
+            command_id=self.command_id
+            self.signal('terminate')
+            self.command_id = None
+
+    def send(self, command, expect_receive=True, end=False):
+        if not self.interactive:
+            return
+        self.send_data = self.shell.send(command, self.interactive, expect_receive=expect_receive, end=end)
+
+    def exit(self):
+        self.send_data = self.shell.send(self.command_id, 'exit\r\n', end=True)
+
+
+class WMICommand(WinRMCommand):
+    def run(self):
+        params = []
+        if self.class_name is not None:
+            params += [ 'PATH', class_name ]
+            if class_filter is not None:
+                params += [ 'WHERE', class_filter ]
+            params += [ 'GET', '/FORMAT:RAWXML' ]
+        self.command_id = self.shell.run_command('wmic', params)
+        self.std_in, self.std_err, self.code, self.done, self.total_time = self.shell.receive(self.interactive)
+        if self.class_name is not None:
+            try:
+                self.root = ET.fromstringlist(self.std_in.replace('\r','').split('\n')[:-1])
+            except Exception as e:
+                return
+            for property in self.root.findall(".//PROPERTY"):
+                n=property.attrib['NAME']
+                v=property.find("./VALUE")
+                self.data[n]=v.text if v is not None else None
+
+
+    def get_class(self, class_name, class_filter=None):
+        cmd="PATH %s" % class_name
+        if class_filter is not None:
+            cmd += " WHERE " + class_filter
+        res=self.send(cmd + " GET /format:rawxml")
+        return res
+
+    def __str__(self):
+        return self.command_id
+    def __repr__(self):
+        return self.command_id
+
+class WinRMShell:
     def __init__(self, cleanup=True):
         self.cleanup = cleanup
         self.data = {}
@@ -133,31 +195,28 @@ class WinRMScript:
             password=self.password)
         self.shell_id = self.p.open_shell()
 
+    def run_command(self, cmd, params=[]):
+        return self.p.run_command(self.shell_id, cmd, params)
+
+    def __str__(self):
+        return self.shell_id
+
+    def __repr__(self):
+        return self.shell_id
+
     def close(self):
-        if self.command_id is not None:
-            command_id=self.command_id
-            self.command_id = None
-            self.p.cleanup_command(self.shell_id, command_id)
         self.p.close_shell(self.shell_id)
         self.shell_id = None
 
-    def get_class(self, class_name, class_filter=None):
-        cmd="PATH %s" % class_name
-        if class_filter is not None:
-            cmd += " WHERE " + class_filter
-        res=self.send(cmd + " GET /format:rawxml")
-        return res
-        
-    def exit(self):
-        return self.p.send(self.shell_id, self.command_id, 'exit\r\n', end=True)
+    def signal(self, command_id, s):
+        return self.p.signal(self.shell_id, command_id, s)
 
     def send(self, command, expect_receive=True, end=False):
-        res = self.p.send(self.shell_id, self.command_id, command + "\r\n", end)
+        self.send_res = self.p.send(self.shell_id, self.command_id, command + "\r\n", end)
         if expect_receive:
-            res = self.p.receive(self.shell_id, self.command_id)
+            return self.p.receive(self.shell_id, self.command_id)
         else:
-            res = ()
-        return res
+            return None
 
     def receive(self, interactive=False):
         stdin_data = ''
