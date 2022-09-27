@@ -90,6 +90,10 @@ class CheckWinRMExceptionUNKNOWN(Exception):
 
 class WinRMScript:
     def __init__(self, cleanup=True):
+        self.cleanup = cleanup
+        self.data = {}
+
+    def open(self, hostaddress, auth):
         if auth is None:
             raise CheckWinRMExceptionUNKNOWN("Authentication data missing")
         if 'domain' not in auth or auth['domain'] is None:
@@ -99,10 +103,6 @@ class WinRMScript:
         if 'password' not in auth or auth['password'] is None:
             raise CheckWinRMExceptionUNKNOWN("The password is a mandatory argument")
 
-        self.cleanup = cleanup
-        self.data = {}
-
-    def open(self, hostaddress, auth):
         self.hostaddress = hostaddress
         if 'upn' in auth:
             self.username = auth['username']
