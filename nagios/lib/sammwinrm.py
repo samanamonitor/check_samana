@@ -121,7 +121,7 @@ class WinRMScript:
         self.p.close_shell(self.shell_id)
 
     def get_class(self, class_name, class_filter=None):
-        cmd="PATH %s"
+        cmd="PATH %s" % class_name
         if class_filter is not None:
             cmd += " WHERE " + class_filter
         return self.send(cmd + " GET /format:rawxml")
