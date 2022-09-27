@@ -200,6 +200,12 @@ class WinRMScript:
 
         return res
 
+    def cmd(self):
+        params = []
+        self.command_id = self.p.run_command(self.shell_id, 'cmd', params)
+        res=self.p.receive(self.shell_id, self.command_id)
+        return res
+
     def posh(self, scriptline=None, scriptfile=None):
         script = None
         if scriptfile is not None:
