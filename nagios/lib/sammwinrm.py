@@ -178,12 +178,13 @@ class WinRMScript:
         error = 0
         std_out = ''
         std_err = ''
-        command_id = self.p.run_command(self.shell_id, 'powershell', params)
+        self.command_id = self.p.run_command(self.shell_id, 'powershell', params)
+        res=self.p.receive(self.shell_id, self.command_id)
         #self.check_error(std_err)
 
         #if status_code != 0:
         #    raise CheckWinRMExceptionUNKNOWN(std_err)
-        return "%s\n%s" % (std_out, "")
+        return res
 
     def check_error(self, std_err):
         if len(std_err) == 0:
