@@ -89,7 +89,7 @@ class CheckWinRMExceptionUNKNOWN(Exception):
 
 
 class WinRMScript:
-    def __init__(self, hostaddress, auth, cleanup=True):
+    def __init__(self, cleanup=True):
         if auth is None:
             raise CheckWinRMExceptionUNKNOWN("Authentication data missing")
         if 'domain' not in auth or auth['domain'] is None:
@@ -101,14 +101,14 @@ class WinRMScript:
 
         self.cleanup = cleanup
         self.data = {}
+
+    def open(self, hostaddress, auth):
         self.hostaddress = hostaddress
         if 'upn' in auth:
             self.username = auth['username']
         else:
             self.username = auth['domain'] + '\\' + auth['username']
         self.password = auth['password']
-
-    def open(self):
         self.p = WRProtocol(
             endpoint='http://%s:5985/wsman' % self.hostaddress,
             transport='ntlm',
