@@ -184,6 +184,7 @@ class WinRMScript:
             params += [ 'GET', '/FORMAT:RAWXML' ]
         self.command_id = self.p.run_command(self.shell_id, 'wmic', params)
         res=self.p.receive(self.shell_id, self.command_id)
+        print(res)
         if class_name is not None:
             root = ET.fromstringlist(res[0].replace('\r','').split('\n')[:-1])
             data={}
