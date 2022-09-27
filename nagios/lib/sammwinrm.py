@@ -169,7 +169,7 @@ class WinRMScript:
             while True:
                 l = f.readline()
                 if l == '': break
-                l = rstrip()
+                l = l.rstrip()
                 if l == '':
                     self.send("echo. >> %s" % (l, remotefile))
                 else:
