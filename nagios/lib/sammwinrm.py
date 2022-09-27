@@ -23,7 +23,7 @@ class WRProtocol(Protocol):
             resource_uri='http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/Win32_ComputerSystem',  # NOQA
             action='http://schemas.xmlsoap.org/ws/2004/09/transfer/Get')}
         req['env:Envelope']['env:Header']['w:SelectorSet'] = {
-            'w:Selector' = { '@Name': 'id', '#text': '1'}
+            'w:Selector': { '@Name': 'id', '#text': '1'}
             }
         req['env:Envelope'].setdefault('env:Body', {})
         print(xmltodict.unparse(req))
