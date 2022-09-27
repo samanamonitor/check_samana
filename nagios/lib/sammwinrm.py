@@ -142,7 +142,7 @@ class WinRMScript:
         self.command_id = self.p.run_command(self.shell_id, 'type', [ 'c:\\temp\\out.txt' ])
         return self.p.receive(self.shell_id, self.command_id)
 
-    def wmic(self, filename=None, class_name=None, class_filter=None):
+    def wmic(self, class_name=None, class_filter=None):
         params=[]
         if class_name is not None:
             params += [ 'PATH', class_name ]
@@ -150,7 +150,17 @@ class WinRMScript:
                 params += [ 'WHERE', class_filter ]
             params += [ 'GET', '/FORMAT:RAWXML' ]
         self.command_id = self.p.run_command(self.shell_id, 'wmic', params)
-        return self.p.receive(self.shell_id, self.command_id)
+        res=self.p.receive(self.shell_id, self.command_id)
+        if class_name is not None:
+            root = ET.fromstringlist(res[0].replace('\r','').split('\n')[:-1])
+            data={}
+            for property in root.findall(".//PROPERTY"):
+              n=property.attrib['NAME']
+              v=property.find("./VALUE")
+              data[n]=v.text if v is not None else None
+              res += (data,)
+
+        return res
 
     def posh(self, scriptline=None, scriptfile=None):
         script = None
