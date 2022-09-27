@@ -179,7 +179,7 @@ class WinRMScript:
         return (stdin_data, stderr_data, res[2], res[3], total_time)
 
     def urlfile(self, url, remotefile):
-        cmd="(new-object System.Net.WebClient).DownloadFile(\\\"%s\\\", \\\"%s\\\")" \
+        cmd="(new-object System.Net.WebClient).DownloadFile(\"%s\", \"%s\")" \
             % (url, remotefile)
         return self.posh(scriptline=cmd)
 #        self.command_id = self.p.run_command(self.shell_id, 
