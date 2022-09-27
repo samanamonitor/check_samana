@@ -24,6 +24,7 @@ class WRProtocol(Protocol):
                 '@xmlns:xs':"http://www.w3.org/2001/XMLSchema",
                 'env:Header': {
                     'a:Action':'http://schemas.xmlsoap.org/ws/2004/09/transfer/Get',
+                    'w:ResourceURI': 'http://schemas.microsoft.com/wbem/wsman/1/windows/shell/cmd',
                     'a:MessageID':'xs:anyURI',
                     'a:To':'xs:anyURI'
                 }
