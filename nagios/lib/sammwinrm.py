@@ -164,8 +164,8 @@ class WinRMScript:
 
     def putfile(self):
         self.command_id = self.p.run_command(self.shell_id, 'cmd', [ ])
-        self.send("echo 'test > c:\\temp\\out.txt")
-        self.send("echo 'another line' >> c:\\temp\\out.txt")
+        self.send("echo test > c:\\temp\\out.txt", expect_receive=False)
+        self.send("echo another line >> c:\\temp\\out.txt", expect_receive=False)
         return self.p.receive(self.shell_id, self.command_id)
 
     def getfile(self):
