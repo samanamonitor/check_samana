@@ -230,7 +230,7 @@ class WinRMScript:
             script = scriptline
         if script is not None:
             interactive = False
-            encoded_ps = b64encode((variables + script).encode('utf_16_le')).decode('ascii')
+            encoded_ps = b64encode(script.encode('utf_16_le')).decode('ascii')
             params = [ '-encodedcommand', encoded_ps ]
         else:
             interactive = True
