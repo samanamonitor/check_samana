@@ -166,8 +166,7 @@ class WinRMScript:
         self.command_id = self.p.run_command(self.shell_id, 'cmd', [ ])
         self.send("echo test > c:\\temp\\out.txt")
         self.send("echo another line >> c:\\temp\\out.txt")
-        self.send("exit")
-        return 0
+        return self.send("exit")
 
     def getfile(self):
         self.command_id = self.p.run_command(self.shell_id, 'type', [ 'c:\\temp\\out.txt' ])
