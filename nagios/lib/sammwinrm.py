@@ -134,7 +134,8 @@ class WinRMScript:
         self.shell_id = self.p.open_shell()
 
     def close(self):
-        self.p.cleanup_command(self.shell_id, self.command_id)
+        if self.command_id is not None:
+            self.p.cleanup_command(self.shell_id, self.command_id)
         self.p.close_shell(self.shell_id)
 
     def get_class(self, class_name, class_filter=None):
