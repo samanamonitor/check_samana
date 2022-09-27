@@ -130,13 +130,18 @@ class WinRMScript:
     def exit(self):
         return self.p.send(self.shell_id, self.command_id, 'exit\r\n', end=True)
 
-    def send(self, command, expect_receive=True):
-        res = self.p.send(self.shell_id, self.command_id, command + "\r\n")
+    def send(self, command, expect_receive=True, end=False):
+        res = self.p.send(self.shell_id, self.command_id, command + "\r\n", end)
         if expect_receive:
             res = self.p.receive(self.shell_id, self.command_id)
         else:
             res = ()
         return res
+
+    def putfile(self):
+        self.command_id = self.p.run_command(self.shell_id, 'copy', [ 'con', 'c:\\temp\\out.txt'])
+        self.send("this\r\nis\r\na test\r\n\r\n\0\r\n", end=True)
+        return self.p.receive(self.shell_id, self.command_id)
 
     def getfile(self):
         self.command_id = self.p.run_command(self.shell_id, 'type', [ 'c:\\temp\\out.txt' ])
@@ -175,15 +180,8 @@ class WinRMScript:
         else:
             params = []
 
-        error = 0
-        std_out = ''
-        std_err = ''
         self.command_id = self.p.run_command(self.shell_id, 'powershell', params)
         res=self.p.receive(self.shell_id, self.command_id)
-        #self.check_error(std_err)
-
-        #if status_code != 0:
-        #    raise CheckWinRMExceptionUNKNOWN(std_err)
         return res
 
     def check_error(self, std_err):
