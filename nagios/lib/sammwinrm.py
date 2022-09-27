@@ -166,7 +166,7 @@ class WinRMScript:
         self.command_id = self.p.run_command(self.shell_id, 'cmd', [ ])
         with open(localfile, "r") as f:
             l = f.readline()
-            print(self.send("echo %s > %s" % (l, remotefile)))
+            print(self.send("echo %s > %s" % (l[:-1], remotefile)))
         return self.send("exit")
 
     def getfile(self):
