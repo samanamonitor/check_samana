@@ -19,30 +19,10 @@ class WRProtocol(Protocol):
     def get(self, shell_id):
         message_id = uuid.uuid4()
         req = {
-            'env:Envelope': { 
-                '@xmlns:env':'http://www.w3.org/2003/05/soap-envelope',
-                '@xmlns:a':'http://schemas.xmlsoap.org/ws/2004/08/addressing',
-                '@xmlns:xs':"http://www.w3.org/2001/XMLSchema",
-                'env:Header': {
-                    'a:Action':'http://schemas.xmlsoap.org/ws/2004/09/transfer/Get',
-                    'w:ResourceURI': 'http://schemas.microsoft.com/wbem/wsman/1/windows/shell/cmd',
-                    'a:MessageID': 'uuid:{0}'.format(message_id),
-                    'a:To':'xs:anyURI',
-                    'a:ReplyTo': {
-                        'a:Address': {
-                            '@mustUnderstand': 'true',
-                            '#text': 'http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous'
-                        },
-                    },
-                    'w:SelectorSet': {
-                        'w:Selector': {
-                            '@Name': 'ShellId',
-                            '#text': shell_id
-                        }
-                    }
-                }
-            }
-        }
+            'env:Envelope': self._get_soap_header(
+            resource_uri='http://schemas.microsoft.com/wbem/wsman/1/windows/shell/cmd',  # NOQA
+            action='http://schemas.xmlsoap.org/ws/2004/09/transfer/Get',
+            shell_id=shell_id)}
         req['env:Envelope'].setdefault('env:Body', {})
         print(xmltodict.unparse(req))
         res=self.send_message(xmltodict.unparse(req))
