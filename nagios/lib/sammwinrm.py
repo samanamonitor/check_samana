@@ -109,6 +109,8 @@ class WinRMScript:
     def __init__(self, cleanup=True):
         self.cleanup = cleanup
         self.data = {}
+        self.shell_id = None
+        self.command_id = None
 
     def open(self, hostaddress, auth):
         if auth is None:
@@ -137,6 +139,8 @@ class WinRMScript:
         if self.command_id is not None:
             self.p.cleanup_command(self.shell_id, self.command_id)
         self.p.close_shell(self.shell_id)
+        self.command_id = None
+        self.shell_id = None
 
     def get_class(self, class_name, class_filter=None):
         cmd="PATH %s" % class_name
