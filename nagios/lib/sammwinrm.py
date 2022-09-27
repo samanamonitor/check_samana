@@ -139,9 +139,10 @@ class WinRMScript:
 
     def close(self):
         if self.command_id is not None:
-            self.p.cleanup_command(self.shell_id, self.command_id)
+            command_id=self.command_id
+            self.command_id = None
+            self.p.cleanup_command(self.shell_id, command_id)
         self.p.close_shell(self.shell_id)
-        self.command_id = None
         self.shell_id = None
 
     def get_class(self, class_name, class_filter=None):
@@ -163,13 +164,15 @@ class WinRMScript:
         return res
 
     def urlfile(self, url, remotefile):
-        cmd="(new-object System.Net.WebClient).DownloadFile(\\\"%s\\\", \\\"%s\\\")" % (url, remotefile)
-        self.command_id = self.p.run_command(self.shell_id, 'powershell', [ "-command", cmd ])
+        cmd="(new-object System.Net.WebClient).DownloadFile(\\\"%s\\\", \\\"%s\\\")" \
+            % (url, remotefile)
+        self.command_id = self.p.run_command(self.shell_id, 
+            'powershell', [ "-command", cmd ])
         return self.p.receive(self.shell_id, self.command_id)
 
 
-    def getfile(self):
-        self.command_id = self.p.run_command(self.shell_id, 'type', [ 'c:\\temp\\out.txt' ])
+    def getfile(self, remotefile):
+        self.command_id = self.p.run_command(self.shell_id, 'type', [ remotefile ])
         return self.p.receive(self.shell_id, self.command_id)
 
     def wmic(self, class_name=None, class_filter=None):
