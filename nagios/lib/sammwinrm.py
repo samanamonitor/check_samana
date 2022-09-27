@@ -126,6 +126,8 @@ class WinRMScript:
             cmd += " WHERE " + class_filter
         return self.send(cmd + " GET /format:rawxml")
         
+    def exit(self):
+        return self.p.send(self.shell_id, self.command_id, 'exit\r\n', end=True)
 
     def send(self, command, expect_receive=True):
         res = self.p.send(self.shell_id, self.command_id, command + "\r\n")
