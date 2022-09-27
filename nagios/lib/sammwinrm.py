@@ -166,7 +166,7 @@ class WinRMScript:
         self.command_id = self.p.run_command(self.shell_id, 'cmd', [ ])
         with open(localfile, "r") as f:
             self.send("del %s" % remotefile)
-            while True
+            while True:
                 l = f.readline()
                 if l == '': break
                 l = rstrip()
