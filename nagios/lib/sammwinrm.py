@@ -251,34 +251,14 @@ class WinRMScript:
         except ET.ParseError:
             return std_err
         ns={ 'ps':root.tag.split('}')[0].split('{')[1] }
-        msg = "Error executing Powershell Command.\n"
+        msg = ""
         error = False
         for tag in root.findall('./ps:S', ns):
             t = tag.get('S')
             if t == 'Error':
                 error = True
             msg += "%s : %s" % (t, tag.text.replace("_x000D__x000A_", "\n"))
+        if error:
+            msg = "Error executing Powershell Command.\n" + msg
         return msg
 
-
-    def check_error(self, std_err):
-        if len(std_err) == 0:
-            return
-        if std_err[0] == '#':
-            temp = std_err.split('\n', 1)
-            if len(temp) > 0:
-                std_err = temp[1]
-        try:
-            root = ET.fromstring(std_err)
-        except ET.ParseError:
-            return
-        ns={ 'ps':root.tag.split('}')[0].split('{')[1] }
-        msg = "Error executing Powershell Command.\n"
-        error = False
-        for tag in root.findall('./ps:S', ns):
-            t = tag.get('S')
-            if t == 'Error':
-                error = True
-            msg += "%s : %s\n" % (t, tag.text.replace("_x000D__x000A_", ""))
-        if error:
-            raise CheckWinRMExceptionUNKNOWN(msg)
