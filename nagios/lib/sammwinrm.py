@@ -222,9 +222,9 @@ class WinRMScript:
         script = None
         if scriptfile is not None:
             with open(scriptfile, "r") as f:
-                script = f.read()
+                script = "$ProgressPreference = \"SilentlyContinue\";" + f.read()
         elif scriptline is not None:
-            script = scriptline
+            script = "$ProgressPreference = \"SilentlyContinue\";" + scriptline
         if script is not None:
             interactive = False
             encoded_ps = b64encode(script.encode('utf_16_le')).decode('ascii')
