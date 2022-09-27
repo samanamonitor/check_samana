@@ -236,7 +236,8 @@ class WinRMScript:
         self.command_id = self.p.run_command(self.shell_id, 'powershell', params)
         res=self.receive(interactive)
         err = self.decode_posh_error(res[1])
-        return (res[0], err, res[2], res[3], res[4])
+        res += (err,)
+        return res
 
     def decode_posh_error(self, std_err):
         if len(std_err) == 0:
