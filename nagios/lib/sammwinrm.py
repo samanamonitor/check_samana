@@ -166,7 +166,8 @@ class WinRMScript:
         cmd="{$client = new-object System.Net.WebClient;\
         $client.DownloadFile(\"%s\",\"%s\")}" % (url, remotefile)
         self.command_id = self.p.run_command(self.shell_id, 'powershell', [ "-command", cmd ])
-        return self.exit()
+
+        return self.receive(self.shell_id, self.command_id)
 
     def getfile(self):
         self.command_id = self.p.run_command(self.shell_id, 'type', [ 'c:\\temp\\out.txt' ])
