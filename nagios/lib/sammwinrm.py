@@ -162,10 +162,11 @@ class WinRMScript:
             res = ()
         return res
 
-    def putfile(self):
+    def putfile(self, localfile, remotefile):
         self.command_id = self.p.run_command(self.shell_id, 'cmd', [ ])
-        self.send("echo test > c:\\temp\\out.txt")
-        self.send("echo another line >> c:\\temp\\out.txt")
+        with open(localfile, "r") as f:
+            l = f.readline()
+            self.send("echo %s > %s" % (l, remotefile))
         return self.send("exit")
 
     def getfile(self):
