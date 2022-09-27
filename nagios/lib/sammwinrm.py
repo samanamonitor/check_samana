@@ -124,7 +124,8 @@ class WinRMScript:
         cmd="PATH %s" % class_name
         if class_filter is not None:
             cmd += " WHERE " + class_filter
-        return self.send(cmd + " GET /format:rawxml")
+        res=self.send(cmd + " GET /format:rawxml")
+        return res
         
     def exit(self):
         return self.p.send(self.shell_id, self.command_id, 'exit\r\n', end=True)
@@ -137,11 +138,18 @@ class WinRMScript:
             res = ()
         return res
 
-    def wmic(self):
-        error = 0
-        std_out = ''
-        std_err = ''
-        self.command_id = self.p.run_command(self.shell_id, 'wmic', [])
+    def getfile(self):
+        self.command_id = self.p.run_command(self.shell_id, 'type', [ 'c:\\temp\\out.txt' ])
+        return self.p.receive(self.shell_id, self.command_id)
+
+    def wmic(self, filename=None, class_name=None, class_filter=None):
+        params=[]
+        if class_name is not None:
+            params += [ 'PATH', class_name ]
+            if class_filter is not None:
+                params += [ 'WHERE', class_filter ]
+            params += [ 'GET', '/FORMAT:RAWXML' ]
+        self.command_id = self.p.run_command(self.shell_id, 'wmic', params)
         return self.p.receive(self.shell_id, self.command_id)
 
     def posh(self, scriptline=None, scriptfile=None):
