@@ -182,9 +182,6 @@ class WinRMScript:
         cmd="(new-object System.Net.WebClient).DownloadFile(\"%s\", \"%s\")" \
             % (url, remotefile)
         return self.posh(scriptline=cmd)
-#        self.command_id = self.p.run_command(self.shell_id, 
-#            'powershell', [ "-command", cmd ])
-#        return self.receive()
 
 
     def getfile(self, remotefile):
@@ -238,7 +235,31 @@ class WinRMScript:
 
         self.command_id = self.p.run_command(self.shell_id, 'powershell', params)
         res=self.receive(interactive)
-        return res
+        err = self.decode_posh_error(res[1])
+        return (res[0], err, res[2], res[3], res[4])
+
+    def decode_posh_error(self, std_err):
+        if len(std_err) == 0:
+            return std_err
+        if std_err[0] == '#':
+            temp = std_err.split('\n', 1)
+            if len(temp) > 0:
+                std_err = temp[1]
+        try:
+            root = ET.fromstring(std_err)
+        except ET.ParseError:
+            return
+        ns={ 'ps':root.tag.split('}')[0].split('{')[1] }
+        msg = "Error executing Powershell Command.\n"
+        error = False
+        for tag in root.findall('./ps:S', ns):
+            t = tag.get('S')
+            if t == 'Error':
+                error = True
+            msg += "%s : %s\n" % (t, tag.text)
+        if error:
+            raise CheckWinRMExceptionUNKNOWN(msg)
+
 
     def check_error(self, std_err):
         if len(std_err) == 0:
