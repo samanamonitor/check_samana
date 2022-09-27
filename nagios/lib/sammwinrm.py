@@ -17,6 +17,7 @@ class WRProtocol(Protocol):
         'p': "http://schemas.microsoft.com/wbem/wsman/1/wsman.xsd"
     }
     def get(self):
+        message_id = uuid.uuid4()
         req = {
             'env:Envelope': { 
                 '@xmlns:env':'http://www.w3.org/2003/05/soap-envelope',
@@ -25,7 +26,7 @@ class WRProtocol(Protocol):
                 'env:Header': {
                     'a:Action':'http://schemas.xmlsoap.org/ws/2004/09/transfer/Get',
                     'w:ResourceURI': 'http://schemas.microsoft.com/wbem/wsman/1/windows/shell/cmd',
-                    'a:MessageID':'xs:anyURI',
+                    'a:MessageID': 'uuid:{0}'.format(message_id),
                     'a:To':'xs:anyURI'
                 }
             }
