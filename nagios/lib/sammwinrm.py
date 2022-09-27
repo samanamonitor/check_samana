@@ -140,8 +140,8 @@ class WinRMScript:
 
     def putfile(self):
         self.command_id = self.p.run_command(self.shell_id, 'copy', [ 'con', 'c:\\temp\\out.txt'])
-        self.send("this\r\nis\r\na test\r\n\r\n\x1a\r\n", end=True)
-        return self.p.receive(self.shell_id, self.command_id)
+        self.send("this\r\nis\r\na test\r\n\r\n\x1a\r\n")
+        return 0
 
     def getfile(self):
         self.command_id = self.p.run_command(self.shell_id, 'type', [ 'c:\\temp\\out.txt' ])
