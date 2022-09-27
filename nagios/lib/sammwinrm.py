@@ -43,8 +43,6 @@ class WRProtocol(Protocol):
                 }
             }
         }
-            header['env:Header'][] = 
-
         req['env:Envelope'].setdefault('env:Body', {})
         print(xmltodict.unparse(req))
         res=self.send_message(xmltodict.unparse(req))
