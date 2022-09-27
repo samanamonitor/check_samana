@@ -27,7 +27,13 @@ class WRProtocol(Protocol):
                     'a:Action':'http://schemas.xmlsoap.org/ws/2004/09/transfer/Get',
                     'w:ResourceURI': 'http://schemas.microsoft.com/wbem/wsman/1/windows/shell/cmd',
                     'a:MessageID': 'uuid:{0}'.format(message_id),
-                    'a:To':'xs:anyURI'
+                    'a:To':'xs:anyURI',
+                    'a:ReplyTo': {
+                        'a:Address': {
+                            '@mustUnderstand': 'true',
+                            '#text': 'http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous'
+                        }
+                    },
                 }
             }
         }
