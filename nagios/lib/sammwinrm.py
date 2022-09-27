@@ -181,14 +181,15 @@ class WinRMScript:
     def urlfile(self, url, remotefile):
         cmd="(new-object System.Net.WebClient).DownloadFile(\\\"%s\\\", \\\"%s\\\")" \
             % (url, remotefile)
-        self.command_id = self.p.run_command(self.shell_id, 
-            'powershell', [ "-command", cmd ])
-        return self.p.receive(self.shell_id, self.command_id)
+        return self.posh(scriptline=cmd)
+#        self.command_id = self.p.run_command(self.shell_id, 
+#            'powershell', [ "-command", cmd ])
+#        return self.receive()
 
 
     def getfile(self, remotefile):
         self.command_id = self.p.run_command(self.shell_id, 'type', [ remotefile ])
-        return self.p.receive(self.shell_id, self.command_id)
+        return self.receive()
 
     def wmic(self, class_name=None, class_filter=None):
         params=[]
@@ -213,10 +214,11 @@ class WinRMScript:
 
         return res
 
-    def cmd(self):
-        params = []
+    def cmd(self, params=[], interactive=False):
+        if len(params) == 0:
+            interactive = True
         self.command_id = self.p.run_command(self.shell_id, 'cmd', params)
-        res=self.p.receive(self.shell_id, self.command_id)
+        res=self.receive(interactive)
         return res
 
     def posh(self, scriptline=None, scriptfile=None):
@@ -227,13 +229,15 @@ class WinRMScript:
         elif scriptline is not None:
             script = scriptline
         if script is not None:
+            interactive = False
             encoded_ps = b64encode((variables + script).encode('utf_16_le')).decode('ascii')
             params = [ '-encodedcommand', encoded_ps ]
         else:
+            interactive = True
             params = []
 
         self.command_id = self.p.run_command(self.shell_id, 'powershell', params)
-        res=self.p.receive(self.shell_id, self.command_id)
+        res=self.receive(interactive)
         return res
 
     def check_error(self, std_err):
