@@ -16,7 +16,7 @@ class WRProtocol(Protocol):
         'rsp': "http://schemas.microsoft.com/wbem/wsman/1/windows/shell",
         'p': "http://schemas.microsoft.com/wbem/wsman/1/wsman.xsd"
     }
-    def get(self):
+    def get(self, shell_id):
         message_id = uuid.uuid4()
         req = {
             'env:Envelope': { 
@@ -32,11 +32,19 @@ class WRProtocol(Protocol):
                         'a:Address': {
                             '@mustUnderstand': 'true',
                             '#text': 'http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous'
-                        }
+                        },
                     },
+                    'w:SelectorSet': {
+                        'w:Selector': {
+                            '@Name': 'ShellId',
+                            '#text': shell_id
+                        }
+                    }
                 }
             }
         }
+            header['env:Header'][] = 
+
         req['env:Envelope'].setdefault('env:Body', {})
         print(xmltodict.unparse(req))
         res=self.send_message(xmltodict.unparse(req))
