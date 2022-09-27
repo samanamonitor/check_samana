@@ -162,19 +162,11 @@ class WinRMScript:
             res = ()
         return res
 
-    def putfile(self, localfile, remotefile):
-        self.command_id = self.p.run_command(self.shell_id, 'cmd', [ ])
-        with open(localfile, "r") as f:
-            self.send("del %s" % remotefile)
-            while True:
-                l = f.readline()
-                if l == '': break
-                l = l.rstrip()
-                if l == '':
-                    self.send("echo. >> %s" % (remotefile))
-                else:
-                    self.send("echo %s >> %s" % (l[:-1], remotefile))
-        return self.send("exit")
+    def urlfile(self, url, remotefile):
+        cmd="{$client = new-object System.Net.WebClient;\
+        $client.DownloadFile(\"%s\",\"%s\")}" % (url, remotefile)
+        self.command_id = self.p.run_command(self.shell_id, 'powershell', [ "-command", cmd ])
+        return self.exit()
 
     def getfile(self):
         self.command_id = self.p.run_command(self.shell_id, 'type', [ 'c:\\temp\\out.txt' ])
