@@ -120,8 +120,12 @@ class WinRMScript:
         self.p.cleanup_command(self.shell_id, self.command_id)
         self.p.close_shell(self.shell_id)
 
-    def get_class(self, class_name):
-        pass
+    def get_class(self, class_name, class_filter=None):
+        cmd="PATH %s"
+        if class_filter is not None:
+            cmd += " WHERE " + class_filter
+        return self.send(cmd + " GET /format:rawxml")
+        
 
     def send(self, command, expect_receive=True):
         res = self.p.send(self.shell_id, self.command_id, command + "\r\n")
