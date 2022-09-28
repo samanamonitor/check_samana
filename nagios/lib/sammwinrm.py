@@ -157,7 +157,7 @@ class WMICommand(WinRMCommand):
 
     def process_result(self):
         try:
-            self.root = ET.fromstringlist(self.std_in.replace('\r','').split('\n')[:-1])
+            self.root = ET.fromstringlist(self.std_out.replace('\r','').split('\n')[:-1])
         except Exception as e:
             return
         for property in self.root.findall(".//PROPERTY"):
@@ -178,8 +178,8 @@ class WMICommand(WinRMCommand):
     def __repr__(self):
         return "<%s interactive=%s%s%s error=%s std_out_bytes=%d std_err_bytes=%d>" % \
             ("WMICommand", 
-                " class_name=%s" % self.class_name if class_name is not None else "",
-                " class_filter=%s" % self.class_filter if class_filter is not None else "",
+                " class_name=%s" % self.class_name if self.class_name is not None else "",
+                " class_filter=%s" % self.class_filter if self.class_filter is not None else "",
                 self.error,
                 len(self.std_out), len(self.std_err))
 
