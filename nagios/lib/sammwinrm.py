@@ -99,11 +99,9 @@ class WRProtocol(Protocol):
         return stdout, stderr, return_code, command_done, total_time
 
 class WinRMCommand:
-    def __init__(self, shell, class_name=None, class_filter=None):
+    def __init__(self, shell):
         self.shell = shell
         self.data={}
-        self.class_name = class_name
-        self.class_filter = class_filter
         self.command_id = None
         if self.class_name is None:
             self.interactive = True
@@ -129,6 +127,12 @@ class WinRMCommand:
 
 
 class WMICommand(WinRMCommand):
+    def __init__(self, shell, class_name=None, class_filter=None):
+        self.super(shell)
+        self.class_name = class_name
+        self.class_filter = class_filter
+        self.interactive = self.class_name is not None
+
     def run(self):
         params = []
         if self.class_name is not None:
@@ -137,7 +141,8 @@ class WMICommand(WinRMCommand):
                 params += [ 'WHERE', class_filter ]
             params += [ 'GET', '/FORMAT:RAWXML' ]
         self.command_id = self.shell.run_command('wmic', params)
-        self.std_in, self.std_err, self.code, self.done, self.total_time = self.shell.receive(self.interactive)
+        self.std_in, self.std_err, self.code, self.done, self.total_time = \
+            self.shell.receive(self.interactive)
         if self.class_name is not None:
             try:
                 self.root = ET.fromstringlist(self.std_in.replace('\r','').split('\n')[:-1])
