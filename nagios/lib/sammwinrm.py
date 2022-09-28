@@ -134,7 +134,27 @@ class WinRMCommand:
 
     def exit(self):
         self.send_data = self.shell.send(self.command_id, 'exit\r\n', end=True)
+    def __str__(self):
+        return self.command_id
 
+class CMDCommand(WinRMCommand):
+    def __init__(self, shell):
+        WinRMCommand.__init__(self, shell)
+        self.interactive = False
+
+    def run(self, cmd=None, params=[]):
+        if cmd is None:
+            self.interactive = True
+            self.command_id = self.p.run_command(self.shell_id, "cmd", [])
+        else:
+            self.interactive = False
+            self.command_id = self.p.run_command(self.shell_id, cmd, params)
+        self.receive()
+
+    def __repr__(self):
+        return "<%s interactive=%s code=%d std_out_bytes=%d std_err_bytes=%d>" % \
+            (self.__class__.__name__, self.interactive, self.code,
+                len(self.std_out), len(self.std_err))
 
 class WMICommand(WinRMCommand):
     def __init__(self, shell, class_name=None, class_filter=None):
@@ -151,7 +171,7 @@ class WMICommand(WinRMCommand):
                 params += [ 'WHERE', self.class_filter ]
             params += [ 'GET', '/FORMAT:RAWXML' ]
         self.command_id = self.shell.run_command('wmic', params)
-        WinRMCommand.receive(self)
+        self.receive()
         if self.class_name is not None:
             self.process_result()
 
@@ -173,11 +193,9 @@ class WMICommand(WinRMCommand):
         res=self.send(cmd + " GET /format:rawxml")
         return res
 
-    def __str__(self):
-        return self.command_id
     def __repr__(self):
-        return "<%s interactive=%s%s%s error=%s std_out_bytes=%d std_err_bytes=%d>" % \
-            (self.__class__.__name__, self.interactive,
+        return "<%s interactive=%s code=%d%s%s error=%s std_out_bytes=%d std_err_bytes=%d>" % \
+            (self.__class__.__name__, self.interactive, self.code,
                 " class_name=%s" % self.class_name if self.class_name is not None else "",
                 " class_filter=%s" % self.class_filter if self.class_filter is not None else "",
                 self.error,
@@ -245,7 +263,7 @@ class WinRMShell:
 
     def __repr__(self):
         return "<%s connected=%s hostaddress=%s username=%s domain=%s shell_id=%s>" % \
-            ("WinRMShell", self.connected, self.hostaddress, \
+            (self.__class__.__name__, self.connected, self.hostaddress, \
                 self.username, self.domain, self.shell_id)
 
     def close(self):
@@ -295,12 +313,6 @@ class WinRMShell:
         self.command_id = self.p.run_command(self.shell_id, 'type', [ remotefile ])
         return self.receive()
 
-    def cmd(self, params=[], interactive=False):
-        if len(params) == 0:
-            interactive = True
-        self.command_id = self.p.run_command(self.shell_id, params[0], params[1:])
-        res=self.receive(interactive)
-        return res
 
     def posh(self, scriptline=None, scriptfile=None):
         script = None
