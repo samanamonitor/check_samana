@@ -132,22 +132,25 @@ class WMICommand(WinRMCommand):
     def run(self):
         params = []
         if self.class_name is not None:
-            params += [ 'PATH', class_name ]
-            if class_filter is not None:
-                params += [ 'WHERE', class_filter ]
+            params += [ 'PATH', self.class_name ]
+            if self.class_filter is not None:
+                params += [ 'WHERE', self.class_filter ]
             params += [ 'GET', '/FORMAT:RAWXML' ]
         self.command_id = self.shell.run_command('wmic', params)
         self.std_in, self.std_err, self.code, self.done, self.total_time = \
             self.shell.receive(self.interactive)
         if self.class_name is not None:
-            try:
-                self.root = ET.fromstringlist(self.std_in.replace('\r','').split('\n')[:-1])
-            except Exception as e:
-                return
-            for property in self.root.findall(".//PROPERTY"):
-                n=property.attrib['NAME']
-                v=property.find("./VALUE")
-                self.data[n]=v.text if v is not None else None
+            self.process_result()
+
+    def process_result(self):
+        try:
+            self.root = ET.fromstringlist(self.std_in.replace('\r','').split('\n')[:-1])
+        except Exception as e:
+            return
+        for property in self.root.findall(".//PROPERTY"):
+            n=property.attrib['NAME']
+            v=property.find("./VALUE")
+            self.data[n]=v.text if v is not None else None
 
 
     def get_class(self, class_name, class_filter=None):
