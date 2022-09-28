@@ -145,7 +145,7 @@ class WinRMCommand:
 class CMDCommand(WinRMCommand):
     def __init__(self, shell, cmd=None, params=[]):
         WinRMCommand.__init__(self, shell)
-        self.interactive = False
+        self.interactive = cmd is not None
         self.cmd=cmd
         self.params=params
         self.shell = shell
@@ -195,20 +195,63 @@ class WMICommand(WinRMCommand):
             v=property.find("./VALUE")
             self.data[n]=v.text if v is not None else None
 
-
-    def get_class(self, class_name, class_filter=None):
-        cmd="PATH %s" % class_name
-        if class_filter is not None:
-            cmd += " WHERE " + class_filter
-        res=self.send(cmd + " GET /format:rawxml")
-        return res
-
     def __repr__(self):
         return "<%s interactive=%s code=%d%s%s error=%s std_out_bytes=%d std_err_bytes=%d>" % \
             (self.__class__.__name__, self.interactive, self.code,
                 " class_name=%s" % self.class_name if self.class_name is not None else "",
                 " class_filter=%s" % self.class_filter if self.class_filter is not None else "",
                 self.error,
+                len(self.std_out), len(self.std_err))
+
+class POSHCommand(WinRMCommand):
+    def __init__(self, shell, scriptline=None, scriptfile=None):
+        WinRMCommand.__init__(self, shell)
+        self.interactive = self.class_name is not None
+        self.posh_error=''
+
+    def run(self):
+        script = None
+        if scriptfile is not None:
+            with open(scriptfile, "r") as f:
+                script = "$ProgressPreference = \"SilentlyContinue\";" + f.read()
+        elif scriptline is not None:
+            script = "$ProgressPreference = \"SilentlyContinue\";" + scriptline
+        if script is not None:
+            interactive = False
+            encoded_ps = b64encode(script.encode('utf_16_le')).decode('ascii')
+            params = [ '-encodedcommand', encoded_ps ]
+        else:
+            interactive = True
+            params = []
+
+        self.command_id = self.shell.run_command('powershell', params)
+        self.receive()
+        self.decode_posh_error()
+
+    def decode_posh_error(self):
+        if len(self.std_err) == 0:
+            return
+        if self.std_err[0] == '#':
+            temp = self.std_err.replace("\r").split('\n', 1)
+            if len(temp) < 2:
+                return
+        try:
+            root = ET.fromstring(temp[1])
+        except ET.ParseError:
+            return
+        ns={ 'ps':root.tag.split('}')[0].split('{')[1] }
+        self.posh_error = ""
+        error = False
+        for tag in root.findall('./ps:S', ns):
+            t = tag.get('S')
+            if t == 'Error':
+                self.error = True
+            self.posh_error += "%s : %s" % (t, tag.text.replace("_x000D__x000A_", "\n"))
+
+    def __repr__(self):
+        return "<%s interactive=%s code=%d error=%s std_out_bytes=%d std_err_bytes=%d>" % \
+            (self.__class__.__name__, self.interactive,
+                self.code, self.error,
                 len(self.std_out), len(self.std_err))
 
 class ExceptionWinRMShellNotConnected(Exception):
@@ -323,48 +366,4 @@ class WinRMShell:
         self.command_id = self.p.run_command(self.shell_id, 'type', [ remotefile ])
         return self.receive()
 
-
-    def posh(self, scriptline=None, scriptfile=None):
-        script = None
-        if scriptfile is not None:
-            with open(scriptfile, "r") as f:
-                script = "$ProgressPreference = \"SilentlyContinue\";" + f.read()
-        elif scriptline is not None:
-            script = "$ProgressPreference = \"SilentlyContinue\";" + scriptline
-        if script is not None:
-            interactive = False
-            encoded_ps = b64encode(script.encode('utf_16_le')).decode('ascii')
-            params = [ '-encodedcommand', encoded_ps ]
-        else:
-            interactive = True
-            params = []
-
-        self.command_id = self.p.run_command(self.shell_id, 'powershell', params)
-        res=self.receive(interactive)
-        err = self.decode_posh_error(res[1])
-        res += (err,)
-        return res
-
-    def decode_posh_error(self, std_err):
-        if len(std_err) == 0:
-            return std_err
-        if std_err[0] == '#':
-            temp = std_err.split('\n', 1)
-            if len(temp) > 0:
-                std_err = temp[1]
-        try:
-            root = ET.fromstring(std_err)
-        except ET.ParseError:
-            return std_err
-        ns={ 'ps':root.tag.split('}')[0].split('{')[1] }
-        msg = ""
-        error = False
-        for tag in root.findall('./ps:S', ns):
-            t = tag.get('S')
-            if t == 'Error':
-                error = True
-            msg += "%s : %s" % (t, tag.text.replace("_x000D__x000A_", "\n"))
-        if error:
-            msg = "Error executing Powershell Command.\n" + msg
-        return msg
 
