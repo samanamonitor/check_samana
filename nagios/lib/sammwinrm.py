@@ -98,6 +98,9 @@ class WRProtocol(Protocol):
             return_code = -1
         return stdout, stderr, return_code, command_done, total_time
 
+class ExceptionWinRMCommandNonInteractive(Exception):
+    pass
+
 class WinRMCommand:
     def __init__(self, shell):
         self.shell = shell
@@ -132,8 +135,9 @@ class WinRMCommand:
         if self.code != 0:
             error=True
 
-
     def exit(self):
+        if not self.interactive:
+            raise ExceptionWinRMCommandNonInteractive()
         self.send_data = self.shell.send(self.command_id, 'exit\r\n', end=True)
     def __str__(self):
         return self.command_id
@@ -204,7 +208,7 @@ class WMICommand(WinRMCommand):
                 self.error,
                 len(self.std_out), len(self.std_err))
 
-class WinRMShellNotConnected(Exception):
+class ExceptionWinRMShellNotConnected(Exception):
     pass
 
 class WinRMShell:
@@ -258,7 +262,7 @@ class WinRMShell:
 
     def run_command(self, cmd, params=[]):
         if not self.connected:
-            raise WinRMShellNotConnected()
+            raise ExceptionWinRMShellNotConnected()
         return self.p.run_command(self.shell_id, cmd, params)
 
     def __str__(self):
@@ -271,19 +275,19 @@ class WinRMShell:
 
     def close(self):
         if not self.connected:
-            raise WinRMShellNotConnected()
+            raise ExceptionWinRMShellNotConnected()
         self.p.close_shell(self.shell_id)
         self.shell_id = None
         self.connected = False
 
     def signal(self, command_id, s):
         if not self.connected:
-            raise WinRMShellNotConnected()
+            raise ExceptionWinRMShellNotConnected()
         return self.p.signal(self.shell_id, command_id, s)
 
     def send(self, command, expect_receive=True, end=False):
         if not self.connected:
-            raise WinRMShellNotConnected()
+            raise ExceptionWinRMShellNotConnected()
         self.send_res = self.p.send(self.shell_id, self.command_id, command + "\r\n", end)
         if expect_receive:
             return self.p.receive(self.shell_id, self.command_id)
@@ -292,7 +296,7 @@ class WinRMShell:
 
     def receive(self, command_id, interactive=False):
         if not self.connected:
-            raise WinRMShellNotConnected()
+            raise ExceptionWinRMShellNotConnected()
         stdin_data = ''
         stderr_data = ''
         total_time = 0
