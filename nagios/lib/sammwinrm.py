@@ -185,6 +185,10 @@ class WinRMShell:
         self.shell_id = None
         self.command_id = None
         self.connected = False
+        self.username = None
+        self.password = None
+        self.domain = None
+        self.hostaddress = None
 
     def open(self, hostaddress=None, auth=None):
         self.username = os.environ.get('WINRM_USER')
