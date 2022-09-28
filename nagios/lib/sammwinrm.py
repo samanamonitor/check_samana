@@ -225,7 +225,7 @@ class WinRMShell:
         return self.shell_id
 
     def __repr__(self):
-        return "<%s connected=%s hostaddress=%s username=%s domain=%s>" % \
+        return "<%s connected=%s hostaddress=%s username=%s domain=%s shell_id=%s>" % \
             ("WinRMShell", self.connected, self.hostaddress, \
                 self.username, self.domain, self.shell_id)
 
