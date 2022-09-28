@@ -225,9 +225,9 @@ class WinRMShell:
         return self.shell_id
 
     def __repr__(self):
-        return "<%s connected=%s hostaddress=%s user=%s domain=%s>" % \
+        return "<%s connected=%s hostaddress=%s username=%s domain=%s>" % \
             ("WinRMShell", self.connected, self.hostaddress, \
-                self.user, self.domain, self.shell_id)
+                self.username, self.domain, self.shell_id)
 
     def close(self):
         self.p.close_shell(self.shell_id)
