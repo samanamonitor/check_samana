@@ -148,6 +148,7 @@ class CMDCommand(WinRMCommand):
         self.interactive = False
         self.cmd=cmd
         self.params=params
+        self.shell = shell
 
     def run(self):
         self.error = False
