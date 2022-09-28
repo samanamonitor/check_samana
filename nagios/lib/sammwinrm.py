@@ -108,6 +108,7 @@ class WinRMCommand:
         self.code = None
         self.done = None
         self.total_time = None
+        self.error = False
 
     def signal(self, s):
         self.signal_res = self.shell.signal(self.command_id, s)
@@ -126,7 +127,7 @@ class WinRMCommand:
     def receive(self):
         if self.command_id is None:
             return None
-        self.std_in, self.std_err, self.code, self.done, self.total_time = \
+        self.std_out, self.std_err, self.code, self.done, self.total_time = \
             self.shell.receive(self.command_id, self.interactive)
 
         return self.shell.receive(self.command_id, self.interactive)
@@ -183,6 +184,7 @@ class WinRMShell:
         self.data = {}
         self.shell_id = None
         self.command_id = None
+        self.connected = False
 
     def open(self, hostaddress=None, auth=None):
         self.username = os.environ.get('WINRM_USER')
@@ -210,6 +212,7 @@ class WinRMShell:
             username=self.username,
             password=self.password)
         self.shell_id = self.p.open_shell()
+        self.connected = True
 
     def run_command(self, cmd, params=[]):
         return self.p.run_command(self.shell_id, cmd, params)
@@ -218,11 +221,14 @@ class WinRMShell:
         return self.shell_id
 
     def __repr__(self):
-        return self.shell_id
+        return "<%s connected=%s hostaddress=%s user=%s domain=%s>" % \
+            ("WinRMShell", self.connected, self.hostaddress, \
+                self.user, self.domain, self.shell_id)
 
     def close(self):
         self.p.close_shell(self.shell_id)
         self.shell_id = None
+        self.connected = False
 
     def signal(self, command_id, s):
         return self.p.signal(self.shell_id, command_id, s)
