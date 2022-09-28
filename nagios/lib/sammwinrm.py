@@ -177,7 +177,7 @@ class WMICommand(WinRMCommand):
         return self.command_id
     def __repr__(self):
         return "<%s interactive=%s%s%s error=%s std_out_bytes=%d std_err_bytes=%d>" % \
-            ("WMICommand", 
+            ("WMICommand", self.interactive,
                 " class_name=%s" % self.class_name if self.class_name is not None else "",
                 " class_filter=%s" % self.class_filter if self.class_filter is not None else "",
                 self.error,
