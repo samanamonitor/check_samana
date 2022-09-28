@@ -128,7 +128,7 @@ class WinRMCommand:
 
 class WMICommand(WinRMCommand):
     def __init__(self, shell, class_name=None, class_filter=None):
-        super().__init__(shell)
+        WinRMCommand.__init__(shell)
         self.class_name = class_name
         self.class_filter = class_filter
         self.interactive = self.class_name is not None
