@@ -218,11 +218,11 @@ class POSHCommand(WinRMCommand):
         elif self.scriptline is not None:
             script = "$ProgressPreference = \"SilentlyContinue\";" + self.scriptline
         if script is not None:
-            interactive = False
+            self.interactive = False
             encoded_ps = b64encode(script.encode('utf_16_le')).decode('ascii')
             params = [ '-encodedcommand', encoded_ps ]
         else:
-            interactive = True
+            self.interactive = True
             params = []
 
         self.command_id = self.shell.run_command('powershell', params)
