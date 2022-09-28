@@ -233,7 +233,7 @@ class POSHCommand(WinRMCommand):
         if len(self.std_err) == 0:
             return
         if self.std_err[0] == '#':
-            temp = self.std_err.replace("\r").split('\n', 1)
+            temp = self.std_err.split('\n', 1)
             if len(temp) < 2:
                 return
         try:
