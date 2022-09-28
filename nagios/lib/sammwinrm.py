@@ -177,11 +177,14 @@ class WMICommand(WinRMCommand):
         return self.command_id
     def __repr__(self):
         return "<%s interactive=%s%s%s error=%s std_out_bytes=%d std_err_bytes=%d>" % \
-            ("WMICommand", self.interactive,
+            (self.__class__.__name__, self.interactive,
                 " class_name=%s" % self.class_name if self.class_name is not None else "",
                 " class_filter=%s" % self.class_filter if self.class_filter is not None else "",
                 self.error,
                 len(self.std_out), len(self.std_err))
+
+class WinRMShellNotConnected(Exception):
+    pass
 
 class WinRMShell:
     def __init__(self, cleanup=True):
@@ -194,6 +197,9 @@ class WinRMShell:
         self.password = None
         self.domain = None
         self.hostaddress = None
+        self.transport = 'ntlm'
+        self.wrport=5985
+        self.wrprotocol='http'
 
     def __enter__(self):
         return self
@@ -222,14 +228,16 @@ class WinRMShell:
             self.hostaddress = hostaddress
 
         self.p = WRProtocol(
-            endpoint='http://%s:5985/wsman' % self.hostaddress,
-            transport='ntlm',
+            endpoint='%s://%s:%d/wsman' % (self.wrprotocol, self.hostaddress, self.wrport),
+            transport=self.transport,
             username=self.username,
             password=self.password)
         self.shell_id = self.p.open_shell()
         self.connected = True
 
     def run_command(self, cmd, params=[]):
+        if not self.connected:
+            raise WinRMShellNotConnected()
         return self.p.run_command(self.shell_id, cmd, params)
 
     def __str__(self):
@@ -241,14 +249,20 @@ class WinRMShell:
                 self.username, self.domain, self.shell_id)
 
     def close(self):
+        if not self.connected:
+            raise WinRMShellNotConnected()
         self.p.close_shell(self.shell_id)
         self.shell_id = None
         self.connected = False
 
     def signal(self, command_id, s):
+        if not self.connected:
+            raise WinRMShellNotConnected()
         return self.p.signal(self.shell_id, command_id, s)
 
     def send(self, command, expect_receive=True, end=False):
+        if not self.connected:
+            raise WinRMShellNotConnected()
         self.send_res = self.p.send(self.shell_id, self.command_id, command + "\r\n", end)
         if expect_receive:
             return self.p.receive(self.shell_id, self.command_id)
@@ -256,6 +270,8 @@ class WinRMShell:
             return None
 
     def receive(self, command_id, interactive=False):
+        if not self.connected:
+            raise WinRMShellNotConnected()
         stdin_data = ''
         stderr_data = ''
         total_time = 0
@@ -275,33 +291,9 @@ class WinRMShell:
             % (url, remotefile)
         return self.posh(scriptline=cmd)
 
-
     def getfile(self, remotefile):
         self.command_id = self.p.run_command(self.shell_id, 'type', [ remotefile ])
         return self.receive()
-
-    def wmic(self, class_name=None, class_filter=None):
-        params=[]
-        interactive=True
-        if class_name is not None:
-            interactive = False
-            params += [ 'PATH', class_name ]
-            if class_filter is not None:
-                params += [ 'WHERE', class_filter ]
-            params += [ 'GET', '/FORMAT:RAWXML' ]
-        self.command_id = self.p.run_command(self.shell_id, 'wmic', params)
-        res = self.receive(interactive)
-        print(res)
-        if class_name is not None:
-            root = ET.fromstringlist(res[0].replace('\r','').split('\n')[:-1])
-            data={}
-            for property in root.findall(".//PROPERTY"):
-              n=property.attrib['NAME']
-              v=property.find("./VALUE")
-              data[n]=v.text if v is not None else None
-              res += (data,)
-
-        return res
 
     def cmd(self, params=[], interactive=False):
         if len(params) == 0:
