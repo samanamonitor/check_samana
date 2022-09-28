@@ -103,10 +103,6 @@ class WinRMCommand:
         self.shell = shell
         self.data={}
         self.command_id = None
-        if self.class_name is None:
-            self.interactive = True
-        else:
-            self.interactive = False
 
     def signal(self, s):
         self.signal_res = self.shell.signal(self.command_id, s)
@@ -128,7 +124,7 @@ class WinRMCommand:
 
 class WMICommand(WinRMCommand):
     def __init__(self, shell, class_name=None, class_filter=None):
-        WinRMCommand.__init__(shell)
+        WinRMCommand.__init__(self, shell)
         self.class_name = class_name
         self.class_filter = class_filter
         self.interactive = self.class_name is not None
