@@ -176,7 +176,12 @@ class WMICommand(WinRMCommand):
     def __str__(self):
         return self.command_id
     def __repr__(self):
-        return self.command_id
+        return "<%s interactive=%s%s%s error=%s std_out_bytes=%d std_err_bytes=%d>" % \
+            ("WMICommand", 
+                " class_name=%s" % self.class_name if class_name is not None else "",
+                " class_filter=%s" % self.class_filter if class_filter is not None else "",
+                self.error,
+                len(self.std_out), len(self.std_err))
 
 class WinRMShell:
     def __init__(self, cleanup=True):
