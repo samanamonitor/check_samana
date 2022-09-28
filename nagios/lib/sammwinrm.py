@@ -206,16 +206,17 @@ class WMICommand(WinRMCommand):
 class POSHCommand(WinRMCommand):
     def __init__(self, shell, scriptline=None, scriptfile=None):
         WinRMCommand.__init__(self, shell)
-        self.interactive = self.class_name is not None
+        self.scriptfile=scriptfile
+        self.scriptline=scriptline
         self.posh_error=''
 
     def run(self):
         script = None
-        if scriptfile is not None:
-            with open(scriptfile, "r") as f:
+        if self.scriptfile is not None:
+            with open(self.scriptfile, "r") as f:
                 script = "$ProgressPreference = \"SilentlyContinue\";" + f.read()
-        elif scriptline is not None:
-            script = "$ProgressPreference = \"SilentlyContinue\";" + scriptline
+        elif self.scriptline is not None:
+            script = "$ProgressPreference = \"SilentlyContinue\";" + self.scriptline
         if script is not None:
             interactive = False
             encoded_ps = b64encode(script.encode('utf_16_le')).decode('ascii')
