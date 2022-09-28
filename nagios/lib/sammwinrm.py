@@ -133,7 +133,7 @@ class WinRMCommand:
         self.std_out, self.std_err, self.code, self.done, self.total_time = \
             self.shell.receive(self.command_id, self.interactive)
         if self.code != 0:
-            error=True
+            self.error=True
 
     def exit(self):
         if not self.interactive:
@@ -143,18 +143,18 @@ class WinRMCommand:
         return self.command_id
 
 class CMDCommand(WinRMCommand):
-    def __init__(self, shell):
+    def __init__(self, shell, cmd=None, params=[]):
         WinRMCommand.__init__(self, shell)
         self.interactive = False
 
-    def run(self, cmd=None, params=[]):
+    def run(self):
         self.error = False
         if cmd is None:
             self.interactive = True
-            self.command_id = self.p.run_command(self.shell_id, "cmd", [])
+            self.command_id = self.shell.run_command("cmd", [])
         else:
             self.interactive = False
-            self.command_id = self.p.run_command(self.shell_id, cmd, params)
+            self.command_id = self.shell.run_command(cmd, params)
         self.receive()
 
     def __repr__(self):
