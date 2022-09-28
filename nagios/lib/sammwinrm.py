@@ -190,6 +190,12 @@ class WinRMShell:
         self.domain = None
         self.hostaddress = None
 
+    def __enter__(self):
+        pass
+
+    def __exit__(self, exception_type, exception_value, exception_traceback):
+        self.close()
+
     def open(self, hostaddress=None, auth=None):
         self.username = os.environ.get('WINRM_USER')
         self.password = os.environ.get('WINRM_PASSWORD')
