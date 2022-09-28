@@ -103,6 +103,11 @@ class WinRMCommand:
         self.shell = shell
         self.data={}
         self.command_id = None
+        self.std_out = None
+        self.std_err = None
+        self.code = None
+        self.done = None
+        self.total_time = None
 
     def signal(self, s):
         self.signal_res = self.shell.signal(self.command_id, s)
@@ -117,6 +122,14 @@ class WinRMCommand:
         if not self.interactive:
             return
         self.send_data = self.shell.send(command, self.interactive, expect_receive=expect_receive, end=end)
+
+    def receive(self):
+        if self.command_id is None:
+            return None
+        self.std_in, self.std_err, self.code, self.done, self.total_time = \
+            self.shell.receive(self.command_id, self.interactive)
+
+        return self.shell.receive(self.command_id, self.interactive)
 
     def exit(self):
         self.send_data = self.shell.send(self.command_id, 'exit\r\n', end=True)
@@ -137,8 +150,7 @@ class WMICommand(WinRMCommand):
                 params += [ 'WHERE', self.class_filter ]
             params += [ 'GET', '/FORMAT:RAWXML' ]
         self.command_id = self.shell.run_command('wmic', params)
-        self.std_in, self.std_err, self.code, self.done, self.total_time = \
-            self.shell.receive(self.interactive)
+        WinRMCommand.receive(self)
         if self.class_name is not None:
             self.process_result()
 
@@ -222,12 +234,12 @@ class WinRMShell:
         else:
             return None
 
-    def receive(self, interactive=False):
+    def receive(self, command_id, interactive=False):
         stdin_data = ''
         stderr_data = ''
         total_time = 0
         while True:
-            res=self.p.receive(self.shell_id, self.command_id)
+            res=self.p.receive(self.shell_id, command_id)
             if interactive and res[3] == False:
                 return res
             stdin_data += res[0]
