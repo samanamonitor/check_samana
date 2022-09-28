@@ -129,8 +129,9 @@ class WinRMCommand:
             return None
         self.std_out, self.std_err, self.code, self.done, self.total_time = \
             self.shell.receive(self.command_id, self.interactive)
+        if self.code != 0:
+            error=True
 
-        return self.shell.receive(self.command_id, self.interactive)
 
     def exit(self):
         self.send_data = self.shell.send(self.command_id, 'exit\r\n', end=True)
@@ -143,6 +144,7 @@ class CMDCommand(WinRMCommand):
         self.interactive = False
 
     def run(self, cmd=None, params=[]):
+        self.error = False
         if cmd is None:
             self.interactive = True
             self.command_id = self.p.run_command(self.shell_id, "cmd", [])
@@ -165,6 +167,7 @@ class WMICommand(WinRMCommand):
 
     def run(self):
         params = []
+        self.error = False
         if self.class_name is not None:
             params += [ 'PATH', self.class_name ]
             if self.class_filter is not None:
