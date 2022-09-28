@@ -146,15 +146,17 @@ class CMDCommand(WinRMCommand):
     def __init__(self, shell, cmd=None, params=[]):
         WinRMCommand.__init__(self, shell)
         self.interactive = False
+        self.cmd=cmd
+        self.params=params
 
     def run(self):
         self.error = False
-        if cmd is None:
+        if self.cmd is None:
             self.interactive = True
             self.command_id = self.shell.run_command("cmd", [])
         else:
             self.interactive = False
-            self.command_id = self.shell.run_command(cmd, params)
+            self.command_id = self.shell.run_command(self.cmd, self.params)
         self.receive()
 
     def __repr__(self):
