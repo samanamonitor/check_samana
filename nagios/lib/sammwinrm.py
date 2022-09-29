@@ -244,6 +244,21 @@ class WinRMCommand:
     def __str__(self):
         return self.command_id
 
+class WMIQuery(WinRMCommand):
+    xmlns = {
+        'xsi': "http://www.w3.org/2001/XMLSchema-instance",
+        'b': "http://schemas.dmtf.org/wbem/wsman/1/cimbinding.xsd"
+        'p': "http://schemas.dmtf.org/wbem/wscim/1/cim-schema/2/MSFT_WmiError"
+        'cim': "http://schemas.dmtf.org/wbem/wscim/1/common"
+    }
+    base_uri='http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/'
+    def get_class(self, class_name):
+        try:
+            self.shell.get(base_uri + class_name)
+        except Exception as e:
+            return e
+
+
 class CMDCommand(WinRMCommand):
     def __init__(self, shell, cmd=None, params=[]):
         WinRMCommand.__init__(self, shell)
