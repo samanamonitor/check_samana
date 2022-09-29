@@ -308,13 +308,13 @@ class WMIQuery(WinRMCommand):
             data = []
             items = self._pullresponse.findall('s:Body/n:PullResponse/n:Items', xmlns)
             for item in items:
-                data += [self.xmltodict(item)]
+                data += [self.xmltodict(item, classname, xmlns)]
 
             if self._pullresponse.find('s:Body/n:PullResponse/n:EndOfSequence', xmlns) is not None:
                 break
 
 
-    def xmltodict(self, data_root):
+    def xmltodict(self, data_root, class_name, xmlns):
         data = {}
         for i in data_root.findall('./' % class_name, xmlns):
             tagname = i.tag.replace('{'+self.base_uri+class_name+'}', '')
