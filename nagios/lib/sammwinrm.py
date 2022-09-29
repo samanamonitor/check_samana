@@ -306,7 +306,7 @@ class WMIQuery(WinRMCommand):
             except Exception as e:
                 return e
 
-            items = self._pullresponse.findall('s:Body/n:PullResponse/n:Items', xmlns)
+            items = self._pullresponse.findall('s:Body/n:PullResponse/n:Items/', xmlns)
             for item in items:
                 data += [self.xmltodict(item, class_name, xmlns)]
 
