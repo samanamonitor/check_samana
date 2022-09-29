@@ -302,7 +302,7 @@ class WMIQuery(WinRMCommand):
                 'n': "http://schemas.xmlsoap.org/ws/2004/09/enumeration"
             }
             self._root = ET.fromstring(self._class_data)
-            self._ec = self._root.find('s:Body/n:EnumerateResponse/n:EnumerationContext').text
+            self._ec = self._root.find('s:Body/n:EnumerateResponse/n:EnumerationContext', xmlns).text
         except Exception as e:
             return e
 
