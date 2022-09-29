@@ -247,8 +247,8 @@ class WinRMCommand:
 class WMIQuery(WinRMCommand):
     xmlns = {
         'xsi': "http://www.w3.org/2001/XMLSchema-instance",
-        'b': "http://schemas.dmtf.org/wbem/wsman/1/cimbinding.xsd"
-        'p': "http://schemas.dmtf.org/wbem/wscim/1/cim-schema/2/MSFT_WmiError"
+        'b': "http://schemas.dmtf.org/wbem/wsman/1/cimbinding.xsd",
+        'p': "http://schemas.dmtf.org/wbem/wscim/1/cim-schema/2/MSFT_WmiError",
         'cim': "http://schemas.dmtf.org/wbem/wscim/1/common"
     }
     base_uri='http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/'
