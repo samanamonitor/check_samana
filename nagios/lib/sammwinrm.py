@@ -17,6 +17,21 @@ class WRProtocol(Protocol):
         'rsp': "http://schemas.microsoft.com/wbem/wsman/1/windows/shell",
         'p': "http://schemas.microsoft.com/wbem/wsman/1/wsman.xsd"
     }
+
+    def enumerate(self, shell_id, resource_uri):
+        message_id = uuid.uuid4()
+        req = {
+            'env:Envelope': self._get_soap_header(
+            resource_uri=resource_uri,  # NOQA
+            action='http://schemas.xmlsoap.org/ws/2004/09/enumeration/Enumerate')}
+        req['env:Envelope'].setdefault('env:Body', {})
+        print(xmltodict.unparse(req))
+        try:
+            res=self.send_message(xmltodict.unparse(req))
+        except Exception as e:
+            return e
+        return res
+        
     def get(self, shell_id, resource_uri):
         message_id = uuid.uuid4()
         req = {
@@ -27,7 +42,6 @@ class WRProtocol(Protocol):
         #    'w:Selector': { '@Name': 'id', '#text': '1'}
         #    }
         req['env:Envelope'].setdefault('env:Body', {})
-        print(xmltodict.unparse(req))
         try:
             res=self.send_message(xmltodict.unparse(req))
         except Exception as e:
