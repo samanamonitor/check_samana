@@ -19,6 +19,10 @@ class WRError(Exception):
     def fault_data(self):
         return self.args[2]
     
+    @property
+    def fault_detail(self):
+        return self.arts[3]
+    
 
 class WRProtocol(Protocol):
     xmlns = {
