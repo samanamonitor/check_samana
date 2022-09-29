@@ -379,7 +379,7 @@ class WinRMShell:
     def pull(self, resource_uri, enumeration_ctx):
         if not self.connected:
             raise ExceptionWinRMShellNotConnected()
-        return self.p.enumerate(self.shell_id, resource_uri, enumeration_ctx)        
+        return self.p.pull(self.shell_id, resource_uri, enumeration_ctx)        
 
     def signal(self, command_id, s):
         if not self.connected:
