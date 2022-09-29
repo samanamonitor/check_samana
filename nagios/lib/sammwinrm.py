@@ -258,7 +258,7 @@ class WMIQuery(WinRMCommand):
             root = ET.fromstring(class_data)
             data = {}
             xmlns = {
-                's': self.xmlns['s'],
+                's': self.shell.p.xmlns['s'],
                 'p': self.base_uri + class_name
             }
             nil = '{http://www.w3.org/2001/XMLSchema-instance}nil'
