@@ -14,6 +14,10 @@ class WRError(Exception):
     @property
     def response_text(self):
         return self.args[1]
+
+    @property
+    def fault_data(self):
+        return self.args[2]
     
 
 class WRProtocol(Protocol):
@@ -69,7 +73,10 @@ class WRProtocol(Protocol):
                 else:
                     error_message = "(no error message in fault)"
 
-                raise WRError('{0} (extended fault data: {1})'.format(error_message, fault_data), ex.response_text)
+                fault_detail = fault.find('s:Detail')
+                raise WRError('{0} (extended fault data: {1})'.format(error_message, fault_data), \
+                    ex.response_text,
+                    fault_data, fault_detail)
 
     def pull(self, shell_id, resource_uri, enumeration_ctx):
         message_id = uuid.uuid4()
