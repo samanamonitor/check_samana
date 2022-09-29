@@ -263,12 +263,17 @@ class WMIQuery(WinRMCommand):
                 'cim': "http://schemas.dmtf.org/wbem/wscim/1/common"
             }
             nil = '{http://www.w3.org/2001/XMLSchema-instance}nil'
-            for i in root.findall('s:Body/p:Win32_OperatingSystem/', xmlns):
+            for i in root.findall('s:Body/p:%s/' % class_name, xmlns):
                 tagname = i.tag.replace('{'+self.base_uri+class_name+'}', '')
                 if i.attrib.get(nil, 'false') == 'true':
                     data[tagname] = None
                 else:
-                    data[tagname] = i.text
+                    if i.text is not None:
+                        data[tagname] = i.text
+                    else:
+                        for e in i.findall('./'):
+                            e_tagname=e.tag.split('}')[1]
+                            data[tagname][e_tagname] = e.text
             return (data, root)
         except WRError as e:
             error_code = e.fault_detail.find('p:MSFT_WmiError/p:error_Code')
