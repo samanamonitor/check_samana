@@ -46,7 +46,7 @@ class WRProtocol(Protocol):
             '@xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
             '@xmlns:env': self.xmlns['s'],
 
-            '@xmlns:a': xmlns['a'],
+            '@xmlns:a': self.xmlns['a'],
             '@xmlns:b': 'http://schemas.dmtf.org/wbem/wsman/1/cimbinding.xsd',
             '@xmlns:wsen': self.xmlns['wsen'],
             '@xmlns:x': 'http://schemas.xmlsoap.org/ws/2004/09/transfer',
