@@ -91,9 +91,9 @@ class WRProtocol(Protocol):
             resource_uri=resource_uri,  # NOQA
             action='http://schemas.xmlsoap.org/ws/2004/09/enumeration/Pull')}
         req['env:Envelope'].setdefault('env:Body', {}).setdefault(
-            'wsen:Pull', {
-                'wsen:EnumerationContext': enumeration_ctx,
-                'wsen:MaxElements': max_elements
+            'n:Pull', {
+                'n:EnumerationContext': enumeration_ctx,
+                'n:MaxElements': max_elements
             })
         print(xmltodict.unparse(req))
         try:
@@ -108,8 +108,7 @@ class WRProtocol(Protocol):
             'env:Envelope': self._get_soap_header(
             resource_uri=resource_uri,  # NOQA
             action='http://schemas.xmlsoap.org/ws/2004/09/enumeration/Enumerate')}
-        req['env:Envelope']['@xmlns:wsen'] = self.xmlns['wsen']
-        req['env:Envelope'].setdefault('env:Body', {}).setdefault('wsen:Enumerate', {})
+        req['env:Envelope'].setdefault('env:Body', {}).setdefault('n:Enumerate', {})
         print(xmltodict.unparse(req))
         try:
             res=self.send_message(xmltodict.unparse(req))
