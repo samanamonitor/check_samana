@@ -77,7 +77,7 @@ class WRProtocol(Protocol):
                 fault_detail = fault.find('soapenv:Detail')
                 raise WRError('{0} (extended fault data: {1})'.format(error_message, fault_data), \
                     ex.response_text,
-                    fault_data, fault_detail)
+                    fault_data)
 
     def pull(self, shell_id, resource_uri, enumeration_ctx):
         message_id = uuid.uuid4()
