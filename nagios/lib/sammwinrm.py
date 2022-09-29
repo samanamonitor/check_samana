@@ -278,8 +278,8 @@ class WMIQuery(WinRMCommand):
                             data[tagname][e_tagname] = e.text
             return data
         except WRError as e:
+            print("FB:"+e.fault_detail)
             error_code = e.fault_detail.find('p:MSFT_WmiError/p:error_Code')
-            print("FB:"+error_code)
             if error_code is not None and error_code.text == '2150859002':
                 return self.enumerate_class(class_name)
             return e
