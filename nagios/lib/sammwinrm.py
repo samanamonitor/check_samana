@@ -28,7 +28,10 @@ class WRProtocol(Protocol):
         #    }
         req['env:Envelope'].setdefault('env:Body', {})
         print(xmltodict.unparse(req))
-        res=self.send_message(xmltodict.unparse(req))
+        try:
+            res=self.send_message(xmltodict.unparse(req))
+        except Exception as e:
+            return e
         return res
 
     def signal(self, shell_id, command_id, s):
