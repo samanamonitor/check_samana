@@ -294,6 +294,7 @@ class WMIQuery(WinRMCommand):
         except Exception as e:
             return e
 
+        data = []
         while True:
             try:
                 self.ec_data = self.shell.pull(self.resource_uri, self._ec)
@@ -305,13 +306,13 @@ class WMIQuery(WinRMCommand):
             except Exception as e:
                 return e
 
-            data = []
             items = self._pullresponse.findall('s:Body/n:PullResponse/n:Items', xmlns)
             for item in items:
                 data += [self.xmltodict(item, class_name, xmlns)]
 
             if self._pullresponse.find('s:Body/n:PullResponse/n:EndOfSequence', xmlns) is not None:
                 break
+        return data
 
 
     def xmltodict(self, data_root, class_name, xmlns):
