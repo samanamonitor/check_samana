@@ -271,6 +271,7 @@ class WMIQuery(WinRMCommand):
                     if i.text is not None:
                         data[tagname] = i.text
                     else:
+                        data[tagname]={}
                         for e in i.findall('./'):
                             e_tagname=e.tag.split('}')[1]
                             data[tagname][e_tagname] = e.text
