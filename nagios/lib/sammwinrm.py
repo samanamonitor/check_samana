@@ -255,6 +255,16 @@ class WMIQuery(WinRMCommand):
     def get_class(self, class_name):
         try:
             self._class_data = self.shell.get(self.base_uri + class_name)
+        except WRError as e:
+            print("FB:"+e.fault_detail)
+            error_code = e.fault_detail.find('p:MSFT_WmiError/p:error_Code')
+            if error_code is not None and error_code.text == '2150859002':
+                return self.enumerate_class(class_name)
+            return e
+        except Exception as e:
+            return e
+
+        try:
             self._root = ET.fromstring(self._class_data)
             data = {}
             xmlns = {
@@ -277,12 +287,6 @@ class WMIQuery(WinRMCommand):
                             e_tagname=e.tag.split('}')[1]
                             data[tagname][e_tagname] = e.text
             return data
-        except WRError as e:
-            print("FB:"+e.fault_detail)
-            error_code = e.fault_detail.find('p:MSFT_WmiError/p:error_Code')
-            if error_code is not None and error_code.text == '2150859002':
-                return self.enumerate_class(class_name)
-            return e
         except Exception as e:
             return e
 
@@ -291,6 +295,14 @@ class WMIQuery(WinRMCommand):
             self._class_data = self.shell.enumerate(self.base_uri + class_name)
         except WRError as e:
             return e
+
+        try:
+            xmlns = {
+                's': "http://www.w3.org/2003/05/soap-envelope",
+                'n': "http://schemas.xmlsoap.org/ws/2004/09/enumeration"
+            }
+            self._root = ET.fromstring(self._class_data)
+            self._ec = self._root.find('s:Body/n:EnumerateResponse/n:EnumerationContext').text
         except Exception as e:
             return e
 
