@@ -41,13 +41,13 @@ class WRProtocol(Protocol):
                 # assume some other transport error; raise the original exception
                 raise ex
 
-            fault = root.find('s:Body/s:Fault', xmlns)
+            fault = root.find('s:Body/s:Fault', self.xmlns)
             if fault is not None:
                 fault_data = dict(
                     transport_message=ex.message,
                     http_status_code=ex.code
                 )
-                wsmanfault_code = fault.find('s:Detail/wsmanfault:WSManFault[@Code]', xmlns)
+                wsmanfault_code = fault.find('s:Detail/wsmanfault:WSManFault[@Code]', self.xmlns)
                 if wsmanfault_code is not None:
                     fault_data['wsmanfault_code'] = wsmanfault_code.get('Code')
                     # convert receive timeout code to WinRMOperationTimeoutError
@@ -55,15 +55,15 @@ class WRProtocol(Protocol):
                         # TODO: this fault code is specific to the Receive operation; convert all op timeouts?
                         raise WinRMOperationTimeoutError()
 
-                fault_code = fault.find('s:Code/s:Value', xmlns)
+                fault_code = fault.find('s:Code/s:Value', self.xmlns)
                 if fault_code is not None:
                     fault_data['fault_code'] = fault_code.text
 
-                fault_subcode = fault.find('s:Code/s:Subcode/s:Value', xmlns)
+                fault_subcode = fault.find('s:Code/s:Subcode/s:Value', self.xmlns)
                 if fault_subcode is not None:
                     fault_data['fault_subcode'] = fault_subcode.text
 
-                error_message = fault.find('s:Reason/s:Text', xmlns)
+                error_message = fault.find('s:Reason/s:Text', self.xmlns)
                 if error_message is not None:
                     error_message = error_message.text
                 else:
