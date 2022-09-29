@@ -8,16 +8,67 @@ import xmltodict
 import base64
 import uuid
 
+class WRError(Exception):
+    code = 500
+    @property
+    def response_text(self):
+        return self.args[1]
+    
 
 class WRProtocol(Protocol):
-    namespace = {
+    xmlns = {
         'a': "http://schemas.xmlsoap.org/ws/2004/08/addressing",
         's': "http://www.w3.org/2003/05/soap-envelope",
         'w': "http://schemas.dmtf.org/wbem/wsman/1/wsman.xsd",
         'rsp': "http://schemas.microsoft.com/wbem/wsman/1/windows/shell",
         'p': "http://schemas.microsoft.com/wbem/wsman/1/wsman.xsd",
-        'wsen': "http://schemas.xmlsoap.org/ws/2004/09/enumeration" 
+        'wsen': "http://schemas.xmlsoap.org/ws/2004/09/enumeration",
+        'wsmanfault': "http://schemas.microsoft.com/wbem/wsman/1/wsmanfault"
     }
+
+    def send_message(self, message):
+        # TODO add message_id vs relates_to checking
+        # TODO port error handling code
+        try:
+            resp = self.transport.send_message(message)
+            return resp
+        except WinRMTransportError as ex:
+            try:
+                # if response is XML-parseable, it's probably a SOAP fault; extract the details
+                root = ET.fromstring(ex.response_text)
+            except Exception:
+                # assume some other transport error; raise the original exception
+                raise ex
+
+            fault = root.find('s:Body/s:Fault', xmlns)
+            if fault is not None:
+                fault_data = dict(
+                    transport_message=ex.message,
+                    http_status_code=ex.code
+                )
+                wsmanfault_code = fault.find('s:Detail/wsmanfault:WSManFault[@Code]', xmlns)
+                if wsmanfault_code is not None:
+                    fault_data['wsmanfault_code'] = wsmanfault_code.get('Code')
+                    # convert receive timeout code to WinRMOperationTimeoutError
+                    if fault_data['wsmanfault_code'] == '2150858793':
+                        # TODO: this fault code is specific to the Receive operation; convert all op timeouts?
+                        raise WinRMOperationTimeoutError()
+
+                fault_code = fault.find('s:Code/s:Value', xmlns)
+                if fault_code is not None:
+                    fault_data['fault_code'] = fault_code.text
+
+                fault_subcode = fault.find('s:Code/s:Subcode/s:Value', xmlns)
+                if fault_subcode is not None:
+                    fault_data['fault_subcode'] = fault_subcode.text
+
+                error_message = fault.find('s:Reason/s:Text', xmlns)
+                if error_message is not None:
+                    error_message = error_message.text
+                else:
+                    error_message = "(no error message in fault)"
+
+                raise WRError('{0} (extended fault data: {1})'.format(error_message, fault_data), ex.response_text)
 
     def pull(self, shell_id, resource_uri, enumeration_ctx):
         message_id = uuid.uuid4()
@@ -25,7 +76,7 @@ class WRProtocol(Protocol):
             'env:Envelope': self._get_soap_header(
             resource_uri=resource_uri,  # NOQA
             action='http://schemas.xmlsoap.org/ws/2004/09/enumeration/Pull')}
-        req['env:Envelope']['@xmlns:wsen'] = self.namespace['wsen']
+        req['env:Envelope']['@xmlns:wsen'] = self.xmlns['wsen']
         req['env:Envelope'].setdefault('env:Body', {}).setdefault(
             'wsen:Pull', {
                 'wsen:EnumerationContext': enumeration_ctx,
@@ -38,14 +89,13 @@ class WRProtocol(Protocol):
             return e
         return res
 
-
     def enumerate(self, shell_id, resource_uri):
         message_id = uuid.uuid4()
         req = {
             'env:Envelope': self._get_soap_header(
             resource_uri=resource_uri,  # NOQA
             action='http://schemas.xmlsoap.org/ws/2004/09/enumeration/Enumerate')}
-        req['env:Envelope']['@xmlns:wsen'] = self.namespace['wsen']
+        req['env:Envelope']['@xmlns:wsen'] = self.xmlns['wsen']
         req['env:Envelope'].setdefault('env:Body', {}).setdefault('wsen:Enumerate', {})
         print(xmltodict.unparse(req))
         try:
@@ -119,18 +169,18 @@ class WRProtocol(Protocol):
         root = ET.fromstring(res)
 
         stdout = stderr = b''
-        stream_stdout = root.findall('.//rsp:Stream[@Name=\'stdout\']', self.namespace)
+        stream_stdout = root.findall('.//rsp:Stream[@Name=\'stdout\']', self.xmlns)
         for stream_node in stream_stdout:
             if stream_node.text is not None:
                 stdout += base64.b64decode(stream_node.text.encode('ascii'))
-        stream_stderr = root.findall('.//rsp:Stream[@Name=\'stderr\']', self.namespace)
+        stream_stderr = root.findall('.//rsp:Stream[@Name=\'stderr\']', self.xmlns)
         for stream_node in stream_stderr:
             if stream_node.text is not None:
                 stderr += base64.b64decode(stream_node.text.encode('ascii'))
 
-        cs=root.find('.//rsp:CommandState[@State=\'%(rsp)s/CommandState/Done\']' % self.namespace, self.namespace)
+        cs=root.find('.//rsp:CommandState[@State=\'%(rsp)s/CommandState/Done\']' % self.xmlns, self.xmlns)
         command_done = cs is not None
-        ec=root.find('.//rsp:ExitCode', self.namespace)
+        ec=root.find('.//rsp:ExitCode', self.xmlns)
         if ec is not None:
             return_code = int(ec.text)
         else:
