@@ -265,26 +265,14 @@ class WMIQuery(WinRMCommand):
 
         try:
             self._root = ET.fromstring(self._class_data)
-            data = {}
             xmlns = {
                 's': self.shell.p.xmlns['s'],
                 'p': self.base_uri + class_name,
                 'cim': "http://schemas.dmtf.org/wbem/wscim/1/common"
             }
             nil = '{http://www.w3.org/2001/XMLSchema-instance}nil'
-            for i in self._root.findall('s:Body/p:%s/' % class_name, xmlns):
-                tagname = i.tag.replace('{'+self.base_uri+class_name+'}', '')
-                if i.attrib.get(nil, 'false') == 'true':
-                    data[tagname] = None
-                else:
-                    if i.text is not None:
-                        data[tagname] = i.text
-                    else:
-                        data[tagname]={}
-                        for e in i.findall('./'):
-                            # TODO: improve this to remove namespace
-                            e_tagname=e.tag.split('}')[1]
-                            data[tagname][e_tagname] = e.text
+            xmldata=self._root.find('s:Body/p:%s', xmlns)
+            data = self.xmltodict(xmldata)
             return data
         except Exception as e:
             return e
@@ -296,20 +284,52 @@ class WMIQuery(WinRMCommand):
         except WRError as e:
             return e
 
+        xmlns = {
+            's': "http://www.w3.org/2003/05/soap-envelope",
+            'n': "http://schemas.xmlsoap.org/ws/2004/09/enumeration"
+        }
         try:
-            xmlns = {
-                's': "http://www.w3.org/2003/05/soap-envelope",
-                'n': "http://schemas.xmlsoap.org/ws/2004/09/enumeration"
-            }
             self._root = ET.fromstring(self._class_data)
             self._ec = self._root.find('s:Body/n:EnumerateResponse/n:EnumerationContext', xmlns).text
         except Exception as e:
             return e
 
-        try:
-            self.ec_data = self.shell.pull(self.resource_uri, self._ec)
-        except WRError as e:
-            return e
+        while True:
+            try:
+                self.ec_data = self.shell.pull(self.resource_uri, self._ec)
+            except WRError as e:
+                return e
+
+            try:
+                self._pullresponse = ET.fromstring(self.ec_data)
+            except Exception as e:
+                return e
+
+            data = []
+            items = self._pullresponse.findall('s:Body/n:PullResponse/n:Items')
+            for item in items:
+                data += [self.xmltodict(item)]
+
+            if self._pullresponse.find('s:Body/n:PullResponse/n:EndOfSequence') is not None:
+                break
+
+
+    def xmltodict(self, data_root):
+        data = {}
+        for i in xmldata.findall('./' % class_name, xmlns):
+            tagname = i.tag.replace('{'+self.base_uri+class_name+'}', '')
+            if i.attrib.get(nil, 'false') == 'true':
+                data[tagname] = None
+            else:
+                if i.text is not None:
+                    data[tagname] = i.text
+                else:
+                    data[tagname]={}
+                    for e in i.findall('./'):
+                        # TODO: improve this to remove namespace
+                        e_tagname=e.tag.split('}')[1]
+                        data[tagname][e_tagname] = e.text
+        return data
 
 class CMDCommand(WinRMCommand):
     def __init__(self, shell, cmd=None, params=[]):
