@@ -256,7 +256,7 @@ class WMIQuery(WinRMCommand):
         try:
             class_data = self.shell.get(self.base_uri + class_name)
             root = ET.fromstring(class_data)
-            return class_data
+            return root
         except WRError as e:
             error_code = e.fault_detail.find('p:MSFT_WmiError/p:error_Code')
             if error_code is not None and error_code.text == '2150859002':
