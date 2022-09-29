@@ -21,7 +21,7 @@ class WRError(Exception):
     
     @property
     def fault_detail(self):
-        return self.arts[3]
+        return self.args[3]
     
 
 class WRProtocol(Protocol):
