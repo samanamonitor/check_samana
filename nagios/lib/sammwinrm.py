@@ -25,6 +25,7 @@ class WRProtocol(Protocol):
             'env:Envelope': self._get_soap_header(
             resource_uri=resource_uri,  # NOQA
             action='http://schemas.xmlsoap.org/ws/2004/09/enumeration/Enumerate')}
+        req['env:Envelope']['@xmlns:wsen'] = self.namespace['wsen']
         req['env:Envelope'].setdefault('env:Body', {}).setdefault('wsen:Enumerate', {})
         #req['env:Envelope']['env:Header']['w:SelectorSet'] = {
         #    'w:Selector': { '@Name': 'id', '#text': '1'}
