@@ -279,6 +279,7 @@ class WMIQuery(WinRMCommand):
             return data
         except WRError as e:
             error_code = e.fault_detail.find('p:MSFT_WmiError/p:error_Code')
+            print("FB:"+error_code)
             if error_code is not None and error_code.text == '2150859002':
                 return self.enumerate_class(class_name)
             return e
