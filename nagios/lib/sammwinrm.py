@@ -15,7 +15,8 @@ class WRProtocol(Protocol):
         's': "http://www.w3.org/2003/05/soap-envelope",
         'w': "http://schemas.dmtf.org/wbem/wsman/1/wsman.xsd",
         'rsp': "http://schemas.microsoft.com/wbem/wsman/1/windows/shell",
-        'p': "http://schemas.microsoft.com/wbem/wsman/1/wsman.xsd"
+        'p': "http://schemas.microsoft.com/wbem/wsman/1/wsman.xsd",
+        'wsen': "http://schemas.xmlsoap.org/ws/2004/09/enumeration" 
     }
 
     def enumerate(self, shell_id, resource_uri):
@@ -24,7 +25,10 @@ class WRProtocol(Protocol):
             'env:Envelope': self._get_soap_header(
             resource_uri=resource_uri,  # NOQA
             action='http://schemas.xmlsoap.org/ws/2004/09/enumeration/Enumerate')}
-        req['env:Envelope'].setdefault('env:Body', {})
+        req['env:Envelope'].setdefault('env:Body', {}).setdefault('wsen:Enumerate', {})
+        #req['env:Envelope']['env:Header']['w:SelectorSet'] = {
+        #    'w:Selector': { '@Name': 'id', '#text': '1'}
+        #    }
         print(xmltodict.unparse(req))
         try:
             res=self.send_message(xmltodict.unparse(req))
