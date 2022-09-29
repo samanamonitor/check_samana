@@ -254,7 +254,7 @@ class WMIQuery(WinRMCommand):
     base_uri='http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/'
     def get_class(self, class_name):
         try:
-            self.shell.get(self.base_uri + class_name)
+            return self.shell.get(self.base_uri + class_name)
         except Exception as e:
             return e
 
