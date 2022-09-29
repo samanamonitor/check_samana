@@ -263,7 +263,7 @@ class WMIQuery(WinRMCommand):
             }
             nil = '{http://www.w3.org/2001/XMLSchema-instance}nil'
             for i in root.findall('s:Body/p:Win32_OperatingSystem/', xmlns):
-                tagname = i.tag.replace(self.base_uri+class_name, '')
+                tagname = i.tag.replace('{'+self.base_uri+class_name+'}', '')
                 if i.attrib.get(nil, 'false') == 'true':
                     data[tagname] = None
                 else:
