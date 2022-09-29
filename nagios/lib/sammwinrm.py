@@ -286,6 +286,7 @@ class WMIQuery(WinRMCommand):
 
         xmlns = {
             's': "http://www.w3.org/2003/05/soap-envelope",
+            'p': self.resource_uri,
             'n': "http://schemas.xmlsoap.org/ws/2004/09/enumeration"
         }
         try:
