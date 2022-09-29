@@ -1,4 +1,5 @@
 from winrm.protocol import Protocol
+from winrm.exceptions import WinRMTransportError
 from base64 import b64encode
 import xml.etree.ElementTree as ET
 from time import time
