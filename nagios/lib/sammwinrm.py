@@ -308,7 +308,7 @@ class WMIQuery(WinRMCommand):
             data = []
             items = self._pullresponse.findall('s:Body/n:PullResponse/n:Items', xmlns)
             for item in items:
-                data += [self.xmltodict(item, classname, xmlns)]
+                data += [self.xmltodict(item, class_name, xmlns)]
 
             if self._pullresponse.find('s:Body/n:PullResponse/n:EndOfSequence', xmlns) is not None:
                 break
