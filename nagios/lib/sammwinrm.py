@@ -84,7 +84,7 @@ class WRProtocol(Protocol):
                     ex.response_text,
                     fault_data, fault_detail)
 
-    def pull(self, shell_id, resource_uri, enumeration_ctx):
+    def pull(self, shell_id, resource_uri, enumeration_ctx, max_elements=10):
         message_id = uuid.uuid4()
         req = {
             'env:Envelope': self._get_soap_header(
@@ -93,7 +93,7 @@ class WRProtocol(Protocol):
         req['env:Envelope'].setdefault('env:Body', {}).setdefault(
             'wsen:Pull', {
                 'wsen:EnumerationContext': enumeration_ctx,
-                'wsen:MaxElements': 1
+                'wsen:MaxElements': max_elements
             })
         print(xmltodict.unparse(req))
         try:
@@ -291,8 +291,9 @@ class WMIQuery(WinRMCommand):
             return e
 
     def enumerate_class(self, class_name):
+        self.resource_uri = self.base_uri + class_name
         try:
-            self._class_data = self.shell.enumerate(self.base_uri + class_name)
+            self._class_data = self.shell.enumerate(self.resource_uri)
         except WRError as e:
             return e
 
@@ -304,6 +305,11 @@ class WMIQuery(WinRMCommand):
             self._root = ET.fromstring(self._class_data)
             self._ec = self._root.find('s:Body/n:EnumerateResponse/n:EnumerationContext', xmlns).text
         except Exception as e:
+            return e
+
+        try:
+            self.ec_data = self.shell.pull(self.resource_uri, self._ec)
+        except WRError as e:
             return e
 
 class CMDCommand(WinRMCommand):
