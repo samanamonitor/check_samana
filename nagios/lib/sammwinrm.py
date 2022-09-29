@@ -317,8 +317,8 @@ class WMIQuery(WinRMCommand):
 
     def xmltodict(self, data_root, class_name, xmlns):
         data = {}
+        print(data_root)
         for i in data_root.findall('./%s' % class_name, xmlns):
-            print(i)
             tagname = i.tag.replace('{'+self.base_uri+class_name+'}', '')
             if i.attrib.get(nil, 'false') == 'true':
                 data[tagname] = None
