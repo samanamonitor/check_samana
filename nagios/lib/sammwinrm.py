@@ -95,7 +95,7 @@ class WRProtocol(Protocol):
                 'n:EnumerationContext': enumeration_ctx,
                 'n:MaxElements': max_elements
             })
-        print(xmltodict.unparse(req))
+        #print(xmltodict.unparse(req))
         try:
             res=self.send_message(xmltodict.unparse(req))
         except Exception as e:
@@ -109,7 +109,7 @@ class WRProtocol(Protocol):
             resource_uri=resource_uri,  # NOQA
             action='http://schemas.xmlsoap.org/ws/2004/09/enumeration/Enumerate')}
         req['env:Envelope'].setdefault('env:Body', {}).setdefault('n:Enumerate', {})
-        print(xmltodict.unparse(req))
+        #print(xmltodict.unparse(req))
         try:
             res=self.send_message(xmltodict.unparse(req))
         except Exception as e:
