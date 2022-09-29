@@ -254,8 +254,8 @@ class WMIQuery(WinRMCommand):
     base_uri='http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/'
     def get_class(self, class_name):
         try:
-            class_data = self.shell.get(self.base_uri + class_name)
-            root = ET.fromstring(class_data)
+            self.class_data = self.shell.get(self.base_uri + class_name)
+            self.root = ET.fromstring(class_data)
             data = {}
             xmlns = {
                 's': self.shell.p.xmlns['s'],
@@ -263,7 +263,7 @@ class WMIQuery(WinRMCommand):
                 'cim': "http://schemas.dmtf.org/wbem/wscim/1/common"
             }
             nil = '{http://www.w3.org/2001/XMLSchema-instance}nil'
-            for i in root.findall('s:Body/p:%s/' % class_name, xmlns):
+            for i in self.root.findall('s:Body/p:%s/' % class_name, xmlns):
                 tagname = i.tag.replace('{'+self.base_uri+class_name+'}', '')
                 if i.attrib.get(nil, 'false') == 'true':
                     data[tagname] = None
@@ -273,9 +273,10 @@ class WMIQuery(WinRMCommand):
                     else:
                         data[tagname]={}
                         for e in i.findall('./'):
+                            # TODO: improve this to remove namespace
                             e_tagname=e.tag.split('}')[1]
                             data[tagname][e_tagname] = e.text
-            return (data, root)
+            return data
         except WRError as e:
             error_code = e.fault_detail.find('p:MSFT_WmiError/p:error_Code')
             if error_code is not None and error_code.text == '2150859002':
