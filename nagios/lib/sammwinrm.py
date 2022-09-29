@@ -17,11 +17,11 @@ class WRProtocol(Protocol):
         'rsp': "http://schemas.microsoft.com/wbem/wsman/1/windows/shell",
         'p': "http://schemas.microsoft.com/wbem/wsman/1/wsman.xsd"
     }
-    def get(self, shell_id):
+    def get(self, shell_id, resource_uri):
         message_id = uuid.uuid4()
         req = {
             'env:Envelope': self._get_soap_header(
-            resource_uri='http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/Win32_ComputerSystem',  # NOQA
+            resource_uri=resource_uri,  # NOQA
             action='http://schemas.xmlsoap.org/ws/2004/09/transfer/Get')}
         #req['env:Envelope']['env:Header']['w:SelectorSet'] = {
         #    'w:Selector': { '@Name': 'id', '#text': '1'}
@@ -326,6 +326,11 @@ class WinRMShell:
         self.p.close_shell(self.shell_id)
         self.shell_id = None
         self.connected = False
+
+    def get(self, resource_uri):
+        if not self.connected:
+            raise ExceptionWinRMShellNotConnected()
+        return self.p.get(self.shell_id, resource_uri)        
 
     def signal(self, command_id, s):
         if not self.connected:
