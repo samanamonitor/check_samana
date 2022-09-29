@@ -256,7 +256,19 @@ class WMIQuery(WinRMCommand):
         try:
             class_data = self.shell.get(self.base_uri + class_name)
             root = ET.fromstring(class_data)
-            return root
+            data = {}
+            xmlns = {
+                's': self.xmlns['s'],
+                'p': self.base_uri + class_name
+            }
+            nil = '{http://www.w3.org/2001/XMLSchema-instance}nil'
+            for i in a.findall('s:Body/p:Win32_OperatingSystem/', xmlns):
+                tagname = i.tag.replace(self.base_uri+class_name, '')
+                if i.attrib.get(nil, 'false') == 'true':
+                    data[tagname] = None
+                else:
+                    data[tagname] = i.text
+            return data
         except WRError as e:
             error_code = e.fault_detail.find('p:MSFT_WmiError/p:error_Code')
             if error_code is not None and error_code.text == '2150859002':
