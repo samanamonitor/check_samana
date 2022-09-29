@@ -19,6 +19,26 @@ class WRProtocol(Protocol):
         'wsen': "http://schemas.xmlsoap.org/ws/2004/09/enumeration" 
     }
 
+    def pull(self, shell_id, resource_uri, enumeration_ctx):
+        message_id = uuid.uuid4()
+        req = {
+            'env:Envelope': self._get_soap_header(
+            resource_uri=resource_uri,  # NOQA
+            action='http://schemas.xmlsoap.org/ws/2004/09/enumeration/Enumerate')}
+        req['env:Envelope']['@xmlns:wsen'] = self.namespace['wsen']
+        req['env:Envelope'].setdefault('env:Body', {}).setdefault(
+            'wsen:Pull', {
+                'wsen:EnumerationContext': enumeration_ctx,
+                'wsen:MaxElements': 1
+            })
+        print(xmltodict.unparse(req))
+        try:
+            res=self.send_message(xmltodict.unparse(req))
+        except Exception as e:
+            return e
+        return res
+
+
     def enumerate(self, shell_id, resource_uri):
         message_id = uuid.uuid4()
         req = {
@@ -27,9 +47,6 @@ class WRProtocol(Protocol):
             action='http://schemas.xmlsoap.org/ws/2004/09/enumeration/Enumerate')}
         req['env:Envelope']['@xmlns:wsen'] = self.namespace['wsen']
         req['env:Envelope'].setdefault('env:Body', {}).setdefault('wsen:Enumerate', {})
-        #req['env:Envelope']['env:Header']['w:SelectorSet'] = {
-        #    'w:Selector': { '@Name': 'id', '#text': '1'}
-        #    }
         print(xmltodict.unparse(req))
         try:
             res=self.send_message(xmltodict.unparse(req))
@@ -358,6 +375,11 @@ class WinRMShell:
         if not self.connected:
             raise ExceptionWinRMShellNotConnected()
         return self.p.enumerate(self.shell_id, resource_uri)        
+
+    def pull(self, resource_uri, enumeration_ctx):
+        if not self.connected:
+            raise ExceptionWinRMShellNotConnected()
+        return self.p.enumerate(self.shell_id, resource_uri, enumeration_ctx)        
 
     def signal(self, command_id, s):
         if not self.connected:
