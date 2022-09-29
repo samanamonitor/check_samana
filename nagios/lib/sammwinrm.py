@@ -31,7 +31,7 @@ class WRProtocol(Protocol):
         except Exception as e:
             return e
         return res
-        
+
     def get(self, shell_id, resource_uri):
         message_id = uuid.uuid4()
         req = {
@@ -348,6 +348,11 @@ class WinRMShell:
         if not self.connected:
             raise ExceptionWinRMShellNotConnected()
         return self.p.get(self.shell_id, resource_uri)        
+
+    def enumerate(self, resource_uri):
+        if not self.connected:
+            raise ExceptionWinRMShellNotConnected()
+        return self.p.enumerate(self.shell_id, resource_uri)        
 
     def signal(self, command_id, s):
         if not self.connected:
