@@ -73,9 +73,11 @@ class WRProtocol(Protocol):
                 else:
                     error_message = "(no error message in fault)"
 
+                fault_detail = fault.find('s:Detail', self.xmlns)
+
                 raise WRError('{0} (extended fault data: {1})'.format(error_message, fault_data), \
                     ex.response_text,
-                    fault_data)
+                    fault_data, fault_detail)
 
     def pull(self, shell_id, resource_uri, enumeration_ctx):
         message_id = uuid.uuid4()
