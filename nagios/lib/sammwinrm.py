@@ -254,8 +254,8 @@ class WMIQuery(WinRMCommand):
     base_uri='http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/'
     def get_class(self, class_name):
         try:
-            self.class_data = self.shell.get(self.base_uri + class_name)
-            self.root = ET.fromstring(class_data)
+            self._class_data = self.shell.get(self.base_uri + class_name)
+            self._root = ET.fromstring(self._class_data)
             data = {}
             xmlns = {
                 's': self.shell.p.xmlns['s'],
@@ -263,7 +263,7 @@ class WMIQuery(WinRMCommand):
                 'cim': "http://schemas.dmtf.org/wbem/wscim/1/common"
             }
             nil = '{http://www.w3.org/2001/XMLSchema-instance}nil'
-            for i in self.root.findall('s:Body/p:%s/' % class_name, xmlns):
+            for i in self._root.findall('s:Body/p:%s/' % class_name, xmlns):
                 tagname = i.tag.replace('{'+self.base_uri+class_name+'}', '')
                 if i.attrib.get(nil, 'false') == 'true':
                     data[tagname] = None
