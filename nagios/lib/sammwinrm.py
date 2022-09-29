@@ -285,6 +285,13 @@ class WMIQuery(WinRMCommand):
         except Exception as e:
             return e
 
+    def enumerate_class(self, class_name):
+        try:
+            self._class_data = self.shell.enumerate(self.base_uri + class_name)
+        except WRError as e:
+            return e
+        except Exception as e:
+            return e
 
 class CMDCommand(WinRMCommand):
     def __init__(self, shell, cmd=None, params=[]):
