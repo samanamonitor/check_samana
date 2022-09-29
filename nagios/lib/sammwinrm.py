@@ -259,7 +259,7 @@ class WMIQuery(WinRMCommand):
             data = {}
             xmlns = {
                 's': self.shell.p.xmlns['s'],
-                'p': self.base_uri + class_name
+                'p': self.base_uri + class_name,
                 'cim': "http://schemas.dmtf.org/wbem/wscim/1/common"
             }
             nil = '{http://www.w3.org/2001/XMLSchema-instance}nil'
