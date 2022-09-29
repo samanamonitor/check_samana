@@ -36,68 +36,6 @@ class WRProtocol(Protocol):
         'wsmv': 'http://schemas.microsoft.com/wbem/wsman/1/wsman.xsd'
     }
 
-    def _get_soap_header(
-            self, action=None, resource_uri=None, shell_id=None,
-            message_id=None):
-        if not message_id:
-            message_id = uuid.uuid4()
-        header = {
-            '@xmlns:xsd': 'http://www.w3.org/2001/XMLSchema',
-            '@xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
-            '@xmlns:env': self.xmlns['s'],
-
-            '@xmlns:a': self.xmlns['a'],
-            '@xmlns:b': 'http://schemas.dmtf.org/wbem/wsman/1/cimbinding.xsd',
-            '@xmlns:wsen': self.xmlns['wsen'],
-            '@xmlns:x': 'http://schemas.xmlsoap.org/ws/2004/09/transfer',
-            '@xmlns:w': self.xmlns['w'],
-            '@xmlns:wsmv': self.xmlns['wsmv'],
-            '@xmlns:rsp': 'http://schemas.microsoft.com/wbem/wsman/1/windows/shell',  # NOQA
-            '@xmlns:cfg': 'http://schemas.microsoft.com/wbem/wsman/1/config',
-
-            'env:Header': {
-                'a:To': 'http://windows-host:5985/wsman',
-                'a:ReplyTo': {
-                    'a:Address': {
-                        '@mustUnderstand': 'true',
-                        '#text': 'http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous'  # NOQA
-                    }
-                },
-                'w:MaxEnvelopeSize': {
-                    '@mustUnderstand': 'true',
-                    '#text': '153600'
-                },
-                'a:MessageID': 'uuid:{0}'.format(message_id),
-                'w:Locale': {
-                    '@mustUnderstand': 'false',
-                    '@xml:lang': 'en-US'
-                },
-                'wsmv:DataLocale': {
-                    '@mustUnderstand': 'false',
-                    '@xml:lang': 'en-US'
-                },
-                # TODO: research this a bit http://msdn.microsoft.com/en-us/library/cc251561(v=PROT.13).aspx  # NOQA
-                # 'cfg:MaxTimeoutms': 600
-                # Operation timeout in ISO8601 format, see http://msdn.microsoft.com/en-us/library/ee916629(v=PROT.13).aspx  # NOQA
-                'w:OperationTimeout': 'PT{0}S'.format(int(self.operation_timeout_sec)),
-                'w:ResourceURI': {
-                    '@mustUnderstand': 'true',
-                    '#text': resource_uri
-                },
-                'a:Action': {
-                    '@mustUnderstand': 'true',
-                    '#text': action
-                }
-            }
-        }
-        if shell_id:
-            header['env:Header']['w:SelectorSet'] = {
-                'w:Selector': {
-                    '@Name': 'ShellId',
-                    '#text': shell_id
-                }
-            }
-        return header
     def send_message(self, message):
         # TODO add message_id vs relates_to checking
         # TODO port error handling code
