@@ -28,8 +28,7 @@ class WRProtocol(Protocol):
         'rsp': "http://schemas.microsoft.com/wbem/wsman/1/windows/shell",
         'p': "http://schemas.microsoft.com/wbem/wsman/1/wsman.xsd",
         'wsen': "http://schemas.xmlsoap.org/ws/2004/09/enumeration",
-        'wsmanfault': "http://schemas.microsoft.com/wbem/wsman/1/wsmanfault",
-        'soapenv': 'http://www.w3.org/2003/05/soap-envelope'
+        'wsmanfault': "http://schemas.microsoft.com/wbem/wsman/1/wsmanfault"
     }
 
     def send_message(self, message):
@@ -46,13 +45,13 @@ class WRProtocol(Protocol):
                 # assume some other transport error; raise the original exception
                 raise ex
 
-            fault = root.find('soapenv:Body/soapenv:Fault', self.xmlns)
+            fault = root.find('s:Body/s:Fault', self.xmlns)
             if fault is not None:
                 fault_data = dict(
                     transport_message=ex.message,
                     http_status_code=ex.code
                 )
-                wsmanfault_code = fault.find('soapenv:Detail/wsmanfault:WSManFault[@Code]', self.xmlns)
+                wsmanfault_code = fault.find('s:Detail/wsmanfault:WSManFault[@Code]', self.xmlns)
                 if wsmanfault_code is not None:
                     fault_data['wsmanfault_code'] = wsmanfault_code.get('Code')
                     # convert receive timeout code to WinRMOperationTimeoutError
@@ -60,21 +59,20 @@ class WRProtocol(Protocol):
                         # TODO: this fault code is specific to the Receive operation; convert all op timeouts?
                         raise WinRMOperationTimeoutError()
 
-                fault_code = fault.find('soapenv:Code/soapenv:Value', self.xmlns)
+                fault_code = fault.find('s:Code/s:Value', self.xmlns)
                 if fault_code is not None:
                     fault_data['fault_code'] = fault_code.text
 
-                fault_subcode = fault.find('soapenv:Code/soapenv:Subcode/soapenv:Value', self.xmlns)
+                fault_subcode = fault.find('s:Code/s:Subcode/s:Value', self.xmlns)
                 if fault_subcode is not None:
                     fault_data['fault_subcode'] = fault_subcode.text
 
-                error_message = fault.find('soapenv:Reason/soapenv:Text', self.xmlns)
+                error_message = fault.find('s:Reason/s:Text', self.xmlns)
                 if error_message is not None:
                     error_message = error_message.text
                 else:
                     error_message = "(no error message in fault)"
 
-                fault_detail = fault.find('soapenv:Detail')
                 raise WRError('{0} (extended fault data: {1})'.format(error_message, fault_data), \
                     ex.response_text,
                     fault_data)
