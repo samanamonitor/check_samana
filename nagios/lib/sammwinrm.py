@@ -324,7 +324,8 @@ class WMIQuery(WinRMCommand):
         for i in data_root.findall('./'):
             tagname = i.tag.replace('{'+self.base_uri+class_name+'}', '')
             print(i.attrib)
-            if i.attrib.get('nil', 'false') == 'true':
+            nil = "{%s}nil" % xmlns['nil']
+            if i.attrib.get(nil, 'false') == 'true':
                 data[tagname] = None
             else:
                 if i.text is not None:
