@@ -289,6 +289,9 @@ class WMIQuery(WinRMCommand):
         except Exception as e:
             return e
 
+    def wql(self, wql):
+        return self.enumerate_class('*', wql=wql)
+
     def enumerate_class(self, class_name, en_filter=None, wql=None):
         self.resource_uri = self.base_uri + class_name
         try:
