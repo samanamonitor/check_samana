@@ -110,9 +110,9 @@ class WRProtocol(Protocol):
             action='http://schemas.xmlsoap.org/ws/2004/09/enumeration/Enumerate')}
         req['env:Envelope'].setdefault('env:Body', {}).setdefault('n:Enumerate', {})
         if en_filter is not None:
-            f=[]
-            for k in en_filter:
-                f += [ { '@Name': k, '#text': en_filter[k] } ]
+            #f=[]
+            #for k in en_filter:
+            #    f += [ { '@Name': k, '#text': en_filter[k] } ]
             req['env:Envelope']['env:Body']['n:Enumerate']['w:Filter'] = {
                 #'@Dialect': 'http://schemas.dmtf.org/wbem/wsman/1/wsman/SelectorFilter',
                 #'w:SelectorSet': { 'w:Selector': f}
