@@ -289,7 +289,7 @@ class WMIQuery(WinRMCommand):
         except Exception as e:
             return e
 
-    def enumerate_class(self, class_name, en_filter=None):
+    def enumerate_class(self, class_name, en_filter=None, wql=None):
         self.resource_uri = self.base_uri + class_name
         try:
             self._class_data = self.shell.enumerate(self.resource_uri, en_filter)
