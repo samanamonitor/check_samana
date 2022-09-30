@@ -350,7 +350,12 @@ class WMIQuery(WinRMCommand):
                     data[tagname]={}
                     for e in i.findall('./'):
                         # TODO: improve this to remove namespace
-                        e_tagname=e.tag.split('}')[1]
+                        e_tagname=e.tag.split('}')
+                        if len(e_tagname) > 1:
+                            e_tagname = e_tagname[1]
+                        else:
+                            e_tagname = e_tagname[0]
+
                         data[tagname][e_tagname] = e.text
         return data
 
