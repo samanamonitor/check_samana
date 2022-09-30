@@ -287,7 +287,8 @@ class WMIQuery(WinRMCommand):
         xmlns = {
             's': "http://www.w3.org/2003/05/soap-envelope",
             'p': self.resource_uri,
-            'n': "http://schemas.xmlsoap.org/ws/2004/09/enumeration"
+            'n': "http://schemas.xmlsoap.org/ws/2004/09/enumeration",
+            'xsi': "http://www.w3.org/2001/XMLSchema-instance"
         }
         try:
             self._root = ET.fromstring(self._class_data)
@@ -322,7 +323,8 @@ class WMIQuery(WinRMCommand):
         print(data_root)
         for i in data_root.findall('./'):
             tagname = i.tag.replace('{'+self.base_uri+class_name+'}', '')
-            if i.attrib.get(nil, 'false') == 'true':
+            print(i.attrib)
+            if i.attrib.get('nil', 'false') == 'true':
                 data[tagname] = None
             else:
                 if i.text is not None:
