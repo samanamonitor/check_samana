@@ -317,7 +317,7 @@ class WMIQuery(WinRMCommand):
             _ec = self._pullresponse.find('s:Body/n:PullResponse/n:EnumerationContext', xmlns)
             if _ec is None:
                 raise WRError("Invalid EnumerationContext.")
-            self._ec = _ec
+            self._ec = _ec.text
         return data
 
 
