@@ -114,7 +114,7 @@ class WRProtocol(Protocol):
             for k in en_filter:
                 f += [ { '@Name': k, '#text': en_filter[k] } ]
             req['env:Envelope']['env:Body']['n:Enumerate']['w:Filter'] = {
-                '@Dialect': 'http://schemas.dmtf.org/wbem/wsman/1/wsman/SelectorFilter',
+                #'@Dialect': 'http://schemas.dmtf.org/wbem/wsman/1/wsman/SelectorFilter',
                 'w:SelectorSet': { 'w:Selector': f}
             }
         print(xmltodict.unparse(req))
