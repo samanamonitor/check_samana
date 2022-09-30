@@ -113,8 +113,10 @@ class WRProtocol(Protocol):
             req['env:Envelope']['env:Body']['n:Enumerate']['w:Filter'] = {
                 '@Dialect': 'w:SelectorFilter',
                 'w:SelectorSet': {
-                    '@Name': 'Name',
-                    '#text': en_filter
+                    'w:Selector': {
+                        '@Name': 'Name',
+                        '#text': en_filter
+                    }
                 }
             }
         print(xmltodict.unparse(req))
