@@ -110,7 +110,10 @@ class WRProtocol(Protocol):
             action='http://schemas.xmlsoap.org/ws/2004/09/enumeration/Enumerate')}
         req['env:Envelope'].setdefault('env:Body', {}).setdefault('n:Enumerate', {})
         if en_filter is not None:
-            req['env:Envelope']['env:Body']['n:Enumerate']['w:Filter'] = en_filter
+            req['env:Envelope']['env:Body']['n:Enumerate']['w:Filter'] {
+                '@Dialect': 'w:SelectorFilter',
+                '#text': en_filter
+            }
         print(xmltodict.unparse(req))
         try:
             res=self.send_message(xmltodict.unparse(req))
