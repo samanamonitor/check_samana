@@ -111,7 +111,7 @@ class WRProtocol(Protocol):
         req['env:Envelope'].setdefault('env:Body', {}).setdefault('n:Enumerate', {})
         if en_filter is not None:
             req['env:Envelope']['env:Body']['n:Enumerate']['w:Filter'] = {
-                '@Dialect': 'w:SelectorFilter',
+                '@Dialect': 'http://schemas.dmtf.org/wbem/wsman/1/wsman/SelectorFilter',
                 'w:SelectorSet': {
                     'w:Selector': {
                         '@Name': 'Name',
