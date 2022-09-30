@@ -102,23 +102,25 @@ class WRProtocol(Protocol):
             return e
         return res
 
-    def enumerate(self, shell_id, resource_uri, en_filter=None):
+    def enumerate(self, shell_id, resource_uri, en_filter=None, wql=None):
         message_id = uuid.uuid4()
         req = {
             'env:Envelope': self._get_soap_header(
             resource_uri=resource_uri,  # NOQA
             action='http://schemas.xmlsoap.org/ws/2004/09/enumeration/Enumerate')}
         req['env:Envelope'].setdefault('env:Body', {}).setdefault('n:Enumerate', {})
-        if en_filter is not None:
-            #f=[]
-            #for k in en_filter:
-            #    f += [ { '@Name': k, '#text': en_filter[k] } ]
+        if wql is not None:
             req['env:Envelope']['env:Body']['n:Enumerate']['w:Filter'] = {
-                #'@Dialect': 'http://schemas.dmtf.org/wbem/wsman/1/wsman/SelectorFilter',
-                #'w:SelectorSet': { 'w:Selector': f}
                 '@Dialect': 'http://schemas.microsoft.com/wbem/wsman/1/WQL',
                 '#text': en_filter
             }
+
+        elif en_filter is not None:
+            req['env:Envelope']['env:Body']['n:Enumerate']['w:Filter'] = {
+                '@Dialect': 'http://schemas.dmtf.org/wbem/wsman/1/wsman/SelectorFilter',
+                'w:SelectorSet': { 
+                    'w:Selector': [ { '@Name': k, '#text': en_filter[k]} for k in en_filter ] }
+                }
         print(xmltodict.unparse(req))
         try:
             res=self.send_message(xmltodict.unparse(req))
@@ -539,7 +541,7 @@ class WinRMShell:
             raise ExceptionWinRMShellNotConnected()
         return self.p.get(self.shell_id, resource_uri)        
 
-    def enumerate(self, resource_uri, en_filter=None):
+    def enumerate(self, resource_uri, en_filter=None, wql=None):
         if not self.connected:
             raise ExceptionWinRMShellNotConnected()
         return self.p.enumerate(self.shell_id, resource_uri, en_filter)        
