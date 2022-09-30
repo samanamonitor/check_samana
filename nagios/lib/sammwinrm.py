@@ -112,12 +112,7 @@ class WRProtocol(Protocol):
         if en_filter is not None:
             req['env:Envelope']['env:Body']['n:Enumerate']['w:Filter'] = {
                 '@Dialect': 'http://schemas.dmtf.org/wbem/wsman/1/wsman/SelectorFilter',
-                'w:SelectorSet': {
-                    'w:Selector': {
-                        '@Name': 'Name',
-                        '#text': en_filter
-                    }
-                }
+                'w:SelectorSet': en_filter
             }
         print(xmltodict.unparse(req))
         try:
