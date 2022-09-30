@@ -113,7 +113,7 @@ class WRProtocol(Protocol):
             req['env:Envelope']['env:Header']['w:SelectorSet'] = {
                     'w:Selector': en_filter
                 }
-        #print(xmltodict.unparse(req))
+        print(xmltodict.unparse(req))
         try:
             res=self.send_message(xmltodict.unparse(req))
         except Exception as e:
