@@ -315,6 +315,9 @@ class WMIQuery(WinRMCommand):
 
             if self._pullresponse.find('s:Body/n:PullResponse/n:EndOfSequence', xmlns) is not None:
                 break
+            self._ec = self._root.find('s:Body/n:PullResponse/n:EnumerationContext', xmlns).text
+            if self._ec is None:
+                raise WRError("Invalid EnumerationContext.")
         return data
 
 
