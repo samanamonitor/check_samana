@@ -121,7 +121,7 @@ class WRProtocol(Protocol):
                 'w:SelectorSet': { 
                     'w:Selector': [ { '@Name': k, '#text': en_filter[k]} for k in en_filter ] }
                 }
-        print(xmltodict.unparse(req))
+        #print(xmltodict.unparse(req))
         try:
             res=self.send_message(xmltodict.unparse(req))
         except Exception as e:
