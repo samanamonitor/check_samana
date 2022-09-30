@@ -110,7 +110,7 @@ class WRProtocol(Protocol):
             action='http://schemas.xmlsoap.org/ws/2004/09/enumeration/Enumerate')}
         req['env:Envelope'].setdefault('env:Body', {}).setdefault('n:Enumerate', {})
         if en_filter is not None:
-            req['env:Envelope']['env:Body']['n:Enumerate']['w:Filter'] {
+            req['env:Envelope']['env:Body']['n:Enumerate']['w:Filter'] = {
                 '@Dialect': 'w:SelectorFilter',
                 '#text': en_filter
             }
