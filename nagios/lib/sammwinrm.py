@@ -544,7 +544,7 @@ class WinRMShell:
     def enumerate(self, resource_uri, en_filter=None, wql=None):
         if not self.connected:
             raise ExceptionWinRMShellNotConnected()
-        return self.p.enumerate(self.shell_id, resource_uri, en_filter)        
+        return self.p.enumerate(self.shell_id, resource_uri, en_filter=en_filter, wql=wql)        
 
     def pull(self, resource_uri, enumeration_ctx):
         if not self.connected:
