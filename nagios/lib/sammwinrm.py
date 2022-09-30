@@ -95,7 +95,7 @@ class WRProtocol(Protocol):
                 'n:EnumerationContext': enumeration_ctx,
                 'n:MaxElements': max_elements
             })
-        #print(xmltodict.unparse(req))
+        print(xmltodict.unparse(req))
         try:
             res=self.send_message(xmltodict.unparse(req))
         except Exception as e:
