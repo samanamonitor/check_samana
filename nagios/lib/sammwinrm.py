@@ -95,7 +95,7 @@ class WRProtocol(Protocol):
                 'n:EnumerationContext': enumeration_ctx,
                 'n:MaxElements': max_elements
             })
-        print(xmltodict.unparse(req))
+        #print(xmltodict.unparse(req))
         try:
             res=self.send_message(xmltodict.unparse(req))
         except Exception as e:
@@ -314,7 +314,7 @@ class WMIQuery(WinRMCommand):
 
             if self._pullresponse.find('s:Body/n:PullResponse/n:EndOfSequence', xmlns) is not None:
                 break
-            _ec = self._root.find('s:Body/n:PullResponse/n:EnumerationContext', xmlns)
+            _ec = self._pullresponse.find('s:Body/n:PullResponse/n:EnumerationContext', xmlns)
             if _ec is None:
                 raise WRError("Invalid EnumerationContext.")
             self._ec = _ec
