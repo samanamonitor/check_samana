@@ -309,7 +309,6 @@ class WMIQuery(WinRMCommand):
                 return e
 
             items = self._pullresponse.findall('s:Body/n:PullResponse/n:Items/', xmlns)
-            print(items)
             for item in items:
                 data += [self.xmltodict(item, class_name, xmlns)]
 
@@ -320,10 +319,8 @@ class WMIQuery(WinRMCommand):
 
     def xmltodict(self, data_root, class_name, xmlns):
         data = {}
-        print(data_root)
         for i in data_root.findall('./'):
             tagname = i.tag.replace('{'+self.base_uri+class_name+'}', '')
-            print(i.attrib)
             nil = "{%s}nil" % xmlns['xsi']
             if i.attrib.get(nil, 'false') == 'true':
                 data[tagname] = None
