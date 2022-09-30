@@ -308,6 +308,7 @@ class WMIQuery(WinRMCommand):
                 return e
 
             items = self._pullresponse.findall('s:Body/n:PullResponse/n:Items/', xmlns)
+            print(items)
             for item in items:
                 data += [self.xmltodict(item, class_name, xmlns)]
 
