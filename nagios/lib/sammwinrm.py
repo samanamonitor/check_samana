@@ -112,7 +112,7 @@ class WRProtocol(Protocol):
         if wql is not None:
             req['env:Envelope']['env:Body']['n:Enumerate']['w:Filter'] = {
                 '@Dialect': 'http://schemas.microsoft.com/wbem/wsman/1/WQL',
-                '#text': en_filter
+                '#text': wql
             }
 
         elif en_filter is not None:
