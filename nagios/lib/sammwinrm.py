@@ -102,13 +102,17 @@ class WRProtocol(Protocol):
             return e
         return res
 
-    def enumerate(self, shell_id, resource_uri):
+    def enumerate(self, shell_id, resource_uri, en_filter=None):
         message_id = uuid.uuid4()
         req = {
             'env:Envelope': self._get_soap_header(
             resource_uri=resource_uri,  # NOQA
             action='http://schemas.xmlsoap.org/ws/2004/09/enumeration/Enumerate')}
         req['env:Envelope'].setdefault('env:Body', {}).setdefault('n:Enumerate', {})
+        if en_filter is not None:
+            req['env:Envelope']['env:Header']['w:SelectorSet'] = {
+                    'w:Selector': en_filter
+                }
         #print(xmltodict.unparse(req))
         try:
             res=self.send_message(xmltodict.unparse(req))
@@ -277,10 +281,10 @@ class WMIQuery(WinRMCommand):
         except Exception as e:
             return e
 
-    def enumerate_class(self, class_name):
+    def enumerate_class(self, class_name, en_filter=None):
         self.resource_uri = self.base_uri + class_name
         try:
-            self._class_data = self.shell.enumerate(self.resource_uri)
+            self._class_data = self.shell.enumerate(self.resource_uri, en_filter)
         except WRError as e:
             return e
 
