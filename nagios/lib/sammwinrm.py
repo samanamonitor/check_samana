@@ -339,7 +339,11 @@ class WMIQuery(WinRMCommand):
     def xmltodict(self, data_root, class_name, xmlns):
         data = {}
         for i in data_root.findall('./'):
-            tagname = i.tag.split('}')[1]
+            tagname = i.tag.split('}')
+            if len(tagname) > 1:
+                tagname = tagname[1]
+            else:
+                tagname = tagname[0]
             nil = "{%s}nil" % xmlns['xsi']
             if i.attrib.get(nil, 'false') == 'true':
                 data[tagname] = None
