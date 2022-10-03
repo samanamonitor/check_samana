@@ -150,7 +150,7 @@ def main(argv):
         memcacheserver = '127.0.0.1'
         memcacheport = '11211'
         cachetype = 'etcd'
-        opts, args = getopt.getopt(sys.argv[1:], "H:he:t:U:p:n:w:c:m:a:i:N:E:")
+        opts, args = getopt.getopt(sys.argv[1:], "H:he:t:U:p:n:w:c:m:a:i:N:")
         ttl = 300
         hostaddress = None
         username = None
@@ -189,12 +189,6 @@ def main(argv):
                 etcdserver =temp[0]
                 if len(temp) > 1:
                     etcdport = temp[1]
-            elif o == '-E':
-                cachetype = 'pyetcd'
-                temp = a.split(':')
-                etcdserver =temp[0]
-                if len(temp) > 1:
-                    etcdport = int(temp[1])
             elif o == '-m':
                 cachetype = 'memcache'
                 temp = a.split(':')
@@ -260,13 +254,14 @@ def main(argv):
         wmi_time = int((time.time() - wmi_start) * 1000)
 
         if cachetype == 'etcd':
-            from samana import etcd
-            c = etcd.Client(host=etcdserver, port=etcdport)
-            c.put("samanamonitor/data/%s" % data['ID'], json.dumps(data), ttl)
-        if cachetype == 'pyetcd':
-            import etcd
-            c = etcd.Client(host=etcdserver, port=etcdport)
-            c.set("samanamonitor/data/%s" % data['ID'], json.dumps(data), ttl)
+            if sys.version_info.major == 3:
+                from samana import etcd
+                c = etcd.Client(host=etcdserver, port=etcdport)
+                c.put("samanamonitor/data/%s" % data['ID'], json.dumps(data), ttl)
+            else:
+                import etcd
+                c = etcd.Client(host=etcdserver, port=etcdport)
+                c.set("samanamonitor/data/%s" % data['ID'], json.dumps(data), ttl)
         elif cachetype == 'memcache':
             import memcache
             mc = memcache.Client(['%s:%s' % (memcacheserver, memcacheport)], debug=0)
