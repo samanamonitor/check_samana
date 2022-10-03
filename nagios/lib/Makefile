@@ -1,4 +1,4 @@
-PYTHON2_LIB ?= /usr/lib/python2/dist-packages/samana
+PYTHON2_LIB ?= /usr/lib/python2.7/dist-packages/samana
 PYTHON3_LIB ?= /usr/lib/python3/dist-packages/samana
 FILE_MODE := 0755
 
