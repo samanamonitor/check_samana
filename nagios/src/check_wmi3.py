@@ -160,7 +160,7 @@ def main(argv):
         dns_crit = None
         packet_loss_warn = None
         packet_loss_crit = None
-        idtype = "md5"
+        idtype = "fqdn"
 
         for o, a in opts:
             if o == '-H':
