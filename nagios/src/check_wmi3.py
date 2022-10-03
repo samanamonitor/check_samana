@@ -72,6 +72,7 @@ def query_server(host, username, password, domain, namespace="root\\cimv2", filt
 def legacy(indata, idtype='md5'):
     from hashlib import md5, sha256
 
+    print(indata)
     computer = indata['computer'][0]
     cpu = indata['cpu'][0]
     os = indata['os'][0]
