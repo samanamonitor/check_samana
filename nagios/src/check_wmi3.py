@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import time
+import time, datetime
 import json
 import csv
 import sys, getopt
@@ -80,13 +80,18 @@ def legacy(indata, idtype='md5'):
     for i in indata['pf']:
         TotalSwapSpaceSize += int(i['AllocatedBaseSize'])
 
-    #t = os['LastBootUpTime']['Datetime'].split('.')[0]
+    t = os['LastBootUpTime']['Datetime'][:-6]
+    tzmin = (int(os['LastBootUpTime']['Datetime'][-5:-3])*60 + \
+            int(os['LastBootUpTime']['Datetime'][-2:])) * \
+            1 if os['LastBootUpTime']['Datetime'][-6] == '-' else -1
+    st = datetime.datetime.strptime(t, "%Y-%m-%dT%H:%M:%S.%f") + \
+        datetime.timedelta(minutes=tzmin)
+    uptimehrs = int((datetime.datetime.utcnow()- st).total_seconds() / 60 / 60)
     #z = int(os['LastBootUpTime']['Datetime'][-4:])
     #zh = abs(int(z / 60))
     #zm = int(z % 60)
     #sign = '-' if z < 0 else '+'
     #st = time.strptime("%s%s%02d%02d" % (t, sign, zh, zm), "%Y%m%d%H%M%S%z")
-    st = time.fromisoformat(os['LastBootUpTime']['Datetime'])
     fqdn = "%s.%s" % (computer['DNSHostName'], computer['Domain'])
     fqdn = fqdn.lower()
     if idtype == 'md5':
@@ -116,7 +121,7 @@ def legacy(indata, idtype='md5'):
         'TotalVisibleMemorySize': os['TotalVisibleMemorySize'],
         'NumberOfProcesses': os['NumberOfProcesses'],
         'LastBootUpTime': os['LastBootUpTime'],
-        'UpTime': int((time.time() - time.mktime(st) + st.tm_gmtoff) / 3600),
+        'UpTime': uptimehrs,
         'Disks': [],
         'Services': [],
         'Events': {
