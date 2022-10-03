@@ -72,12 +72,12 @@ def query_server(host, username, password, domain, namespace="root\\cimv2", filt
 def legacy(indata, idtype='md5'):
     from hashlib import md5, sha256
 
-    computer = indata['computer'][0]['properties']
-    cpu = indata['cpu'][0]['properties']
-    os = indata['os'][0]['properties']
+    computer = indata['computer'][0]
+    cpu = indata['cpu'][0]
+    os = indata['os'][0]
     TotalSwapSpaceSize = 0
     for i in indata['pf']:
-        TotalSwapSpaceSize += i['properties']['AllocatedBaseSize']
+        TotalSwapSpaceSize += i['AllocatedBaseSize']
 
     t = os['LastBootUpTime'].split('.')[0]
     z = int(os['LastBootUpTime'][-4:])
@@ -124,16 +124,16 @@ def legacy(indata, idtype='md5'):
         }
     }
     for s in indata['services']:
-        s['properties']['ServiceName'] = s['properties'].get('Name')
+        s['ServiceName'] = s.get('Name')
         ret['Services'].append(s['properties'])
     for e in indata['evt_system']:
-        ret['Events']['System'].append(e['properties'])
+        ret['Events']['System'].append(e)
     for e in indata['evt_application']:
-        ret['Events']['Application'].append(e['properties'])
+        ret['Events']['Application'].append(e)
     for e in indata['evt_sf']:
-        ret['Events']['Citrix Delivery Services'].append(e['properties'])
+        ret['Events']['Citrix Delivery Services'].append(e)
     for d in indata['disk']:
-        ret['Disks'].append(d['properties'])
+        ret['Disks'].append(d)
 
     return ret
 
