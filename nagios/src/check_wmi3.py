@@ -258,8 +258,8 @@ def main(argv):
                 from samana import etcd
             else:
                 import etcd
-                c = etcd.Client(host=etcdserver, port=int(etcdport))
-                c.set("samanamonitor/data/%s" % data['ID'], json.dumps(data), ttl)
+            c = etcd.Client(host=etcdserver, port=int(etcdport))
+            c.set("samanamonitor/data/%s" % data['ID'], json.dumps(data), ttl)
         elif cachetype == 'memcache':
             import memcache
             mc = memcache.Client(['%s:%s' % (memcacheserver, memcacheport)], debug=0)
