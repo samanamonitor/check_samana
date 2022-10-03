@@ -296,7 +296,7 @@ def main(argv):
     except Exception as e:
         exc_type, exc_obj, tb = sys.exc_info()
         traceback_info = traceback.extract_tb(tb)
-        out = CheckResult("Error: %s at line %s" % (str(e), tb.tb_lineno), addl=traceback_info.format, status=3, status_str="UNKNOWN")
+        out = CheckResult("Error: %s at line %s" % (str(e), tb.tb_lineno), addl=traceback_info, status=3, status_str="UNKNOWN")
 
     print(out)
     exit(out.status)
