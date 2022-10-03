@@ -78,7 +78,7 @@ def legacy(indata, idtype='md5'):
     os = indata['os'][0]
     TotalSwapSpaceSize = 0
     for i in indata['pf']:
-        TotalSwapSpaceSize += i['AllocatedBaseSize']
+        TotalSwapSpaceSize += int(i['AllocatedBaseSize'])
 
     t = os['LastBootUpTime'].split('.')[0]
     z = int(os['LastBootUpTime'][-4:])
