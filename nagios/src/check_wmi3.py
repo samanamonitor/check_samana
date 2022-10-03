@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 import time, datetime
 import json
@@ -151,7 +151,7 @@ def main(argv):
         memcacheserver = '127.0.0.1'
         memcacheport = '11211'
         cachetype = 'etcd'
-        opts, args = getopt.getopt(sys.argv[1:], "H:he:t:U:p:n:w:c:m:a:i:N:")
+        opts, args = getopt.getopt(sys.argv[1:], "H:he:t:U:p:n:w:c:m:a:i:N:E:")
         ttl = 300
         hostaddress = None
         username = None
@@ -186,6 +186,12 @@ def main(argv):
             elif o == 'n':
                 namespace = a
             elif o == '-e':
+                temp = a.split(':')
+                etcdserver =temp[0]
+                if len(temp) > 1:
+                    etcdport = temp[1]
+            elif o == '-E':
+                cachetype = 'pyetcd'
                 temp = a.split(':')
                 etcdserver =temp[0]
                 if len(temp) > 1:
@@ -256,6 +262,10 @@ def main(argv):
 
         if cachetype == 'etcd':
             from samana import etcd
+            c = etcd.Client(host=etcdserver, port=etcdport)
+            c.put("samanamonitor/data/%s" % data['ID'], json.dumps(data), ttl)
+        if cachetype == 'pyetcd':
+            import etcd
             c = etcd.Client(host=etcdserver, port=etcdport)
             c.put("samanamonitor/data/%s" % data['ID'], json.dumps(data), ttl)
         elif cachetype == 'memcache':
