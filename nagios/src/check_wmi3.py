@@ -260,7 +260,7 @@ def main(argv):
                 c.put("samanamonitor/data/%s" % data['ID'], json.dumps(data), ttl)
             else:
                 import etcd
-                c = etcd.Client(host=etcdserver, port=etcdport)
+                c = etcd.Client(host=etcdserver, port=int(etcdport))
                 c.set("samanamonitor/data/%s" % data['ID'], json.dumps(data), ttl)
         elif cachetype == 'memcache':
             import memcache
