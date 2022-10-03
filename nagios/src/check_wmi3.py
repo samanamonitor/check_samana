@@ -132,7 +132,7 @@ def legacy(indata, idtype='md5'):
     }
     for s in indata['services']:
         s['ServiceName'] = s.get('Name')
-        ret['Services'].append(s['properties'])
+        ret['Services'].append(s)
     for e in indata['evt_system']:
         ret['Events']['System'].append(e)
     for e in indata['evt_application']:
