@@ -267,7 +267,7 @@ def main(argv):
         if cachetype == 'pyetcd':
             import etcd
             c = etcd.Client(host=etcdserver, port=etcdport)
-            c.put("samanamonitor/data/%s" % data['ID'], json.dumps(data), ttl)
+            c.set("samanamonitor/data/%s" % data['ID'], json.dumps(data), ttl)
         elif cachetype == 'memcache':
             import memcache
             mc = memcache.Client(['%s:%s' % (memcacheserver, memcacheport)], debug=0)
