@@ -195,7 +195,7 @@ def main(argv):
                 temp = a.split(':')
                 etcdserver =temp[0]
                 if len(temp) > 1:
-                    etcdport = temp[1]
+                    etcdport = int(temp[1])
             elif o == '-m':
                 cachetype = 'memcache'
                 temp = a.split(':')
