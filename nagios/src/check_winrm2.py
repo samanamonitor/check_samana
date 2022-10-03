@@ -248,8 +248,7 @@ def process_data(data):
         data['variables'] = ''
         for varname in data['scriptarguments']:
             data['variables'] += "$%s='%s'\r\n" % (varname, data['scriptarguments'][varname])
-        out = client.run(scriptline=data.get('scriptline', None), 
-            scriptfile=data.get('scriptfile', None), variables=data['variables'])
+        out = client.run(scriptfile=data['scriptfile'], data['variables'])
         winrm_time = (time() - winrm_start) * 1000
 
         perc_packet_loss = 100-int(100.0 * ping_data['packets_received'] / ping_data['packets_sent'])
@@ -391,14 +390,13 @@ def main():
         'authfile': None,
         'nagiosaddress': None,
         'scriptfile': None,
-        'scriptline': None,
         'warning': None,
         'critical': None,
         'url': None,
         'scriptarguments': {},
         'cleanup': True
     }
-    opts, args = getopt.getopt(sys.argv[1:], "H:d:u:p:ha:n:s:S:w:c:U:A:C")
+    opts, args = getopt.getopt(sys.argv[1:], "H:d:u:p:ha:n:s:w:c:U:A:C")
 
     for o, a in opts:
         if o == '-H':
@@ -415,8 +413,6 @@ def main():
             data['nagiosaddress'] = a
         elif o == '-s':
             data['scriptfile'] = a
-        elif o == '-S':
-            data['scriptline'] = a
         elif o == '-w':
             data['warning'] = a
         elif o == '-c':
