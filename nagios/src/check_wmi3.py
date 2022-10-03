@@ -80,8 +80,8 @@ def legacy(indata, idtype='md5'):
     for i in indata['pf']:
         TotalSwapSpaceSize += int(i['AllocatedBaseSize'])
 
-    t = os['LastBootUpTime'].split('.')[0]
-    z = int(os['LastBootUpTime'][-4:])
+    t = os['LastBootUpTime']['Datetime'].split('.')[0]
+    z = int(os['LastBootUpTime']['Datetime'][-4:])
     zh = abs(int(z / 60))
     zm = int(z % 60)
     sign = '-' if z < 0 else '+'
