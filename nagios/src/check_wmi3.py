@@ -55,6 +55,7 @@ def query_server(host, username, password, domain, namespace="root\\cimv2", filt
         if the key doesn't exist, then an empty tuple is expected, otherwise the tuple
         must contain all the arguments needed to complete the string
     '''
+    server = {}
     shell = WinRMShell()
     shell.open(host, {'username': username, 'password': password, 'domain': domain})
     if shell.connected != True:
