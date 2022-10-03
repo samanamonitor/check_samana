@@ -80,12 +80,13 @@ def legacy(indata, idtype='md5'):
     for i in indata['pf']:
         TotalSwapSpaceSize += int(i['AllocatedBaseSize'])
 
-    t = os['LastBootUpTime']['Datetime'].split('.')[0]
-    z = int(os['LastBootUpTime']['Datetime'][-4:])
-    zh = abs(int(z / 60))
-    zm = int(z % 60)
-    sign = '-' if z < 0 else '+'
-    st = time.strptime("%s%s%02d%02d" % (t, sign, zh, zm), "%Y%m%d%H%M%S%z")
+    #t = os['LastBootUpTime']['Datetime'].split('.')[0]
+    #z = int(os['LastBootUpTime']['Datetime'][-4:])
+    #zh = abs(int(z / 60))
+    #zm = int(z % 60)
+    #sign = '-' if z < 0 else '+'
+    #st = time.strptime("%s%s%02d%02d" % (t, sign, zh, zm), "%Y%m%d%H%M%S%z")
+    st = time.fromisoformat(os['LastBootUpTime']['Datetime'])
     fqdn = "%s.%s" % (computer['DNSHostName'], computer['Domain'])
     fqdn = fqdn.lower()
     if idtype == 'md5':
