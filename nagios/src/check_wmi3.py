@@ -256,8 +256,6 @@ def main(argv):
         if cachetype == 'etcd':
             if sys.version_info.major == 3:
                 from samana import etcd
-                c = etcd.Client(host=etcdserver, port=etcdport)
-                c.put("samanamonitor/data/%s" % data['ID'], json.dumps(data), ttl)
             else:
                 import etcd
                 c = etcd.Client(host=etcdserver, port=int(etcdport))
