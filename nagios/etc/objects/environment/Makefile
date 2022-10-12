@@ -14,6 +14,7 @@ INSTALL_FILES = $(wildcard *.cfg)
 all:
 	
 install: $(INSTALL_FILES)
+	install -d -g $(NAGIOS_GROUP) -o $(NAGIOS_USER) -m 0775 $(INSTALL_PATH)
 	grep -q -e "^cfg_dir=$(INSTALL_PATH)" $(NAGIOS_ETC)/nagios.cfg || echo "cfg_dir=$(INSTALL_PATH)" >> $(NAGIOS_ETC)/nagios.cfg
 
 $(INSTALL_FILES):
