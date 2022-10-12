@@ -4,7 +4,7 @@ NAGIOS_ETC ?= $(NAGIOS_BASE)/etc
 INSTALL_PATH ?= $(NAGIOS_ETC)/objects/samana
 NAGIOS_USER ?= nagios
 NAGIOS_GROUP ?= nagios
-FILE_MODE ?= 0664
+FILE_MODE ?= 0444
 
 INSTALL_FILES = $(wildcard *.cfg)
 
@@ -13,6 +13,7 @@ INSTALL_FILES = $(wildcard *.cfg)
 all:
 	
 install: $(INSTALL_FILES)
+	install -d -g $(NAGIOS_GROUP) -o $(NAGIOS_USER) -m 0775 $(INSTALL_PATH)
 	grep -q -e "^cfg_dir=$(INSTALL_PATH)" $(NAGIOS_ETC)/nagios.cfg || echo "cfg_dir=$(INSTALL_PATH)" >> $(NAGIOS_ETC)/nagios.cfg
 
 $(INSTALL_FILES):
