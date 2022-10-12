@@ -86,11 +86,6 @@ def legacy(indata, idtype='md5'):
     st = datetime.datetime.strptime(t, "%Y-%m-%dT%H:%M:%S.%f") + \
         datetime.timedelta(minutes=tzmin)
     uptimehrs = int((datetime.datetime.utcnow()- st).total_seconds() / 60 / 60)
-    #z = int(os['LastBootUpTime']['Datetime'][-4:])
-    #zh = abs(int(z / 60))
-    #zm = int(z % 60)
-    #sign = '-' if z < 0 else '+'
-    #st = time.strptime("%s%s%02d%02d" % (t, sign, zh, zm), "%Y%m%d%H%M%S%z")
     fqdn = "%s.%s" % (computer['DNSHostName'], computer['Domain'])
     fqdn = fqdn.lower()
     if idtype == 'md5':
@@ -309,7 +304,7 @@ def main(argv):
         out = CheckResult("Error: %s at line %s" % (str(e), tb.tb_lineno), addl=traceback_info, status=3, status_str="UNKNOWN")
 
     print(out)
-    exit(out.status)
+    return out.status
 
 if __name__ == "__main__":
-  main(sys.argv)
+  exit(main(sys.argv))
