@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 import time, datetime
 import json
@@ -180,6 +180,8 @@ def main(argv):
             elif o == 'n':
                 namespace = a
             elif o == '-e':
+                if a[:7] == "http://":
+                    a = a[7:]
                 temp = a.split(':')
                 etcdserver =temp[0]
                 if len(temp) > 1:
@@ -291,7 +293,7 @@ def main(argv):
         if notnone_and_lt(wmi_warn, wmi_time):
             raise CheckWarning("WMI took longer than expected %d ms" % wmi_time, perf_data=perf_data)
 
-        out = CheckResult("Data Collected %s" % data['ID'], perf_data=perf_data, addl=' '.join(sys.argv))
+        out = CheckResult("Data Collected. ID: %s" % data['ID'], perf_data=perf_data, addl=' '.join(sys.argv))
     except CheckWarning as e:
         out = e.result
     except CheckCritical as e:
