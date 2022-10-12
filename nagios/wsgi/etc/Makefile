@@ -7,6 +7,9 @@ WSGI_WWW ?= /usr/local/nagios/share/wsgi
 FILE_MODE := 0644
 INSTALL_FILES = $(subst .orig,,$(wildcard *.orig))
 
+dummy:
+	$(info "skipping installation of check_winrm wsgi")
+
 all: $(INSTALL_FILES)
 
 %.conf: %.conf.orig
@@ -16,7 +19,10 @@ all: $(INSTALL_FILES)
 		-e "s|&WSGI_GROUP&|$(WSGI_GROUP)|" \
 		$< > $@
 
-install: $(patsubst %,install_%,$(INSTALL_FILES))
+install:
+	$(info skipping installation of check_winrm wsgi)
+
+install-: $(patsubst %,install_%,$(INSTALL_FILES))
 
 install_$(INSTALL_FILES):
 ifneq ("$(wildcard $(APACHE_ETC_UBUNTU))","")
