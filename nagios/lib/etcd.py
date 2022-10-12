@@ -41,6 +41,9 @@ class Client():
 #        data = json.loads(r.data.decode('UTF-8'))
         return EtcdResult(action=data['action'], node=data['node'])
 
+    def set(self, key, value, ttl):
+        self.put(key, value, ttl)
+
 class EtcdResult(object):
     _node_props = {
         'key': None,
