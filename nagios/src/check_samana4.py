@@ -77,7 +77,7 @@ def ram(data, crit, warn):
         state = "OK"
         outval = 0
 
-    perfused = "'Physical Memory Used'=%d;;;0;%d 'Physical Memory Utilization'=%d;%s;%s;0;100" % (
+    perfused = "memory_used=%d;;;0;%d memory_used_percentage=%d;%s;%s;0;100" % (
         free,
         total,
         percused,
@@ -118,7 +118,7 @@ def swap(data, crit, warn):
         state = "OK"
         outval = 0
 
-    perfused = "Swap Memory Used=%d;%s;%s;0;100" % (
+    perfused = "swap_used_percentage=%d;%s;%s;0;100" % (
         percused,
         warn if warn is not None else '',
         crit if crit is not None else '')
@@ -257,8 +257,8 @@ def hddrives(data, crit, warn, srch):
             usedg,
             percused)
         disk_messages.append(message)
-        perf = "%s=%.1f;%s;%s;0;100 " % (
-            disk['Name'],
+        perf = "disk_%s=%.1f;%s;%s;0;100 " % (
+            disk['Name'].replace(':', '').lower(),
             percused,
             warn if warn is not None else '',
             crit if crit is not None else '')
