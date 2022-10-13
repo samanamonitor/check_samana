@@ -37,18 +37,18 @@ def cpu(data, crit, warn):
     else:
         state = "OK"
         outval = 0
-    
-    perfusage = "cpuLoad=%.0f;%s;%s;0;%d" % (
-        val, 
+    Processor=data['classes']['Win32_PerfFormattedData_PerfOS_Processor'][0]
+    perfusage = "| cpu.Load=%d;%s;%s;0;%d" % (
+        int(val), 
         warn if warn is not None else '', 
         crit if crit is not None else '', 
         graphmax)
-    # TODO: need to create script to migrate old data to include these values on old systems
-    perfpriv = "" #"priv=%.0f;;;" % data['PercentPrivilegedTime']
-    perfuser = "" #"user=%.0f;;;" % data['PercentUserTime']
-    perfirq  = "" #"interrupt=%.0f;;;" % data['PercentInterruptTime']
-    outmsg = "%s - CPU Usage %0.f %%| %s %s %s %s" % (
-        state, val, perfusage, perfpriv, perfuser, perfirq)
+    perfusage += " cpu.PercentIdleTime=%d;;;0;100" % int(Processor['PercentIdleTime'])
+    perfusage += " cpu.PercentUserTime=%d;;;0;100" % int(Processor['PercentUserTime'])
+    perfusage += " cpu.PercentPrivilegedTime=%d;;;0;100" % int(Processor['PercentPrivilegedTime'])
+    perfusage += " cpu.PercentInterruptTime=%d;;;0;100" % int(Processor['PercentInterruptTime'])
+    outmsg = "%s - CPU Usage %0.f %% %s" % (
+        state, val, perfusage)
     return (outval, outmsg)
 
 def ram(data, crit, warn):
@@ -77,13 +77,13 @@ def ram(data, crit, warn):
         state = "OK"
         outval = 0
 
-    perfused = "memory_used=%d;;;0;%d memory_used_percentage=%d;%s;%s;0;100" % (
+    perfused = "| ram.MemoryUsed=%d;;;0;%d ram.PercentMemoryUsed=%d;%s;%s;0;100" % (
         free,
         total,
         percused,
         warn if warn is not None else '',
         crit if crit is not None else '')
-    outmsg = "%s - Physical Memory: Total: %.2fGB - Used: %.2fGB (%.1f%%) - Free %.2fGB (%.2f%%) | %s" % (
+    outmsg = "%s - Physical Memory: Total: %.2fGB - Used: %.2fGB (%.1f%%) - Free %.2fGB (%.2f%%) %s" % (
         state, total, used, percused, free, percfree, perfused)
 
     return (outval, outmsg)
@@ -118,11 +118,17 @@ def swap(data, crit, warn):
         state = "OK"
         outval = 0
 
-    perfused = "swap_used_percentage=%d;%s;%s;0;100" % (
+    perfused = "| pagefile.used_percentage=%d;%s;%s;0;100" % (
         percused,
         warn if warn is not None else '',
         crit if crit is not None else '')
-    outmsg = "%s - Swap Memory: Total: %.2fGB - Used: %.2fGB (%.1f%%) - Free %.2fGB (%.2f%%) | %s" % (
+
+    for pf in data['classes']['Win32_PageFileUsage']:
+        name = pf['Caption'].replace(':', '_').replace('\\', '').replace('.', '_')
+        perfused += " pagefile.%s_AllocatedBaseSize=%d;;;;" % (name, int(pf['AllocatedBaseSize']))
+        perfused += " pagefile.%s_CurrentUsage=%d;;;;" % (name, int(pf['CurrentUsage']))
+        perfused += " pagefile.%s_PeakUsage=%d;;;;" % (name, int(pf['PeakUsage']))
+    outmsg = "%s - Swap Memory: Total: %.2fGB - Used: %.2fGB (%.1f%%) - Free %.2fGB (%.2f%%) %s" % (
         state, total, used, percused, free, percfree, perfused)
 
     return (outval, outmsg)
@@ -130,6 +136,21 @@ def swap(data, crit, warn):
 def log(data, logname, crit, warn):
     state = "UNKNOWN"
     messages = ""
+    eventtype_names = [
+        "None",
+        "Error",
+        "Warning",
+        "AuditSuccess",
+        "AuditFailure"
+    ]
+    event_count = [
+        0, # None
+        0, # Error
+        0, # Warning
+        0, # Information
+        0, # Audit Success
+        0, # Audit Failure
+    ]
 
     if logname not in data['Events']:
         return (3, "UNKNOWN - Invalid event log.")
@@ -145,6 +166,9 @@ def log(data, logname, crit, warn):
         return (3, 'UNKNOWN - Event log %s not configured.' % logname)
 
     events = data['Events'][logname]
+
+    for e in events:
+        event_count[int(e['EventType'])] += 1
 
     if isinstance(events, dict):
         if len(events) == 0:
@@ -178,9 +202,12 @@ def log(data, logname, crit, warn):
                 messages += i['Message'] + "\n"
             else:
                 messages += "<UNKNOWN>\n"
+    perfused = " |"
+    for i in range(1, len(eventtype_names)):
+        perfused += " log.%s.%s=%d;;;;" % (logname, eventtype_names[i], event_count[i])
 
-    outmsg = "%s - Error or Warning Events=%d %s" %  \
-        (state, val, messages)
+    outmsg = "%s - Error or Warning Events=%d %s %s" %  \
+        (state, val, messages, perfused)
     return (outval, outmsg)
 
 def services(data, crit, warn, incl, excl):
@@ -227,8 +254,10 @@ def services(data, crit, warn, incl, excl):
         state = "OK"
         outval = 0
 
-    outmsg = "%s - %d Services Running - %d Services Stopped %s" % (
-        state, r, s, stopped_services if outval > 0 else '')
+    perfused = " | services.Running=%d;;;; services.Stopped=%d;%d;%d;;" % \
+        (r, s, int(warnval), int(critval))
+    outmsg = "%s - %d Services Running - %d Services Stopped %s%s" % (
+        state, r, s, stopped_services if outval > 0 else '', perfused)
     return (outval, outmsg)
 
 def hddrives(data, crit, warn, srch):
@@ -257,7 +286,7 @@ def hddrives(data, crit, warn, srch):
             usedg,
             percused)
         disk_messages.append(message)
-        perf = "disk_%s=%.1f;%s;%s;0;100 " % (
+        perf = "disk.%s=%.1f;%s;%s;0;100 " % (
             disk['Name'].replace(':', '').lower(),
             percused,
             warn if warn is not None else '',

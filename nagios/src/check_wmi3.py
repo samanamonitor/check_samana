@@ -107,13 +107,13 @@ def legacy(indata, idtype='md5'):
         'PercentPrivilegedTime': int(cpu['PercentPrivilegedTime']),
         'PercentProcessorTime': int(cpu['PercentProcessorTime']),
         'PercentUserTime': int(cpu['PercentUserTime']),
-        'FreePhysicalMemory': os['FreePhysicalMemory'],
-        'FreeSpaceInPagingFiles': os['FreeSpaceInPagingFiles'],
-        'FreeVirtualMemory': os['FreeVirtualMemory'],
-        'TotalSwapSpaceSize': TotalSwapSpaceSize,
-        'TotalVirtualMemorySize': os['TotalVirtualMemorySize'],
-        'TotalVisibleMemorySize': os['TotalVisibleMemorySize'],
-        'NumberOfProcesses': os['NumberOfProcesses'],
+        'FreePhysicalMemory': int(os['FreePhysicalMemory']),
+        'FreeSpaceInPagingFiles': int(os['FreeSpaceInPagingFiles'])/1024,
+        'FreeVirtualMemory': int(os['FreeVirtualMemory']),
+        'TotalSwapSpaceSize': int(TotalSwapSpaceSize),
+        'TotalVirtualMemorySize': int(os['TotalVirtualMemorySize']),
+        'TotalVisibleMemorySize': int(os['TotalVisibleMemorySize']),
+        'NumberOfProcesses': int(os['NumberOfProcesses']),
         'LastBootUpTime': os['LastBootUpTime'],
         'UpTime': uptimehrs,
         'Disks': [],
@@ -249,6 +249,13 @@ def main(argv):
         a = query_server(hostip, username, password, domain, namespace=namespace, filter_tuples=filter_tuples)
         data = legacy(a, idtype)
         wmi_time = int((time.time() - wmi_start) * 1000)
+        data['classes'] = {
+            'Win32_OperatingSystem': a['os'],
+            'Win32_LogicalDisk': a['disk'],
+            'Win32_PerfFormattedData_PerfOS_Processor': a['cpu'],
+            'Win32_PageFileUsage': a['pf'],
+            'Win32_ComputerSystem': a['computer']
+        }
 
         if cachetype == 'etcd':
             if sys.version_info.major == 3:
@@ -269,10 +276,10 @@ def main(argv):
             
 
         perf_data = " ".join([
-            perf('dns_resolution', dns_time, dns_warn, dns_crit),
-            perf('ping_perc_packet_loss', perc_packet_loss, packet_loss_warn, packet_loss_crit),
-            perf('ping_rtt', ping_data['avg'], ping_warn, ping_crit),
-            perf('wmi_time', wmi_time, wmi_warn, wmi_crit)])
+            perf('pullinfo.dns_resolution', dns_time, dns_warn, dns_crit),
+            perf('pullinfo.ping_perc_packet_loss', perc_packet_loss, packet_loss_warn, packet_loss_crit),
+            perf('pullinfo.ping_rtt', ping_data['avg'], ping_warn, ping_crit),
+            perf('pullinfo.wmi_time', wmi_time, wmi_warn, wmi_crit)])
 
         notnone_and_lt = lambda x, y: True if x is not None and int(x) < y else False
 
