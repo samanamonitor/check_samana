@@ -1,9 +1,10 @@
 #!/usr/bin/python3
 
+import sys, getopt
+sys.path.append('/usr/local/nagios/libexec/lib/python3/dist-packages')
 import time, datetime
 import json
 import csv
-import sys, getopt
 import traceback
 from samana.nagios import CheckUnknown, CheckWarning, CheckCritical, CheckResult
 from samana.base import get_dns_ip, ping_host, perf, auth_file
