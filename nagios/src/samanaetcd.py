@@ -1,6 +1,5 @@
 import sys
-sys.path.append('./lib')
-
+sys.path.append('/usr/local/nagios/libexec/lib')
 import urllib3
 import json
 
