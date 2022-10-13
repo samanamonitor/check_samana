@@ -3,7 +3,7 @@ NAGIOS_USER ?= nagios
 NAGIOS_GROUP ?= nagios
 FILE_MODE := 0755
 
-INSTALL_FILES = $(wildcard check*) slack_nagios.pl
+INSTALL_FILES = $(wildcard check*) slack_nagios.pl samanaetcd.py
 
 .PHONY: $(INSTALL_FILES)
 
