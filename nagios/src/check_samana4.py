@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import sys, getopt
+sys.path.append('/usr/local/nagios/libexec/lib/python3/dist-packages')
 import json
 import re
 from samana import etcd
