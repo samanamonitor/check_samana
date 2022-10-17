@@ -39,15 +39,15 @@ def cpu(data, crit, warn):
         state = "OK"
         outval = 0
     Processor=data['classes']['Win32_PerfFormattedData_PerfOS_Processor'][0]
-    perfusage = "| cpu.Load=%d;%s;%s;0;%d" % (
+    perfusage = "| Load=%d;%s;%s;0;%d" % (
         int(val), 
         warn if warn is not None else '', 
         crit if crit is not None else '', 
         graphmax)
-    perfusage += " cpu.PercentIdleTime=%d;;;0;100" % int(Processor['PercentIdleTime'])
-    perfusage += " cpu.PercentUserTime=%d;;;0;100" % int(Processor['PercentUserTime'])
-    perfusage += " cpu.PercentPrivilegedTime=%d;;;0;100" % int(Processor['PercentPrivilegedTime'])
-    perfusage += " cpu.PercentInterruptTime=%d;;;0;100" % int(Processor['PercentInterruptTime'])
+    perfusage += " PercentIdleTime=%d;;;0;100" % int(Processor['PercentIdleTime'])
+    perfusage += " PercentUserTime=%d;;;0;100" % int(Processor['PercentUserTime'])
+    perfusage += " PercentPrivilegedTime=%d;;;0;100" % int(Processor['PercentPrivilegedTime'])
+    perfusage += " PercentInterruptTime=%d;;;0;100" % int(Processor['PercentInterruptTime'])
     outmsg = "%s - CPU Usage %0.f %% %s" % (
         state, val, perfusage)
     return (outval, outmsg)
@@ -78,7 +78,7 @@ def ram(data, crit, warn):
         state = "OK"
         outval = 0
 
-    perfused = "| ram.MemoryUsed=%d;;;0;%d ram.PercentMemoryUsed=%d;%s;%s;0;100" % (
+    perfused = "| MemoryUsed=%d;;;0;%d PercentMemoryUsed=%d;%s;%s;0;100" % (
         free,
         total,
         percused,
@@ -126,9 +126,9 @@ def swap(data, crit, warn):
 
     for pf in data['classes']['Win32_PageFileUsage']:
         name = pf['Caption'].replace(':', '_').replace('\\', '').replace('.', '_')
-        perfused += " pagefile.%s_AllocatedBaseSize=%d;;;;" % (name, int(pf['AllocatedBaseSize']))
-        perfused += " pagefile.%s_CurrentUsage=%d;;;;" % (name, int(pf['CurrentUsage']))
-        perfused += " pagefile.%s_PeakUsage=%d;;;;" % (name, int(pf['PeakUsage']))
+        perfused += " %s_AllocatedBaseSize=%d;;;;" % (name, int(pf['AllocatedBaseSize']))
+        perfused += " %s_CurrentUsage=%d;;;;" % (name, int(pf['CurrentUsage']))
+        perfused += " %s_PeakUsage=%d;;;;" % (name, int(pf['PeakUsage']))
     outmsg = "%s - Swap Memory: Total: %.2fGB - Used: %.2fGB (%.1f%%) - Free %.2fGB (%.2f%%) %s" % (
         state, total, used, percused, free, percfree, perfused)
 
@@ -205,7 +205,7 @@ def log(data, logname, crit, warn):
                 messages += "<UNKNOWN>\n"
     perfused = " |"
     for i in range(1, len(eventtype_names)):
-        perfused += " log.%s.%s=%d;;;;" % (logname, eventtype_names[i], event_count[i])
+        perfused += " %s=%d;;;;" % (eventtype_names[i], event_count[i])
 
     outmsg = "%s - Error or Warning Events=%d %s %s" %  \
         (state, val, messages, perfused)
@@ -255,7 +255,7 @@ def services(data, crit, warn, incl, excl):
         state = "OK"
         outval = 0
 
-    perfused = " | services.Running=%d;;;; services.Stopped=%d;%d;%d;;" % \
+    perfused = " | Running=%d;;;; Stopped=%d;%d;%d;;" % \
         (r, s, int(warnval), int(critval))
     outmsg = "%s - %d Services Running - %d Services Stopped %s%s" % (
         state, r, s, stopped_services if outval > 0 else '', perfused)
@@ -287,7 +287,7 @@ def hddrives(data, crit, warn, srch):
             usedg,
             percused)
         disk_messages.append(message)
-        perf = "disk.%s=%.1f;%s;%s;0;100 " % (
+        perf = "%s=%.1f;%s;%s;0;100 " % (
             disk['Name'].replace(':', '').lower(),
             percused,
             warn if warn is not None else '',
