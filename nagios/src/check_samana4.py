@@ -119,7 +119,7 @@ def swap(data, crit, warn):
         state = "OK"
         outval = 0
 
-    perfused = "| pagefile.used_percentage=%d;%s;%s;0;100" % (
+    perfused = "| Total_PercentageUsed=%d;%s;%s;0;100" % (
         percused,
         warn if warn is not None else '',
         crit if crit is not None else '')
@@ -128,6 +128,7 @@ def swap(data, crit, warn):
         name = pf['Caption'].replace(':', '_').replace('\\', '').replace('.', '_')
         perfused += " %s_AllocatedBaseSize=%d;;;;" % (name, int(pf['AllocatedBaseSize']))
         perfused += " %s_CurrentUsage=%d;;;;" % (name, int(pf['CurrentUsage']))
+        perfused += " %s_PercentageUsage=%d;;;;" % (name, int((int(pf['CurrentUsage'])*100/int(pf['AllocatedBaseSize'])) if pf['AllocatedBaseSize'] != 0 else 0))
         perfused += " %s_PeakUsage=%d;;;;" % (name, int(pf['PeakUsage']))
     outmsg = "%s - Swap Memory: Total: %.2fGB - Used: %.2fGB (%.1f%%) - Free %.2fGB (%.2f%%) %s" % (
         state, total, used, percused, free, percfree, perfused)
