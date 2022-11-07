@@ -336,8 +336,8 @@ class SAMMWMICheck(SAMMCheck):
             password=self._password)
         for i in queries.keys():
             try:
-                self._server[i] = q.wql(queries[i] % filter_tuples.get(i, ()))
                 print(queries[i] % filter_tuples.get(i, ()))
+                self._server[i] = q.wql(queries[i] % filter_tuples.get(i, ()))
             except:
                 self._server[i] = [None]
             if not isinstance(self._server[i], list):
