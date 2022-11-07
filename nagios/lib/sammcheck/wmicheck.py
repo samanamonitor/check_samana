@@ -340,10 +340,8 @@ class SAMMWMICheck(SAMMCheck):
             except:
                 self._server[i] = []
             if not isinstance(self._server[i], list):
-                shell.close()
                 self.unknown("Error connecting to server %s" % i)
                 return False
-        shell.close()
         return True
 
     def legacy(self):
