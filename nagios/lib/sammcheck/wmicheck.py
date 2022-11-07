@@ -337,6 +337,7 @@ class SAMMWMICheck(SAMMCheck):
         for i in queries.keys():
             try:
                 self._server[i] = q.wql(queries[i] % filter_tuples.get(i, ()))
+                print(queries[i] % filter_tuples.get(i, ()))
             except:
                 self._server[i] = [None]
             if not isinstance(self._server[i], list):
@@ -345,7 +346,6 @@ class SAMMWMICheck(SAMMCheck):
         return True
 
     def legacy(self):
-        print(self._server['computer'])
         computer = self._server['computer'][0]
         cpu = self._server['cpu'][0]
         os = self._server['os'][0]
