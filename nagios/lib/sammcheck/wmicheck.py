@@ -342,10 +342,10 @@ class SAMMWMICheck(SAMMCheck):
             if not isinstance(self._server[i], list):
                 self.unknown("Error connecting to server %s" % i)
                 return False
-        print(self._server.keys())
         return True
 
     def legacy(self):
+        print(self._server.keys())
         computer = self._server['computer'][0]
         cpu = self._server['cpu'][0]
         os = self._server['os'][0]
