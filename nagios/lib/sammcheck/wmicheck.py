@@ -132,7 +132,10 @@ class SAMMWMICheck(SAMMCheck):
                 temp = arg.split(':')
                 self._etcdserver = temp[0]
                 if len(temp) > 1:
-                    self._etcdport = int(temp[1])
+                    try:
+                        self._etcdport = int(temp[1])
+                    except ValueError:
+                        return unknown("Invalid port")
             else:
                 return self.help()
 
