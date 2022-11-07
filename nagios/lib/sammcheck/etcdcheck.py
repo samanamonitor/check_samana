@@ -125,6 +125,9 @@ class SAMMEtcdCheck(SAMMCheck):
         if age_secs > self._max_age:
             return self.unknown("Data is too old %d seconds." % age_secs)
 
+        if 'classes' not in self._data:
+            return self.unknown("Legacy check configured.")
+            
         if self._module == 'cpu':
             self.cpu()
         elif self._module == 'ram':
