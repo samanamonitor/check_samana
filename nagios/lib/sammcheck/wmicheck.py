@@ -335,6 +335,7 @@ class SAMMWMICheck(SAMMCheck):
             username=self._username,
             password=self._password)
         for i in queries.keys():
+            print(i)
             try:
                 self._server[i] = q.wql(queries[i] % filter_tuples.get(i, ()))
             except:
