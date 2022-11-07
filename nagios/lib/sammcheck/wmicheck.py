@@ -338,7 +338,7 @@ class SAMMWMICheck(SAMMCheck):
             try:
                 self._server[i] = q.wql(queries[i] % filter_tuples.get(i, ()))
             except:
-                self._server[i] = []
+                self._server[i] = [None]
             if not isinstance(self._server[i], list):
                 self.unknown("Error connecting to server %s" % i)
                 return False
