@@ -9,6 +9,7 @@ from sammwr import WMIQuery, WinRMShell
 from hashlib import md5, sha256
 import re
 import json
+sys.path.append("/usr/local/nagios/libexec/lib/python3/dist-packages")
 from samana.base import auth_file
 
 intstr = lambda x: str(x) if x is not None else ''
