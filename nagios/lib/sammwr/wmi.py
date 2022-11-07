@@ -5,9 +5,9 @@ import xml.etree.ElementTree as ET
 class WMIQuery():
     base_uri='http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/'
     def __init__(self, protocol=None, *args, **kwargs):
-        if not isinstance(protocol, WRProtocol):
-            raise Exception("Can only accept WRProtocol")
         if protocol is not None:
+            if not isinstance(protocol, WRProtocol):
+                raise Exception("Can only accept WRProtocol")
             self.p = protocol
         else:
             self.p = WRProtocol(*args, **kwargs)
