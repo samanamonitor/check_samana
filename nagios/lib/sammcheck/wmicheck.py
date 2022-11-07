@@ -345,7 +345,7 @@ class SAMMWMICheck(SAMMCheck):
         return True
 
     def legacy(self):
-        print(self._server.keys())
+        print(self._server['computer'])
         computer = self._server['computer'][0]
         cpu = self._server['cpu'][0]
         os = self._server['os'][0]
