@@ -11,6 +11,9 @@ DST_FILES2 = $(addprefix $(PYTHON2_LIB)/,$(SRC_FILES))
 all:
 	
 install: $(DST_FILES) $(DST_FILES2)
+	$(MAKE) -C sammcheck
+	$(MAKE) -C sammwr
+
 
 $(DST_FILES): $(SRC_FILES)
 	install -D -g root -o root -m $(FILE_MODE) $(notdir $@) $@
