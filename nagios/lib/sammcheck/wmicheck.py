@@ -9,6 +9,7 @@ from sammwr import WMIQuery, WinRMShell
 from hashlib import md5, sha256
 import re
 import json
+from samana.base import auth_file
 
 intstr = lambda x: str(x) if x is not None else ''
 gt = lambda x, y: x is not None and y is not None and x > y
