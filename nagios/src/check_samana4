@@ -1,0 +1,4 @@
+#!/bin/bash
+
+echo "UNKNOWN - This plugin must be run by samana_worker worker process."
+exit 3

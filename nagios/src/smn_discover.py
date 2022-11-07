@@ -184,6 +184,26 @@ def get_name(data):
 
 def remove_hosts(hosts):
     for h in hosts:
+        pass
+
+def add_hosts(hosts, role, ddc_name):
+    for fqdn in hosts:
+        hostdata_j = c.get("/samanamonitor/ctx_data/%s/computer/%s/data" % (ddc_name, fqdn))
+        host_data = json.loads(hostdata_j.value)
+        if "Name" in host_data:
+            host_name=host_data['Name'].replace('\\', '_')
+        elif "MachineName" in host_data:
+            host_name=host_data['MachineName'].replace('\\', '_')
+        hg_alias = host_data.get('DesktopGroupName').lower()
+        hg_name = "ctx-%s" % hg_alias.replace(' ', '_')
+        add_ctx_hg(hg_name, hg_alias)
+        host.address=host_data.get('DNSName').lower()
+        host.set_attribute('use', role)
+        host.set_macro('$_HOSTHOME_DDC$', ddc_name)
+        host.set_macro('$_HOSTEARGS$', '-idMethod fqdn')
+        host.set_macro('$_HOSTID$', host.address)
+        host.add_to_hostgroup(hg_name)
+
 
 def process_hosts(ddc_name):
     '''Receives a DDC name, collects the hosts from the farm and
