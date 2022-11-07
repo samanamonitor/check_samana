@@ -323,15 +323,17 @@ class SAMMWMICheck(SAMMCheck):
             the arguments needed to complete the string
         '''
         self._server = {}
-        shell = WinRMShell()
-        shell.open(self._hostip, {
-            'username': self._username,
-            'password': self._password,
-            'domain': self._domain})
-        if shell.connected != True:
-            self.unknown("Unable to connecto to server. Error %s" % conn_status)
-            return False
-        q = WMIQuery(shell)
+        #shell = WinRMShell()
+        #shell.open(self._hostip, {
+        #    'username': self._username,
+        #    'password': self._password,
+        #    'domain': self._domain})
+        #if shell.connected != True:
+        #    self.unknown("Unable to connecto to server. Error %s" % conn_status)
+        #    return False
+        q = WMIQuery(endpoint="http://%s:5985/wsman" % self._hostip,
+            username=self._username,
+            password=self._password)
         for i in queries.keys():
             try:
                 self._server[i] = q.wql(queries[i] % filter_tuples.get(i, ()))
