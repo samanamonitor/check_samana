@@ -127,7 +127,7 @@ class SAMMWMICheck(SAMMCheck):
             elif opt == '-c':
                 self._crit = arg
             elif opt == '-a':
-                (self._username, self._password, self._domain) = auth_file(a)
+                (self._username, self._password, self._domain) = auth_file(arg)
             elif opt == "-e":
                 temp = arg.split(':')
                 self._etcdserver = temp[0]
