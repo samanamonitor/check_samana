@@ -16,6 +16,7 @@ class SAMMEtcdCheck(SAMMCheck):
         self._excl = None
         self._submod = None
         self._logfilters = []
+        self._module = None
 
         super().__init__(argv)
         if self.done:
@@ -36,6 +37,9 @@ class SAMMEtcdCheck(SAMMCheck):
                 self._warn = int(self._warn)
             except:
                 return self.unknown("Invalid WARNING threshold.")
+
+        if self._module is None:
+            return self.unknown("Module is a mandatory parameter.")
 
         self._data = None
         self._etcdclient = etcd.Client(host=self._etcdserver, port=self._etcdport)
