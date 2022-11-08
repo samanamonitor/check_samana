@@ -65,7 +65,7 @@ class SAMMWMICheck(SAMMCheck):
 
         super().__init__(argv)
         if self.done:
-            return unknown()
+            return self.unknown()
 
         if self._hostaddress is None:
             return self.unknown("Host Address not specified.")
