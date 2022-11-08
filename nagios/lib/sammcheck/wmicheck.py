@@ -104,8 +104,8 @@ class SAMMWMICheck(SAMMCheck):
     def process_args(self, argv):
         try:
             opts, args = getopt.getopt(argv, "hH:U:p:n:t:w:c:a:e:")
-        except getopt.GetoptError:
-            return self.help()
+        except getopt.GetoptError as e:
+            return self.help(str(e))
         for opt, arg in opts:
             if opt == '-h':
                 return self.help()
