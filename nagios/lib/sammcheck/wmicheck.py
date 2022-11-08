@@ -140,7 +140,8 @@ class SAMMWMICheck(SAMMCheck):
                 return self.help()
 
     def help(self, msg=""):
-        self.outmsg = "Check Samana Etcd v2.0.0\n" \
+        self.outmsg = "%s\n" \
+            "Check Samana Etcd v2.0.0\n" \
             "This nagios plugin come with ABSOLUTELY NO WARRANTY and is property of\n" \
             "SAMANA GROUP LLC. If you want to use it, you should contact us before\n" \
             "to get a license.\n" \
