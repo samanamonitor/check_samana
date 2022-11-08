@@ -20,7 +20,7 @@ class SAMMEtcdCheck(SAMMCheck):
 
         super().__init__(argv)
         if self.done:
-            return unknown()
+            return self.unknown()
         self._max_age = max_age
 
         if self._hostid == "":
