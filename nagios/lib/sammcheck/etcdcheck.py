@@ -48,8 +48,8 @@ class SAMMEtcdCheck(SAMMCheck):
     def process_args(self, argv):
         try:
             opts, args = getopt.getopt(argv, "hH:m:c:w:s:i:e:x:E:")
-        except getopt.GetoptError:
-            return self.help()
+        except getopt.GetoptError as e:
+            return self.help(str(e))
         
         for opt, arg in opts:
             if opt == '-h':
