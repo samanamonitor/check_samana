@@ -137,17 +137,28 @@ class SAMMWorker:
             return False
         check = job['check']
         if not check.done:
-            return False
-        data = {
-            b'job_id': job_id.encode('ascii'),
-            b'type': job[b'type'],
-            b'start': check.start,
-            b'stop': check.stop,
-            b'runtime': check.runtime,
-            b'outstd': str(check).encode('ascii'),
-            b'outerr': b'',
-            b'exited_ok': 1,
-            b'wait_status': check.outval * 0x100
+            data = {
+                b'job_id': job_id.encode('ascii'),
+                b'type': job[b'type'],
+                b'start': check.start,
+                b'stop': check.stop,
+                b'runtime': check.runtime,
+                b'outstd': str(check).encode('ascii'),
+                b'outerr': b'Some error happened',
+                b'exited_ok': 0,
+                b'wait_status': check.outval * 0x100
+            }
+        else:
+            data = {
+                b'job_id': job_id.encode('ascii'),
+                b'type': job[b'type'],
+                b'start': check.start,
+                b'stop': check.stop,
+                b'runtime': check.runtime,
+                b'outstd': str(check).encode('ascii'),
+                b'outerr': b'',
+                b'exited_ok': 1,
+                b'wait_status': check.outval * 0x100
         }
         message=b'job_id=%(job_id)s\0type=%(type)s\0start=%(start)f\0' \
             b'stop=%(stop)f\0runtime=%(runtime)f\0outstd=%(outstd)s\0' \
