@@ -199,8 +199,12 @@ class SAMMWMICheck(SAMMCheck):
         }
 
         c = etcd.Client(host=self._etcdserver, port=int(self._etcdport))
-        c.set("samanamonitor/data/%s" % self._data['ID'], json.dumps(self._data), 
-            self._ttl)
+        try:
+            c.set("samanamonitor/data/%s" % self._data['ID'], json.dumps(self._data), 
+                self._ttl)
+        except:
+            self.unknown("Unable to set data to ETCD server.")
+            return
 
         perf_data = " | pullinfo.dns_resolution=%d;%s;%s;0;" % (
             int(self._dns_time), 
