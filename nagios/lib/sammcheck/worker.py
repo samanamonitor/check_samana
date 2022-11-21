@@ -148,7 +148,7 @@ class SAMMWorker:
         logging.debug("Select releasing: readsock=%s", str(readsock))
         if len(readsock) > 0:
             temp=readsock[0].recv(2048)
-            self.received_bytes=len(temp)
+            self.received_bytes+=len(temp)
             self.raw_data += temp
             if self.raw_data == b"":
                 self.registered = False
@@ -169,6 +169,7 @@ class SAMMWorker:
         self.received_jobs+=len(reclist)
         for rec in reclist:
             if rec == '':
+                self.received_jobs -= 1
                 continue
             self.processed_jobs+=1
             data={}
