@@ -214,33 +214,33 @@ class SAMMWorker:
         check = job['check']
         if not check.done:
             data = {
-                b'job_id': job_id.encode('ascii'),
-                b'type': job['type'].encode('ascii'),
+                b'job_id': job_id,
+                b'type': job['type'],
                 b'start': check.start,
                 b'stop': check.stop,
                 b'runtime': check.runtime,
-                b'outstd': str(check).encode('ascii'),
-                b'outerr': b'Some error happened',
+                b'outstd': str(check),
+                b'outerr': 'An error happened',
                 b'exited_ok': 0,
                 b'wait_status': check.outval * 0x100
             }
         else:
             data = {
-                b'job_id': job_id.encode('ascii'),
-                b'type': job['type'].encode('ascii'),
+                b'job_id': job_id,
+                b'type': job['type'],
                 b'start': check.start,
                 b'stop': check.stop,
                 b'runtime': check.runtime,
-                b'outstd': str(check).encode('ascii'),
+                b'outstd': str(check),
                 b'outerr': '',
                 b'exited_ok': 1,
                 b'wait_status': check.outval * 0x100
         }
-        message=b'job_id=%(job_id)s\0type=%(type)s\0start=%(start)f\0' \
-            b'stop=%(stop)f\0runtime=%(runtime)f\0outstd=%(outstd)s\0' \
-            b'wait_status=%(wait_status)d\0exited_ok=%(exited_ok)d\0' \
-            b'outerr=%(outerr)s\0\1\0\0\0' % data
-        self.sock.send(message)
+        message='job_id=%(job_id)s\0type=%(type)s\0start=%(start)f\0' \
+            'stop=%(stop)f\0runtime=%(runtime)f\0outstd=%(outstd)s\0' \
+            'wait_status=%(wait_status)d\0exited_ok=%(exited_ok)d\0' \
+            'outerr=%(outerr)s\0\1\0\0\0' % data
+        self.sock.send(message.encode('ascii'))
         #print(message.decode('ascii'))
         self.running_jobs.pop(job_id)
         self.last_done_jobe_id=job_id
