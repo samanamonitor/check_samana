@@ -18,20 +18,6 @@ def log_stats():
         logging.info(str(w.stats()))
     t=Timer(30.0, log_stats)
 
-
-            "last_recv_job_id": self.last_recv_job_id,
-            "last_run_job_id": self.last_run_job_id,
-            "last_done_jobe_id": self.last_done_jobe_id,
-            "received_jobs": self.received_jobs,
-            "processed_jobs": self.processed_jobs,
-            "run_jobs": self.run_jobs,
-            "done_jobs": self.done_jobs
-            "received_bytes": self.received_bytes,
-            "running_jobs": len(self.running_jobs),
-            "connected": self.connected,
-            "registered": self.registered
-
-
 def sig(signum, frame):
     global w
     global keep_running
