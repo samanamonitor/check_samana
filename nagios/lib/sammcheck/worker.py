@@ -31,6 +31,48 @@ def str2array(a):
         arr += [s]
     return arr
 
+class SAMMWorkerStats:
+    def __init__(self, w):
+        if not isinstance(w, SAMMWorker):
+            return
+        self.last_recv_job_id=w.last_recv_job_id
+        self.last_run_job_id=w.last_run_job_id
+        self.last_done_jobe_id=w.last_done_jobe_id
+        self.received_jobs=w.received_jobs
+        self.processed_jobs=w.processed_jobs
+        self.run_jobs=w.run_jobs
+        self.done_jobs=w.done_jobs
+        self.received_bytes=w.received_bytes
+        self.sent_bytes=w.sent_bytes
+
+    def __str__(self):
+        return "connected=%s " \
+            "registered=%s " \
+            "received_bytes=%d " \
+            "sent_bytes=%d " \
+            "received_jobs=%d " \
+            "processed_jobs=%d " \
+            "run_jobs=%d " \
+            "done_jobs=%d " \
+            "received_jobs=%d " \
+            "running_jobs=%d " \
+            "last_recv_job_id=%d " \
+            "last_run_job_id=%d " \
+            "last_done_jobe_id=%d " % \
+            (self.connected
+                self.registered,
+                self.received_bytes,
+                self.sent_bytes,
+                self.received_jobs,
+                self.processed_jobs,
+                self.run_jobs,
+                self.done_jobs,
+                self.received_jobs,
+                self.running_jobs,
+                self.last_recv_job_id,
+                self.last_run_job_id,
+                self.last_done_jobe_id)
+
 class SAMMWorker:
     def __init__(self, sock=None, wait=5):
         if sock is None:
@@ -50,6 +92,8 @@ class SAMMWorker:
         self.last_done_jobe_id=-1
         self.received_jobs=0
         self.processed_jobs=0
+        self.run_jobs=0
+        self.done_jobs=0
         self.received_bytes=0
         self.sent_bytes=0
         logging.debug("Instantiation of NagiosWorker with sock=%s and wait=%d", \
@@ -61,12 +105,7 @@ class SAMMWorker:
         self.connected = True
 
     def stats(self):
-        return {
-            "lastpid": self.lastpid
-            "running_jobs": len(self.running_jobs)
-            "connected": self.connected
-            "registered": self.registered
-        }
+        return SAMMWorkerStats(self)
 
     def register(self):
         self.register_message=b'@wproc register name=test %(pid)d;pid=%(pid)d;' \
@@ -148,6 +187,7 @@ class SAMMWorker:
         if not check.running and not check.done:
             job['thread'] = Thread(target=check.run, args=())
             job['thread'].start()
+            self.run_jobs += 1
             return True
             #logging.info(check)
         return False
@@ -191,6 +231,8 @@ class SAMMWorker:
         #print(message.decode('ascii'))
         self.running_jobs.pop(job_id)
         self.last_done_jobe_id=job_id
+        self.done_jobs += 1
+        self.sent_bytes += len(message)
         return True
 
     @property
