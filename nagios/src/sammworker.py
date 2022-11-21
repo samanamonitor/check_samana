@@ -15,11 +15,11 @@ t = None
 def log_stats():
     global t
     global w
+    print(".")
     if not isinstance(w, SAMMWorker):
         logging.info("Object not defined yet. type=%s" % str(type(w)))
     else:
         logging.info(str(w.stats()))
-        print(".")
     t=None
 
 def sig(signum, frame):
