@@ -34,7 +34,20 @@ def str2array(a):
 class SAMMWorkerStats:
     def __init__(self, w):
         if not isinstance(w, SAMMWorker):
+            self.connected=False
+            self.registered=False
+            self.last_recv_job_id=-1
+            self.last_run_job_id=-1
+            self.last_done_jobe_id=-1
+            self.received_jobs=-1
+            self.processed_jobs=-1
+            self.run_jobs=-1
+            self.done_jobs=-1
+            self.received_bytes=-1
+            self.sent_bytes=-1
             return
+        self.connected=w.connected
+        self.registered=w.registered
         self.last_recv_job_id=w.last_recv_job_id
         self.last_run_job_id=w.last_run_job_id
         self.last_done_jobe_id=w.last_done_jobe_id
