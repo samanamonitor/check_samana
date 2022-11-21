@@ -57,6 +57,7 @@ class SAMMWorkerStats:
         self.done_jobs=w.done_jobs
         self.received_bytes=w.received_bytes
         self.sent_bytes=w.sent_bytes
+        self.running_jobs = len(w.running_jobs)
 
     def __str__(self):
         return "connected=%s " \
