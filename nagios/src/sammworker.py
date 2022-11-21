@@ -19,6 +19,7 @@ def log_stats():
         logging.info("Object not defined yet. type=%s" % str(type(w)))
     else:
         logging.info(str(w.stats()))
+        print(".")
     t=None
 
 def sig(signum, frame):
