@@ -19,7 +19,7 @@ def log_stats():
         logging.info("Object not defined yet. type=%s" % str(type(w)))
     else:
         logging.info(str(w.stats()))
-    t=Timer(30.0, log_stats)
+    t=None
 
 def sig(signum, frame):
     global w
@@ -110,6 +110,8 @@ def main(argv):
             logging.critical("Unable to register. Aborting")
             w.close()
         while keep_running and w.registered and w.connected:
+            if t is None:
+                t=Timer(5.0, log_stats)
             try:
                 if w.recv():
                     logging.debug("Received data.")
