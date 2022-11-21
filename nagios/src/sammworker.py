@@ -10,6 +10,7 @@ from threading import Timer
 
 w = None
 keep_running = True
+stats_time = 5
 
 def sig(signum, frame):
     global w
@@ -100,7 +101,7 @@ def main(argv):
             logging.critical("Unable to register. Aborting")
             w.close()
         while keep_running and w.registered and w.connected:
-            if t is None or time.time() - t > 5000:
+            if t is None or time.time() - t > stats_time:
                 logging.info(w.stats())
                 t = time.time()
             try:
