@@ -15,10 +15,6 @@ def log_stats():
     if not isinstance(w, SAMMWorker):
         logging.info("Object not defined yet. type=%s" % str(type(w)))
     else:
-        temp=""
-        stats=w.stats()
-        for k in stats.keys():
-            temp=
         logging.info(str(w.stats()))
     t=Timer(30.0, log_stats)
 
