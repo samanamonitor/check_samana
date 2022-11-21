@@ -202,8 +202,8 @@ class SAMMWMICheck(SAMMCheck):
         try:
             c.set("samanamonitor/data/%s" % self._data['ID'], json.dumps(self._data), 
                 self._ttl)
-        except:
-            self.unknown("Unable to set data to ETCD server.")
+        except Exception as e:
+            self.unknown("Unable to set data to ETCD server.\n" + str(e))
             return
 
         perf_data = " | pullinfo.dns_resolution=%d;%s;%s;0;" % (
