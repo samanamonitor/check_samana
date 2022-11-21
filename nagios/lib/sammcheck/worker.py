@@ -45,6 +45,13 @@ class SAMMWorker:
         self.running_jobs = {}
         self.raw_data = b""
         self.wait = wait
+        self.last_recv_job_id=-1
+        self.last_run_job_id=-1
+        self.last_done_jobe_id=-1
+        self.received_jobs=0
+        self.processed_jobs=0
+        self.received_bytes=0
+        self.sent_bytes=0
         logging.debug("Instantiation of NagiosWorker with sock=%s and wait=%d", \
             self.sock, self.wait)
 
@@ -89,7 +96,9 @@ class SAMMWorker:
         readsock, writesock, exsock = select.select([self.sock], [], [], self.wait)
         logging.debug("Select releasing: readsock=%s", str(readsock))
         if len(readsock) > 0:
-            self.raw_data += readsock[0].recv(2048)
+            temp=readsock[0].recv(2048)
+            self.received_bytes=len(temp)
+            self.raw_data += temp
             if self.raw_data == b"":
                 self.registered = False
                 raise Exception("Got disconnected?")
@@ -106,9 +115,11 @@ class SAMMWorker:
             reclist = reclist[:-1]
         else:
             remaining_data = ""
+        self.received_jobs+=len(reclist)
         for rec in reclist:
             if rec == '':
                 continue
+            self.processed_jobs+=1
             data={}
             param_list=rec.split('\0')
             for p in param_list:
@@ -118,6 +129,7 @@ class SAMMWorker:
                 data[k] = v
             if 'job_id' not in data:
                 raise Exception("Invalid input." + rec)
+            self.last_recv_job_id = data['job_id']
             self.running_jobs[data['job_id']] = data
             command = data['command']
             #logging.info(command)
@@ -132,6 +144,7 @@ class SAMMWorker:
     def run(self, job_id):
         job = self.running_jobs[job_id]
         check = job['check']
+        self.last_run_job_id=job_id
         if not check.running and not check.done:
             job['thread'] = Thread(target=check.run, args=())
             job['thread'].start()
@@ -177,6 +190,7 @@ class SAMMWorker:
         self.sock.send(message)
         #print(message.decode('ascii'))
         self.running_jobs.pop(job_id)
+        self.last_done_jobe_id=job_id
         return True
 
     @property
