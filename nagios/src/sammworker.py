@@ -112,6 +112,7 @@ def main(argv):
             w.close()
         while keep_running and w.registered and w.connected:
             if t is None:
+                logging.info("stats")
                 t=Timer(5.0, log_stats)
             try:
                 if w.recv():
