@@ -70,9 +70,9 @@ class SAMMWorkerStats:
             "done_jobs=%d " \
             "received_jobs=%d " \
             "running_jobs=%d " \
-            "last_recv_job_id=%d " \
-            "last_run_job_id=%d " \
-            "last_done_jobe_id=%d " % ( \
+            "last_recv_job_id=%s " \
+            "last_run_job_id=%s " \
+            "last_done_jobe_id=%s " % ( \
                 self.connected,
                 self.registered,
                 self.received_bytes,
