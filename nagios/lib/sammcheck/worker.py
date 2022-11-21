@@ -64,7 +64,6 @@ class SAMMWorkerStats:
             "registered=%s " \
             "received_bytes=%d " \
             "sent_bytes=%d " \
-            "received_jobs=%d " \
             "processed_jobs=%d " \
             "run_jobs=%d " \
             "done_jobs=%d " \
@@ -77,7 +76,6 @@ class SAMMWorkerStats:
                 self.registered,
                 self.received_bytes,
                 self.sent_bytes,
-                self.received_jobs,
                 self.processed_jobs,
                 self.run_jobs,
                 self.done_jobs,
@@ -162,7 +160,7 @@ class SAMMWorker:
         return False
 
     def process(self, s):
-        reclist=s.split("\0\1\0\0\0")
+        reclist=s.split("\x00\x01\x00\x00\x00")
         if s[-5:] != '\x00\x01\x00\x00\x00':
             remaining_data = reclist[-1]
             reclist = reclist[:-1]
