@@ -72,7 +72,7 @@ class SAMMWorkerStats:
             "last_recv_job_id=%d " \
             "last_run_job_id=%d " \
             "last_done_jobe_id=%d " % ( \
-                self.connected
+                self.connected,
                 self.registered,
                 self.received_bytes,
                 self.sent_bytes,
