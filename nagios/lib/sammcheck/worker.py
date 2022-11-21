@@ -214,27 +214,27 @@ class SAMMWorker:
         check = job['check']
         if not check.done:
             data = {
-                b'job_id': job_id,
-                b'type': job['type'],
-                b'start': check.start,
-                b'stop': check.stop,
-                b'runtime': check.runtime,
-                b'outstd': str(check),
-                b'outerr': 'An error happened',
-                b'exited_ok': 0,
-                b'wait_status': check.outval * 0x100
+                'job_id': job_id,
+                'type': job['type'],
+                'start': check.start,
+                'stop': check.stop,
+                'runtime': check.runtime,
+                'outstd': str(check),
+                'outerr': 'An error happened',
+                'exited_ok': 0,
+                'wait_status': check.outval * 0x100
             }
         else:
             data = {
-                b'job_id': job_id,
-                b'type': job['type'],
-                b'start': check.start,
-                b'stop': check.stop,
-                b'runtime': check.runtime,
-                b'outstd': str(check),
-                b'outerr': '',
-                b'exited_ok': 1,
-                b'wait_status': check.outval * 0x100
+                'job_id': job_id,
+                'type': job['type'],
+                'start': check.start,
+                'stop': check.stop,
+                'runtime': check.runtime,
+                'outstd': str(check),
+                'outerr': '',
+                'exited_ok': 1,
+                'wait_status': check.outval * 0x100
         }
         message='job_id=%(job_id)s\0type=%(type)s\0start=%(start)f\0' \
             'stop=%(stop)f\0runtime=%(runtime)f\0outstd=%(outstd)s\0' \
