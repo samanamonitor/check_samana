@@ -10,8 +10,11 @@ from threading import Timer
 
 w = None
 keep_running = True
+t = None
 
 def log_stats():
+    global t
+    global w
     if not isinstance(w, SAMMWorker):
         logging.info("Object not defined yet. type=%s" % str(type(w)))
     else:
