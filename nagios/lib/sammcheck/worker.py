@@ -53,6 +53,14 @@ class SAMMWorker:
         logging.debug("Connected to address \"%s\"", address)
         self.connected = True
 
+    def stats(self):
+        return {
+            "lastpid": self.lastpid
+            "running_jobs": len(self.running_jobs)
+            "connected": self.connected
+            "registered": self.registered
+        }
+
     def register(self):
         self.register_message=b'@wproc register name=test %(pid)d;pid=%(pid)d;' \
             b'max_jobs=%(max_jobs)d;plugin=check_samana4\0\1\0\0\0' \
@@ -85,31 +93,33 @@ class SAMMWorker:
             if self.raw_data == b"":
                 self.registered = False
                 raise Exception("Got disconnected?")
-            self.raw_data = self.process(self.raw_data)
+            if not isinstance(self.raw_data, bytes):
+                raise Exception("Invalid input from nagios")
+            self.raw_data = self.process(self.raw_data.decode('ascii'))
             return True
         return False
 
     def process(self, s):
-        reclist=s.split(b"\0\1\0\0\0")
-        if s[-5:] != b'\x00\x01\x00\x00\x00':
+        reclist=s.split("\0\1\0\0\0")
+        if s[-5:] != '\x00\x01\x00\x00\x00':
             remaining_data = reclist[-1]
             reclist = reclist[:-1]
         else:
-            remaining_data = b""
+            remaining_data = ""
         for rec in reclist:
-            if rec == b'':
+            if rec == '':
                 continue
             data={}
-            param_list=rec.split(b'\0')
+            param_list=rec.split('\0')
             for p in param_list:
-                if b'=' not in p:
+                if '=' not in p:
                     continue
-                (k,v) = p.split(b'=')
+                (k,v) = p.split('=')
                 data[k] = v
-            if b'job_id' not in data:
-                raise Exception("Invalid input." + rec.decode('ascii'))
-            self.running_jobs[data[b'job_id'].decode('ascii')] = data
-            command = data[b'command'].decode('ascii')
+            if 'job_id' not in data:
+                raise Exception("Invalid input." + rec)
+            self.running_jobs[data['job_id']] = data
+            command = data['command']
             #logging.info(command)
             data['argv'] = str2array(command)
             plugin=data['argv'][0].split('/')[-1]
@@ -117,7 +127,7 @@ class SAMMWorker:
                 data['check'] = SAMMEtcdCheck(data['argv'][1:])
             else:
                 data['check'] = SAMMCheck(data['argv'][1:])
-        return remaining_data
+        return remaining_data.encode('ascii')
 
     def run(self, job_id):
         job = self.running_jobs[job_id]
@@ -139,7 +149,7 @@ class SAMMWorker:
         if not check.done:
             data = {
                 b'job_id': job_id.encode('ascii'),
-                b'type': job[b'type'],
+                b'type': job['type'].encode('ascii'),
                 b'start': check.start,
                 b'stop': check.stop,
                 b'runtime': check.runtime,
@@ -151,12 +161,12 @@ class SAMMWorker:
         else:
             data = {
                 b'job_id': job_id.encode('ascii'),
-                b'type': job[b'type'],
+                b'type': job['type'].encode('ascii'),
                 b'start': check.start,
                 b'stop': check.stop,
                 b'runtime': check.runtime,
                 b'outstd': str(check).encode('ascii'),
-                b'outerr': b'',
+                b'outerr': '',
                 b'exited_ok': 1,
                 b'wait_status': check.outval * 0x100
         }

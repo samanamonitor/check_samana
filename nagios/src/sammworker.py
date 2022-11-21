@@ -6,10 +6,20 @@ from sammcheck import SAMMWorker
 import time
 import logging
 import signal
+from threading import Timer
 
 w = None
 keep_running = True
 
+def log_stats():
+    if not isinstance(w, SAMMWorker):
+        logging.info("Object not defined yet. type=%s" % str(type(w)))
+    else:
+        logging.info("Registered=%(registered)s " \
+            "Connected=%(connected)s " \
+            "Running_Jobs=%(running_jobs)d" \
+            "Last_Pid=%(lastpid)d" % w.stats())
+    t=Timer(30.0, log_stats)
 
 def sig(signum, frame):
     global w
@@ -83,6 +93,7 @@ def main(argv):
     signal.signal(signal.SIGHUP, sig)
     signal.signal(signal.SIGINT, sig)
 
+    log_stats()
     while keep_running:
         w = SAMMWorker(wait=job_wait)
         while w.connected == False:
