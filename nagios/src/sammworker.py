@@ -94,7 +94,6 @@ def main(argv):
     signal.signal(signal.SIGHUP, sig)
     signal.signal(signal.SIGINT, sig)
 
-    log_stats()
     while keep_running:
         w = SAMMWorker(wait=job_wait)
         while w.connected == False:
