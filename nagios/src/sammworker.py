@@ -10,17 +10,6 @@ from threading import Timer
 
 w = None
 keep_running = True
-t = None
-
-def log_stats():
-    global t
-    global w
-    logging.info(".")
-    if not isinstance(w, SAMMWorker):
-        logging.info("Object not defined yet. type=%s" % str(type(w)))
-    else:
-        logging.info(str(w.stats()))
-    t=None
 
 def sig(signum, frame):
     global w
@@ -49,7 +38,7 @@ def help(msg=""):
     return -1
 
 def main(argv):
-    global t
+    t = None
     job_wait=5
     retry_delay=5
     pid_file='/run/sammworker_process.pid'
@@ -111,9 +100,9 @@ def main(argv):
             logging.critical("Unable to register. Aborting")
             w.close()
         while keep_running and w.registered and w.connected:
-            if t is None:
-                logging.info("stats")
-                t=Timer(5.0, log_stats)
+            if t is None or time.time() - t > 5000:
+                logging.info(w.stats())
+                t = time.time()
             try:
                 if w.recv():
                     logging.debug("Received data.")
