@@ -48,6 +48,7 @@ def help(msg=""):
     return -1
 
 def main(argv):
+    global t
     job_wait=5
     retry_delay=5
     pid_file='/run/sammworker_process.pid'
