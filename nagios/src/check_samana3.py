@@ -187,7 +187,7 @@ def log(data, logname, crit, warn):
 
     val = len(events)
 
-    if 'Truncated' in data['Events'] and logname in data['Events']['Truncated'] or val > critval:
+    if val > critval:
         state = "CRITICAL"
         outval = 2
     elif val > warnval:
