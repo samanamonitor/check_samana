@@ -118,7 +118,7 @@ class WRProtocol(Protocol):
                         raise
         return resp
 
-    def pull(self, resource_uri, enumeration_ctx, max_elements=10):
+    def pull(self, resource_uri, enumeration_ctx, max_elements=10, selector=None):
         message_id = uuid.uuid4()
         req = {
             'env:Envelope': self._get_soap_header(
@@ -129,7 +129,11 @@ class WRProtocol(Protocol):
                 'n:EnumerationContext': enumeration_ctx,
                 'n:MaxElements': max_elements
             })
-        #print(xmltodict.unparse(req))
+        if selector is not None:
+            req['env:Envelope']['env:Header']['w:SelectorSet'] = {
+                'w:Selector': selector
+            }
+        print(xmltodict.unparse(req))
         res=self.send_message(xmltodict.unparse(req))
         return res
 
@@ -144,8 +148,6 @@ class WRProtocol(Protocol):
             req['env:Envelope']['env:Header']['w:SelectorSet'] = {
                 'w:Selector': selector
             }
-
-            selector
         if wql is not None:
             req['env:Envelope']['env:Body']['n:Enumerate']['w:Filter'] = {
                 '@Dialect': 'http://schemas.microsoft.com/wbem/wsman/1/WQL',
@@ -158,11 +160,11 @@ class WRProtocol(Protocol):
                 'w:SelectorSet': { 
                     'w:Selector': [ { '@Name': k, '#text': en_filter[k]} for k in en_filter ] }
                 }
-        #print(xmltodict.unparse(req))
+        print(xmltodict.unparse(req))
         res=self.send_message(xmltodict.unparse(req))
         return res
 
-    def get(self, resource_uri, selector=None):
+    def get(self, resource_uri, selector=None, option=None):
         message_id = uuid.uuid4()
         req = {
             'env:Envelope': self._get_soap_header(
@@ -172,8 +174,15 @@ class WRProtocol(Protocol):
             #{
             #    'w:Selector': { '@Name': 'ShellId', '#text': '1'}
             #    }
-            req['env:Envelope']['env:Header']['w:SelectorSet'] = selector
+            req['env:Envelope']['env:Header']['w:SelectorSet'] = {
+                'w:Selector': selector
+            }
+        if option is not None:
+            req['env:Envelope']['env:Header']['w:OptionSet'] = {
+                'w:Option': option
+            }
         req['env:Envelope'].setdefault('env:Body', {})
+        print(xmltodict.unparse(req))
         res=self.send_message(xmltodict.unparse(req))
         return res
 
