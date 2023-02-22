@@ -21,6 +21,8 @@ if [ -f ${LASTFILE} ]; then
     DIFVAL=$(expr ${CURVAL} - ${LASTVAL})
 fi
 
+echo "${CURVAL}" > ${LASTFILE}
+
 if [ -z "${DIFVAL}" ]; then
     echo "OK - First time execution. Recording current value."
     exit 0
