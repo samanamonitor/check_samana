@@ -38,7 +38,7 @@ if [ "${#LASTVALS[@]}" != "${#CURVALS[@]}" ]; then
     exit 0
 fi
 
-for i in $(seq ${#CURVAL[@]}); do
+for i in $(seq ${#CURVALS[@]}); do
     ival=$(expr ${CURVALS[i]} - ${LASTVALS[i]})
     DIFVALS[i]=$ival
     if [ -n "${CRITVAL}" ] && [ "${ival}" -ge "${CRITVAL}" ]; then
