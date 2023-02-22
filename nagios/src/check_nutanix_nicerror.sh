@@ -15,7 +15,7 @@ if ! grep -q ${HOST_ID} ~/.ssh/config; then
     exit 1
 fi
 
-CURVAL=$(ssh ${HOST_ID} ethtool -S ${INTERFACE} \
+CURVAL=$(ssh ${HOST_ID} ethtool -S ${INTERFACE} 2>/dev/null \
     | grep -e " rx_errors" | awk '{print $2}')
 if [ -f ${LASTFILE} ]; then
     LASTVAL=$(cat ${LASTFILE})
