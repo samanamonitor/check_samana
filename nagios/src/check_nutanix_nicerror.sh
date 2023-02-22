@@ -38,7 +38,7 @@ if [ "${#LASTVALS[@]}" != "${#CURVALS[@]}" ]; then
     exit 0
 fi
 
-for i in ${#CURVAL[@]}; do
+for i in $(seq ${#CURVAL[@]}); do
     ival=$(expr ${CURVALS[i]} - ${LASTVALS[i]})
     DIFVALS[i]=$ival
     if [ -n "${CRITVAL}" ] && [ "${ival}" -ge "${CRITVAL}" ]; then
@@ -54,7 +54,7 @@ echo "${CURVALS[@]}" > ${LASTFILE}
 
 printf "%s - |" ${STATUS}
 
-for i in ${#DIFVAL[@]}; do
+for i in $(seq ${#DIFVAL[@]}); do
     printf " %s_rx_errors=%d;%s;%s;;" ${inames[i]} \
         ${DIFVAL[i]} ${WARNVAL} ${CRITVAL}
 done
