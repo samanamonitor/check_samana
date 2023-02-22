@@ -1,49 +1,60 @@
 #!/bin/bash
 
 HOST_ID=$1
-INTERFACE=$2
+INTERFACES=$2
 WARNVAL=$3
 CRITVAL=$4
 
-LASTFILE=/tmp/${HOST_ID}-${INTERFACE}
-DIFVAL=""
+LASTFILE=/tmp/${HOST_ID}-rx_errors
+DIFVALS=()
 STATUS="OK"
 RETVAL=0
+inames=(${INTERFACES//,/ })
 
 if ! grep -q ${HOST_ID} ~/.ssh/config; then
     echo "UNKNOWN - Host ${HOST_ID} not configured for ssh." >&2
     exit 3
 fi
 
-CURVAL=$(ssh ${HOST_ID} ethtool -S ${INTERFACE} 2>/dev/null \
-    | grep -e " rx_errors" | awk '{print $2}')
+CURVALS=($(ssh ${HOST_ID} "for i in ${inames[@]}; do ethtool -S \$i 2>/dev/null \
+    | grep -e " rx_errors" | awk '{print \$2}'"))
 
-if [ "$?" != "0" ] || [ -z "${CURVAL}" ] ; then
+if [ "$?" != "0" ] || [ -z "${CURVALS[@]}" ] ; then
     echo "UNKNOWN - Error executing check"
-    echo ${CURVAL}
+    echo "${CURVALS[@]}"
     exit 3
 fi
 
-if [ -f ${LASTFILE} ]; then
-    LASTVAL=$(cat ${LASTFILE})
-    DIFVAL=$(expr ${CURVAL} - ${LASTVAL})
-fi
-
-echo "${CURVAL}" > ${LASTFILE}
-
-if [ -z "${DIFVAL}" ]; then
+if [ ! -f ${LASTFILE} ]; then
     echo "OK - First time execution. Recording current value."
     exit 0
 fi
 
-if [ -n "${CRITVAL}" ] && [ ${DIFVAL} -ge ${CRITVAL} ]; then
-    STATUS="CRITICAL"
-    RETVAL=2
-elif [ -n "${WARNVAL}" ] && [ ${DIFVAL} -ge ${WARNVAL} ]; then
-    STATUS="WARNING"
-    RETVAL=1
+LASTVALS=($(cat ${LASTFILE}))
+if [ "${#LASTVALS[@]}" != "${#CURVALS[@]}" ]; then
+    echo "OK - Number of interfaces changed. Resetting value file"
+    exit 0
 fi
 
-printf "%s - Errors = %d | rx_errors=%d;%s;%s;;\n" ${STATUS} \
+for i in ${#CURVAL[@]}; do
+    ival=$(expr ${CURVALS[i]} - ${LASTVALS[i]})
+    DIFVALS[i]=$ival
+    if [ -n "${CRITVAL}" ] && [ "${ival}" -ge "${CRITVAL}" ]; then
+        STATUS="CRITICAL"
+        RETVAL=2
+    elif [ -n "WARNVAL" ] && [ "${RETVAL}" -lt "1" ] && [ "${ival}" -ge "${WARNVAL}" ]; then
+        STATUS="WARNING"
+        RETVAL=1
+    fi
+done
+
+echo "${CURVALS}" > ${LASTFILE}
+
+printf "%s - Errors = %d |rx_errors=%d;%s;%s;;" ${STATUS} \
     ${DIFVAL} ${DIFVAL} ${WARNVAL} ${CRITVAL}
+
+for i in ${#DIFVAL[@]}; do
+    printf " %s_rx_errors=%d;%s;%s;;" ${inames[i]} \
+        ${DIFVAL[i]} ${WARNVAL} ${CRITVAL}
+done
 exit ${RETVAL}
