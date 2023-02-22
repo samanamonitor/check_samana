@@ -33,6 +33,7 @@ fi
 
 LASTVALS=($(cat ${LASTFILE}))
 if [ "${#LASTVALS[@]}" != "${#CURVALS[@]}" ]; then
+    echo "${CURVALS[@]}" > ${LASTFILE}
     echo "OK - Number of interfaces changed. Resetting value file"
     exit 0
 fi
