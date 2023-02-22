@@ -26,6 +26,7 @@ if [ "$?" != "0" ] || [ -z "${CURVALS[0]}" ] ; then
 fi
 
 if [ ! -f ${LASTFILE} ]; then
+    echo "${CURVALS[@]}" > ${LASTFILE}
     echo "OK - First time execution. Recording current value."
     exit 0
 fi
