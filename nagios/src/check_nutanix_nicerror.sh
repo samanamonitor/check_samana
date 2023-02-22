@@ -43,7 +43,7 @@ for i in ${#CURVAL[@]}; do
     if [ -n "${CRITVAL}" ] && [ "${ival}" -ge "${CRITVAL}" ]; then
         STATUS="CRITICAL"
         RETVAL=2
-    elif [ -n "WARNVAL" ] && [ "${RETVAL}" -lt "1" ] && [ "${ival}" -ge "${WARNVAL}" ]; then
+    elif [ -n "${WARNVAL}" ] && [ "${RETVAL}" -lt "1" ] && [ "${ival}" -ge "${WARNVAL}" ]; then
         STATUS="WARNING"
         RETVAL=1
     fi
