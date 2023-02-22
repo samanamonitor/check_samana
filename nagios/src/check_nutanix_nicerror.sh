@@ -9,14 +9,14 @@ LASTFILE=/tmp/${HOST_ID}-rx_errors
 DIFVALS=()
 STATUS="OK"
 RETVAL=0
-inames=(${INTERFACES//,/ })
+inames=(0 ${INTERFACES//,/ })
 
 if ! grep -q ${HOST_ID} ~/.ssh/config; then
     echo "UNKNOWN - Host ${HOST_ID} not configured for ssh." >&2
     exit 3
 fi
 
-CURVALS=($(ssh ${HOST_ID} "for i in ${INTERFACES//,/ }; do ethtool -S \$i 2>/dev/null \
+CURVALS=(0 $(ssh ${HOST_ID} "for i in ${INTERFACES//,/ }; do ethtool -S \$i 2>/dev/null \
     | grep -e " rx_errors" | awk '{print \$2}'; done"))
 
 if [ "$?" != "0" ] || [ -z "${CURVALS[0]}" ] ; then
@@ -31,7 +31,7 @@ if [ ! -f ${LASTFILE} ]; then
     exit 0
 fi
 
-LASTVALS=($(cat ${LASTFILE}))
+LASTVALS=(0 $(cat ${LASTFILE}))
 if [ "${#LASTVALS[@]}" != "${#CURVALS[@]}" ]; then
     echo "${CURVALS[@]}" > ${LASTFILE}
     echo "OK - Number of interfaces changed. Resetting value file"
