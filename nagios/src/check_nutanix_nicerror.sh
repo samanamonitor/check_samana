@@ -18,7 +18,7 @@ fi
 CURVAL=$(ssh ${HOST_ID} ethtool -S ${INTERFACE} 2>/dev/null \
     | grep -e " rx_errors" | awk '{print $2}')
 
-if [ "$?" != "0" ] || [ -z ${CURVAL} ] ; then
+if [ "$?" != "0" ] || [ -z "${CURVAL}" ] ; then
     echo "UNKNOWN - Error executing check"
     echo ${CURVAL}
     exit 3
