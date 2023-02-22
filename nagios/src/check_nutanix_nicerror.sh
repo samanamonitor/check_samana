@@ -37,6 +37,6 @@ elif [ -n "${WARNVAL}" ] && [ ${DIFVAL} -gt ${WARNVAL} ]; then
     RETVAL=1
 fi
 
-printf "%s - Errors = %d | rx_errors=%d;%s;%s;;\n" STATUS \
+printf "%s - Errors = %d | rx_errors=%d;%s;%s;;\n" ${STATUS} \
     ${DIFVAL} ${DIFVAL} ${WARNVAL} ${CRITVAL}
 exit ${RETVAL}
