@@ -14,7 +14,8 @@ if ! grep -q ${HOST_ID} ~/.ssh/config; then
     exit 1
 fi
 
-CURVAL=$(ssh ${HOST_ID} ethtool -S ${INTERFACE} | grep -e " rx_errors" | awk '{print \$2}')
+CURVAL=$(ssh ${HOST_ID} ethtool -S ${INTERFACE} \
+    | grep -e " rx_errors" | awk '{print $2}')
 if [ -f ${LASTFILE} ]; then
     LASTVAL=$(cat ${LASTFILE})
     DIFVAL=$(expr ${CURVAL} - ${LASTVAL})
