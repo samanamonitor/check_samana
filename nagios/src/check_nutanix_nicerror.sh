@@ -52,8 +52,7 @@ done
 
 echo "${CURVALS[@]}" > ${LASTFILE}
 
-printf "%s - Errors = %d |rx_errors=%d;%s;%s;;" ${STATUS} \
-    ${DIFVAL} ${DIFVAL} ${WARNVAL} ${CRITVAL}
+printf "%s - |" ${STATUS}
 
 for i in ${#DIFVAL[@]}; do
     printf " %s_rx_errors=%d;%s;%s;;" ${inames[i]} \
