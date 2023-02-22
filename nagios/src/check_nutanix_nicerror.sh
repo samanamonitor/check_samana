@@ -29,10 +29,10 @@ if [ -z "${DIFVAL}" ]; then
     exit 0
 fi
 
-if [ -n "${CRITVAL}" ] && [ ${DIFVAL} -gt ${CRITVAL} ]; then
+if [ -n "${CRITVAL}" ] && [ ${DIFVAL} -ge ${CRITVAL} ]; then
     STATUS="CRITICAL"
     RETVAL=2
-elif [ -n "${WARNVAL}" ] && [ ${DIFVAL} -gt ${WARNVAL} ]; then
+elif [ -n "${WARNVAL}" ] && [ ${DIFVAL} -ge ${WARNVAL} ]; then
     STATUS="WARNING"
     RETVAL=1
 fi
