@@ -16,7 +16,7 @@ if ! grep -q ${HOST_ID} ~/.ssh/config; then
     exit 3
 fi
 
-CURVALS=($(ssh ${HOST_ID} "for i in ${inames[@]}; do ethtool -S \$i 2>/dev/null \
+CURVALS=($(ssh ${HOST_ID} "for i in ${INTERFACES//,/ }; do ethtool -S \$i 2>/dev/null \
     | grep -e " rx_errors" | awk '{print \$2}'"))
 
 if [ "$?" != "0" ] || [ -z "${CURVALS[@]}" ] ; then
