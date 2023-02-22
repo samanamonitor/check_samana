@@ -11,12 +11,19 @@ STATUS="OK"
 RETVAL=0
 
 if ! grep -q ${HOST_ID} ~/.ssh/config; then
-    echo "Host ${HOST_ID} not configured for ssh." >&2
-    exit 1
+    echo "UNKNOWN - Host ${HOST_ID} not configured for ssh." >&2
+    exit 3
 fi
 
 CURVAL=$(ssh ${HOST_ID} ethtool -S ${INTERFACE} 2>/dev/null \
     | grep -e " rx_errors" | awk '{print $2}')
+
+if [ "$?" != "0" ]; then
+    echo "UNKNOWN - Error executing check"
+    echo ${CURVAL}
+    exit 3
+fi
+
 if [ -f ${LASTFILE} ]; then
     LASTVAL=$(cat ${LASTFILE})
     DIFVAL=$(expr ${CURVAL} - ${LASTVAL})
