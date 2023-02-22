@@ -8,6 +8,7 @@ CRITVAL=$4
 LASTFILE=/tmp/${HOST_ID}-${INTERFACE}
 DIFVAL=""
 STATUS="OK"
+RETVAL=0
 
 if ! grep -q ${HOST_ID} ~/.ssh/config; then
     echo "Host ${HOST_ID} not configured for ssh." >&2
@@ -29,13 +30,13 @@ if [ -z "${DIFVAL}" ]; then
 fi
 
 if [ -n "${CRITVAL}" ] && [ ${DIFVAL} -gt ${CRITVAL} ]; then
-    printf "CRITICAL - Errors = %d | rx_errors=%d;%s;%s;;" \
-        ${DIFVAL} ${DIFVAL} ${WARNVAL} ${CRITVAL}
-    exit 2
+    STATUS="CRITICAL"
+    RETVAL=2
 elif [ -n "${WARNVAL}" ] && [ ${DIFVAL} -gt ${WARNVAL} ]; then
-    printf "WARNING - Errors = %d | rx_errors=%d;%s;%s;;" \
-        ${DIFVAL} ${DIFVAL} ${WARNVAL} ${CRITVAL}
-    exit 1
+    STATUS="WARNING"
+    RETVAL=1
 fi
-printf "OK - Errors = %d | rx_errors=%d;%s;%s;;" \
+
+printf "%s - Errors = %d | rx_errors=%d;%s;%s;;\n" STATUS \
     ${DIFVAL} ${DIFVAL} ${WARNVAL} ${CRITVAL}
+exit ${RETVAL}
