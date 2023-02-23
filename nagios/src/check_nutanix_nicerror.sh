@@ -16,8 +16,8 @@ if ! grep -q ${HOST_ID} ~/.ssh/config; then
     exit 3
 fi
 
-CURVALS=(0 $(ssh ${HOST_ID} "for i in ${INTERFACES//,/ }; do ethtool -S \$i 2>/dev/null \
-    | grep -e " rx_errors" | awk '{print \$2}'; done"))
+CURVALS=(0 $(ssh ${HOST_ID} "for i in ${INTERFACES//,/ }; do ethtool -S \$i \
+    | grep -e " rx_errors" | awk '{print \$2}'; done" 2>/dev/null))
 
 if [ "$?" != "0" ] || [ -z "${CURVALS[0]}" ] ; then
     echo "UNKNOWN - Error executing check"
