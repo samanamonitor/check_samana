@@ -52,7 +52,7 @@ done
 
 echo "${CURVALS[@]}" > ${LASTFILE}
 
-printf "%s - |" ${STATUS}
+printf "%s |" ${STATUS}
 
 for i in $(seq ${#ifnames[@]}); do
     ifindex=$(expr $i - 1)
