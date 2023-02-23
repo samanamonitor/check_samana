@@ -19,7 +19,7 @@ fi
 CURVALS=(0 $(ssh ${HOST_ID} "for i in ${INTERFACES//,/ }; do ethtool -S \$i \
     | grep -e " rx_errors" | awk '{print \$2}'; done" 2>/dev/null))
 
-if [ "$?" != "0" ] || [ -z "${CURVALS[0]}" ] ; then
+if [ "$?" != "0" ] || [ -z "${CURVALS[1]}" ] ; then
     echo "UNKNOWN - Error executing check"
     echo "${CURVALS[@]}"
     exit 3
