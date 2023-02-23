@@ -10,13 +10,15 @@ DIFVALS=(0)
 STATUS="OK"
 RETVAL=0
 ifnames=(${INTERFACES//,/ })
+sshconfig=/home/nagios/.ssh/config
+sshkey=/home/nagios/.ssh/id_rsa
 
-if ! grep -q ${HOST_ID} ~/.ssh/config; then
+if ! grep -q ${HOST_ID} ${sshconfig}; then
     echo "UNKNOWN - Host ${HOST_ID} not configured for ssh." >&2
     exit 3
 fi
 
-CURVALS=(0 $(ssh ${HOST_ID} "for i in ${INTERFACES//,/ }; do ethtool -S \$i \
+CURVALS=(0 $(ssh -F ${sshconfig} -i ${sshkey} ${HOST_ID} "for i in ${INTERFACES//,/ }; do ethtool -S \$i \
     | grep -e " rx_errors" | awk '{print \$2}'; done" 2>/dev/null))
 
 if [ "$?" != "0" ] || [ -z "${CURVALS[1]}" ] ; then
