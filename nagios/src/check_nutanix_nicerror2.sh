@@ -28,7 +28,8 @@ fi
 printf "OK |"
 
 for i in $(seq ${#ifnames[@]}); do
-    printf " %s=%s;;;;" ${ifnames[$i]} ${CURVALS[$i]}
+    ifindex=$(expr $i - 1)
+    printf " %s=%s;;;;" ${ifnames[$ifindex]} ${CURVALS[$i]}
 done
 printf "\n"
 exit ${RETVAL}
