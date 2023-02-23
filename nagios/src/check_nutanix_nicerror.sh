@@ -39,8 +39,8 @@ if [ "${#LASTVALS[@]}" != "${#CURVALS[@]}" ]; then
 fi
 
 for i in $(seq ${#ifnames[@]}); do
-    ival=$(expr ${CURVALS[i]} - ${LASTVALS[i]})
-    DIFVALS[i]=$ival
+    ival=$(expr ${CURVALS[$i]} - ${LASTVALS[$i]})
+    DIFVALS[$i]=$ival
     if [ -n "${CRITVAL}" ] && [ "${ival}" -ge "${CRITVAL}" ]; then
         STATUS="CRITICAL"
         RETVAL=2
@@ -55,8 +55,9 @@ echo "${CURVALS[@]}" > ${LASTFILE}
 printf "%s - |" ${STATUS}
 
 for i in $(seq ${#ifnames[@]}); do
-    printf " %s_rx_errors=%d;%s;%s;;" ${ifnames[i]} \
-        ${DIFVALS[i]} ${WARNVAL} ${CRITVAL}
+    ifindex=$(expr $i - 1)
+    printf " %s_rx_errors=%d;%s;%s;;" ${ifnames[$ifindex]} \
+        ${DIFVALS[$i]} ${WARNVAL} ${CRITVAL}
 done
 printf "\n"
 exit ${RETVAL}
