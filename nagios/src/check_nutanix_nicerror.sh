@@ -58,4 +58,5 @@ for i in $(seq ${#ifnames[@]}); do
     printf " %s_rx_errors=%d;%s;%s;;" ${ifnames[i]} \
         ${DIFVALS[i]} ${WARNVAL} ${CRITVAL}
 done
+printf "\n"
 exit ${RETVAL}
