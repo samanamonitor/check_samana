@@ -56,6 +56,6 @@ printf "%s - |" ${STATUS}
 
 for i in $(seq ${#ifnames[@]}); do
     printf " %s_rx_errors=%d;%s;%s;;" ${ifnames[i]} \
-        ${DIFVAL[i]} ${WARNVAL} ${CRITVAL}
+        ${DIFVALS[i]} ${WARNVAL} ${CRITVAL}
 done
 exit ${RETVAL}
