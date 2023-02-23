@@ -6,7 +6,7 @@ WARNVAL=$3
 CRITVAL=$4
 
 LASTFILE=/tmp/${HOST_ID}-rx_errors
-DIFVALS=()
+DIFVALS=(0)
 STATUS="OK"
 RETVAL=0
 inames=(0 ${INTERFACES//,/ })
@@ -31,7 +31,7 @@ if [ ! -f ${LASTFILE} ]; then
     exit 0
 fi
 
-LASTVALS=(0 $(cat ${LASTFILE}))
+LASTVALS=($(cat ${LASTFILE}))
 if [ "${#LASTVALS[@]}" != "${#CURVALS[@]}" ]; then
     echo "${CURVALS[@]}" > ${LASTFILE}
     echo "OK - Number of interfaces changed. Resetting value file"
