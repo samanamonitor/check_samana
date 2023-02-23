@@ -9,7 +9,7 @@ LASTFILE=/tmp/${HOST_ID}-rx_errors
 DIFVALS=(0)
 STATUS="OK"
 RETVAL=0
-inames=(${INTERFACES//,/ })
+ifnames=(${INTERFACES//,/ })
 
 if ! grep -q ${HOST_ID} ~/.ssh/config; then
     echo "UNKNOWN - Host ${HOST_ID} not configured for ssh." >&2
@@ -55,7 +55,7 @@ echo "${CURVALS[@]}" > ${LASTFILE}
 printf "%s - |" ${STATUS}
 
 for i in $(seq ${#ifnames[@]}); do
-    printf " %s_rx_errors=%d;%s;%s;;" ${inames[i]} \
+    printf " %s_rx_errors=%d;%s;%s;;" ${ifnames[i]} \
         ${DIFVAL[i]} ${WARNVAL} ${CRITVAL}
 done
 exit ${RETVAL}
