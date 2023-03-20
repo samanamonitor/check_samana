@@ -12,7 +12,7 @@ all:
 install: $(INSTALL_FILES)
 
 $(INSTALL_FILES):
-	install -D -g $(NAGIOS_GROUP) -o $(NAGIOS_USER) -m $(FILE_MODE) $@ $(HTML_PATH)/$@
-	install -D -g $(NAGIOS_GROUP) -o $(NAGIOS_USER) -m $(FILE_MODE) $@ $(CONTAINER_HTML)/$@
+	install -D -g $(NAGIOS_GROUP) -o $(NAGIOS_USER) -m $(FILE_MODE) $@ $(DESTDIR)$(HTML_PATH)/$@
+	install -D -g $(NAGIOS_GROUP) -o $(NAGIOS_USER) -m $(FILE_MODE) $@ $(DESTDIR)$(CONTAINER_HTML)/$@
 
 clean:

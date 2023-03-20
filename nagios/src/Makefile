@@ -12,6 +12,6 @@ all:
 install: $(INSTALL_FILES)
 
 $(INSTALL_FILES):
-	install -D -g $(NAGIOS_GROUP) -o $(NAGIOS_USER) -m $(FILE_MODE) $@ $(NAGIOS_LIBEXEC)/$@
+	install -D -g $(NAGIOS_GROUP) -o $(NAGIOS_USER) -m $(FILE_MODE) $@ $(DESTDIR)$(NAGIOS_LIBEXEC)/$@
 
 clean:
