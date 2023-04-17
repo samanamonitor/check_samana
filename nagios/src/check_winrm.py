@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 import re
 from time import time
@@ -91,7 +91,7 @@ class WinRMScript:
             encoded_ps = b64encode(script.encode('utf_16_le')).decode('ascii')
             command_id = p.run_command(shell_id, 'powershell', ['-encodedcommand {0}'.format(encoded_ps), ])
             std_out, std_err, status_code = p.get_command_output(shell_id, command_id)
-            self.check_error(std_err)
+            self.check_error(std_err.decode('ascii'))
             p.cleanup_command(shell_id, command_id)
             p.close_shell(shell_id)
 
@@ -101,8 +101,8 @@ class WinRMScript:
             raise CheckWinRMExceptionUNKNOWN("Unable to get data from Server (%s) %s." % (type(e).__name__, str(e)))
 
         if status_code != 0:
-            raise CheckWinRMExceptionUNKNOWN(std_err)
-        return "%s\n%s" % (std_out, "")
+            raise CheckWinRMExceptionUNKNOWN(std_err.decode('ascii'))
+        return "%s\n%s" % (std_out.decode('ascii'), "")
 
     def check_error(self, std_err):
         if len(std_err) == 0:
@@ -200,14 +200,14 @@ def ping_host(ip):
     p = subprocess.Popen(["ping", "-c", "3", ip], stdout = subprocess.PIPE)
     out = p.communicate()
     if p.returncode != 0:
-        raise CheckWinRMExceptionUNKNOWN("Unable to ping host %s\n%s" % (ip, out[0]))
+        raise CheckWinRMExceptionUNKNOWN("Unable to ping host %s\n%s" % (ip, out[0].decode('ascii')))
     try:
-        pat = re.search("^(\d+) packets transmitted, (\d+) received", out[0], flags=re.M)
+        pat = re.search("^(\d+) packets transmitted, (\d+) received", out[0].decode('ascii'), flags=re.M)
         if pat is None:
             raise ValueError("Cannot extract packets from ping output.")
         packets = pat.groups()
 
-        pat = re.search("^r[^ ]+ min/avg/max/[^ ]+ = ([\d.]+)/([\d.]+)/([\d.]+)/([\d.]+)", out[0], flags=re.M)
+        pat = re.search("^r[^ ]+ min/avg/max/[^ ]+ = ([\d.]+)/([\d.]+)/([\d.]+)/([\d.]+)", out[0].decode('ascii'), flags=re.M)
         if pat is None:
             raise ValueError("Cannot extract ping rtt times.")
         rtt = pat.groups()
