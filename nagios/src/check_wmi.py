@@ -49,14 +49,14 @@ Usage:
 """ % sys.argv[0] if len(sys.argv) > 0 else "???????"
 
 
-def query_server(host, username, password, namespace="root\\cimv2", filter_tuples={}):
+def query_server(host, username, password, domain, namespace="root\\cimv2", filter_tuples={}):
     ''' param:filter_tuples is a dictionary where keys matches the key in queries global dictionary
         if the key doesn't exist, then an empty tuple is expected, otherwise the tuple
         must contain all the arguments needed to complete the string
     '''
     import pywmi
     server = {}
-    conn_status = pywmi.open(host, username, password, namespace)
+    conn_status = pywmi.open(host, username, password, domain, namespace)
     if conn_status != 0:
         raise CheckUnknown("Unable to connecto to server. Error %s" % conn_status)
     for i in queries.keys():
@@ -189,8 +189,8 @@ def main(argv):
                 critical = a
             elif o == '-a':
                 (username, password, domain) = auth_file(a)
-                if domain is not None:
-                    username = "%s\\%s" % (domain, username)
+#                if domain is not None:
+#                    username = "%s\\%s" % (domain, username)
             elif o == "-i":
                 idtype = a
             elif o == "-N":
@@ -237,7 +237,7 @@ def main(argv):
             'evt_system': (timefilter, 2),
             'evt_sf': (timefilter, 2)
         }
-        a = query_server(hostip, username, password, namespace=namespace, filter_tuples=filter_tuples)
+        a = query_server(hostip, username, password, domain, namespace=namespace, filter_tuples=filter_tuples)
         data = legacy(a, idtype)
         wmi_time = int((time.time() - wmi_start) * 1000)
 
