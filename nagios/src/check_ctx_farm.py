@@ -453,7 +453,7 @@ def auth_file(authfile):
     else:
       data['upn'] = False
   except Exception as e:
-    print "UNKNOWN - auth_file Error %s" % str(e)
+    print("UNKNOWN - auth_file Error %s" % str(e))
     exit(3)
 
   return data
