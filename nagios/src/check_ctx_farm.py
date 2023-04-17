@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 from base64 import b64encode
 import json
@@ -22,7 +22,7 @@ class CitrixXD:
         raise Exception("The password is a mandatory argument")
 
     except Exception as e:
-      print "UNKNOWN - Error " + str(e)
+      print("UNKNOWN - Error %s" % str(e))
       usage()
       exit(3)
 
@@ -79,7 +79,7 @@ $json
       encoded_ps = b64encode(script.encode('utf_16_le')).decode('ascii')
       command_id = p.run_command(shell_id, 'powershell', ['-encodedcommand {0}'.format(encoded_ps), ])
       std_out, std_err, status_code = p.get_command_output(shell_id, command_id)
-      citrix = json.loads(std_out, 'latin-1')
+      citrix = json.loads(std_out.decode('ascii'))
       if not isinstance(citrix, list):
         citrix = [citrix]
     except Exception as e:
@@ -108,7 +108,7 @@ $json
       if len(mn) == 2:
           name = mn[0] + '__' + mn[1]
       else:
-          print "Invalid Machine name %s" % m['MachineName']
+          print("Invalid Machine name %s" % m['MachineName'])
           continue
       if self.data.get(name):
         if m['InMaintenanceMode'] != self.data[name]['data']['InMaintenanceMode']:
@@ -281,8 +281,9 @@ $json
     #print("Individual Data; | ")
     for i in s['data']['LoadIndexes']:
       (index_name, index_value) = i.split(':')
-      index_name = unicodedata.normalize('NFKD', index_name).encode('ascii', 'ignore').translate(None, '$')
+      #index_name = unicodedata.normalize('NFKD', index_name).encode('ascii', 'ignore').translate(None, '$')
       #out = "{0} '{1}'={2};;;0;10000".format(out, index_name, index_value)
+      index_name = index_name.replace('$', '')
       print("{0} load is {1}".format(index_name, index_value))
     #print out
     exit(code)
@@ -317,7 +318,7 @@ $json
       exit_code = 0
     print("{0} - Server has {1} users connected | load={1};{2};{3};;;".format(status, userload, warn, crit))
     for u in users:
-      print u
+      print(u)
     exit(exit_code)
 
   def getCatalogName(self, hostname, domain):
@@ -346,7 +347,8 @@ $json
     UnregisteredServers = 0
     WaitingForReboot = 0
     AvailLoadIndex = 0
-    for name, s in self.data.iteritems():
+    for name in self.data.keys():
+      s=self.data[name]
       if type(s) is not dict: continue
       if s['data']['DesktopGroupName'] == DesktopGroupName:
         LoadIndex += s['data']['LoadIndex']
@@ -363,7 +365,7 @@ $json
             if tag == 'RebootReady':
               WaitingForReboot += 1
     if TotalServers == 0:
-      print 'UNKNOWN - Servers in Delivery Group is 0. Maybe Delivery Group %s doesn\'t exist' % DesktopGroupName
+      print('UNKNOWN - Servers in Delivery Group is 0. Maybe Delivery Group %s doesn\'t exist' % DesktopGroupName)
       exit(3)
 
     AverageLoad = int(LoadIndex / TotalServers)
@@ -408,7 +410,8 @@ $json
       exit(3)
 
     LoadUser = 0
-    for name, s in self.data.iteritems():
+    for name in self.data.keys():
+      s=self.data[name]
       if type(s) is not dict: continue
       if s['data']['DesktopGroupName'] == DesktopGroupName:
         LoadUser += len(s['data']['AssociatedUserSIDs'])
@@ -450,7 +453,7 @@ def auth_file(authfile):
     else:
       data['upn'] = False
   except Exception as e:
-    print "UNKNOWN - auth_file Error " + str(e)
+    print "UNKNOWN - auth_file Error %s" % str(e)
     exit(3)
 
   return data
@@ -558,7 +561,7 @@ def main():
     machines = CitrixXD(ddc, auth(username, u_domain, password, authfile), refresh_interval, load_from_server)
 
     if load_from_server:
-      print "OK - Data loaded"
+      print("OK - Data loaded")
       exit(0)
     if module == 'rawData':
       machines.getRawData(hostname, h_domain)
@@ -580,7 +583,7 @@ def main():
       raise Exception("Module not implemented")
 
   except Exception as err:
-    print "UNKNOWN - main Error: " + str(err)
+    print("UNKNOWN - main Error: %s" % str(err))
     usage()
     exit(3)
 
