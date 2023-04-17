@@ -1,0 +1,14 @@
+if [ ! -f /usr/local/nagios/etc/nagios.cfg ]; then
+    echo "SAMM config file not found" >&2
+    exit 1
+fi
+
+if ! grep -q -e "^cfg_dir=/usr/local/nagios/etc/objects/samana" /usr/local/nagios/etc/nagios.cfg; then
+    echo "cfg_dir=/usr/local/nagios/etc/objects/samana" >> /usr/local/nagios/etc/nagios.cfg
+fi
+if ! grep -q -e "^cfg_dir=/usr/local/nagios/etc/objects/environment" /usr/local/nagios/etc/nagios.cfg; then
+    echo "cfg_dir=/usr/local/nagios/etc/objects/environment" >> /usr/local/nagios/etc/nagios.cfg
+fi
+
+sed -i '/^;\s\+tds\s\+version/a tds version = 8.0' \
+    /etc/freetds/freetds.conf
