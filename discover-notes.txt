@@ -1,0 +1,18 @@
+=>tag SAMM_Remove
+    remove host from SAMM
+=>tag SAMM_Disable
+    Disable host and services on SAMM
+    pynag.Control.Command.disable_host_svc_checks(hostname)
+    pynag.Control.Command.disable_host_check(hostname)
+
+=>no tag
+    powerstate=> On, Unmanaged
+            all services check
+            pynag.Control.Command.enable_host_svc_checks(hostname)
+            pynag.Control.Command.enable_host_check(hostname)
+    powerstate=> Off, TurningOff, Resuming, TurningOn, Suspended, Suspending
+        Disable host and services on SAMM
+        pynag.Control.Command.disable_host_svc_checks(hostname)
+        pynag.Control.Command.disable_host_check(hostname)
+    powerstate=> other
+        Set service as critical
