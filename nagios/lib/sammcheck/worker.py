@@ -4,6 +4,7 @@ import time
 import logging
 from .check import SAMMCheck
 from .etcdcheck import SAMMEtcdCheck
+from .dummycheck import SAMMDummyCheck
 from threading import Thread
 
 def str2array(a):
@@ -121,7 +122,7 @@ class SAMMWorker:
 
     def register(self):
         self.register_message=b'@wproc register name=test %(pid)d;pid=%(pid)d;' \
-            b'max_jobs=%(max_jobs)d;plugin=check_samana4\0\1\0\0\0' \
+            b'max_jobs=%(max_jobs)d;plugin=check_samana4;plugin=check_dummy\0\1\0\0\0' \
             % {b'pid': self.pid, b'max_jobs': self.max_jobs}
         logging.debug("Sending registration message: \"%s\"", self.register_message.decode('ascii'))
         self.sock.send(self.register_message)
@@ -189,6 +190,8 @@ class SAMMWorker:
             plugin=data['argv'][0].split('/')[-1]
             if plugin == "check_samana4":
                 data['check'] = SAMMEtcdCheck(data['argv'][1:])
+            elif plugin == "check_dummy":
+                data['check'] = SAMMDummyCheck(data['argv'][1:])
             else:
                 data['check'] = SAMMCheck(data['argv'][1:])
         return remaining_data.encode('ascii')
